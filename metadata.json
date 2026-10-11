@@ -1,0 +1,8 @@
+{
+  "name": "OM Polymer ASP.NET Core 10 & Angular 19 Platform",
+  "description": "Production-grade ASP.NET Core 10 Web API backend and Angular 19 standalone frontend solution for OM Polymer, featuring reactive maintenance portal, RFQ lead engine, and full REST integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

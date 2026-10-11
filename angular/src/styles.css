@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased transition-colors duration-300;
+    font-family: "Segoe UI", Arial, sans-serif;
+  }
+}
+
+@keyframes floatAnim {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes rotateGear {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes loadingBar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(230%); }
+}
+
+.anim-gear {
+  animation: rotateGear 5s linear infinite;
+}
+
+.anim-loading-bar::before {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 45%;
+  background: #2563eb;
+  border-radius: 10px;
+  animation: loadingBar 2s ease-in-out infinite;
+}

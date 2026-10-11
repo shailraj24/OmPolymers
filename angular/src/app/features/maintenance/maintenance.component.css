@@ -1,0 +1,13 @@
+/* Component animations */
+@keyframes floatAnim {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.anim-float {
+  animation: floatAnim 7s ease-in-out infinite;
+}
+
+.anim-float-reverse {
+  animation: floatAnim 8s ease-in-out infinite reverse;
+}
