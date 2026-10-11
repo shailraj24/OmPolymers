@@ -92,6 +92,51 @@ export const SolutionExplorer: React.FC = () => {
         </div>
       </div>
 
+      {/* GitHub Repository Push Guide */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-blue-950/40 border border-slate-800 rounded-xl p-5 shadow-lg">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl shrink-0">
+              🐙
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">Git Repository Initialized in /dotnet</h3>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  Committed (76 Files)
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                The entire ASP.NET Core 10 backend solution is generated on disk at <code className="text-blue-400">/dotnet</code> with initial Git commit.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors shadow-sm disabled:opacity-50"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>{downloading ? 'Packing...' : 'Download .NET ZIP'}</span>
+          </button>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-slate-800/80">
+          <div className="text-[11px] font-semibold text-slate-300 mb-2">
+            To push this repository to GitHub:
+          </div>
+          <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 overflow-x-auto space-y-1">
+            <div className="text-slate-500"># 1. Create a new repository on GitHub (e.g. om-polymer-api)</div>
+            <div className="text-slate-500"># 2. In your terminal inside the dotnet folder:</div>
+            <div className="text-blue-400">git remote add origin https://github.com/&lt;USERNAME&gt;/&lt;REPO-NAME&gt;.git</div>
+            <div className="text-blue-400">git branch -M main</div>
+            <div className="text-emerald-400">git push -u origin main</div>
+          </div>
+        </div>
+      </div>
+
+
       {/* Categories Bar & Quick Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-2">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
