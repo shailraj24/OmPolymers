@@ -15,6 +15,84 @@ export const csharpSolutionFiles: CodeFile[] = [
   // 1. Solution & Project Files
   // ==========================================
   {
+    path: '.gitignore',
+    name: '.gitignore',
+    category: 'Configuration',
+    language: 'json',
+    description: 'Git ignore rules for secrets (appsettings.json), node_modules, and build binaries',
+    content: `## .NET Core / Visual Studio .gitignore
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+## Secrets & Configuration Files
+appsettings.json
+appsettings.*.json
+!appsettings.example.json
+
+## Node.js Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+## Build & Test Results
+uploads/
+TestResults/
+*.DotSettings.user
+*.log
+.DS_Store
+`
+  },
+  {
+    path: 'OMPolymer.API/appsettings.example.json',
+    name: 'appsettings.example.json',
+    category: 'Configuration',
+    language: 'json',
+    description: 'Sanitized template for appsettings without database secrets',
+    content: `{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=OMPolymerDB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true;"
+  },
+  "JwtSettings": {
+    "Key": "YOUR_SUPER_SECRET_AND_LONG_KEY_AT_LEAST_32_CHARACTERS_HERE",
+    "Issuer": "OMPolymerAPI",
+    "Audience": "OMPolymerClient",
+    "DurationInMinutes": 1440
+  },
+  "FileStorageSettings": {
+    "UploadBasePath": "uploads",
+    "MaxFileSizeInBytes": 5242880,
+    "AllowedExtensions": [ ".jpg", ".jpeg", ".png", ".webp" ],
+    "AllowedMimeTypes": [ "image/jpeg", "image/png", "image/webp" ]
+  },
+  "EmailSettings": {
+    "SmtpHost": "smtp.mailtrap.io",
+    "SmtpPort": 587,
+    "SenderEmail": "no-reply@ompolymer.com",
+    "SenderName": "OM Polymer Security",
+    "SmtpUser": "",
+    "SmtpPass": "",
+    "EnableSsl": true,
+    "AppBaseUrl": "https://ompolymer.com"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore.Database.Command": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
+`
+  },
+  {
     path: 'OMPolymer.sln',
     name: 'OMPolymer.sln',
     category: 'Configuration',

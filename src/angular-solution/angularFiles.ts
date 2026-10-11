@@ -15,6 +15,42 @@ export const angularSolutionFiles: AngularCodeFile[] = [
   // 1. CONFIGURATION
   // ==========================================
   {
+    path: '.gitignore',
+    name: '.gitignore',
+    category: 'Configuration',
+    language: 'json',
+    description: 'Git ignore rules for node_modules, build outputs, and configuration files',
+    content: `# Angular & Node.js dependencies
+node_modules/
+.angular/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# Environments & secrets
+.env*
+!.env.example
+appsettings.json
+appsettings.*.json
+
+# IDEs and OS files
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+`
+  },
+  {
     path: 'package.json',
     name: 'package.json',
     category: 'Configuration',

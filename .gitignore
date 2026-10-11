@@ -6,3 +6,10 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# .NET Configuration & Secrets
+appsettings.json
+appsettings.*.json
+!appsettings.example.json
+bin/
+obj/
