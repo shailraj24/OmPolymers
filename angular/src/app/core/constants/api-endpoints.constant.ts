@@ -25,6 +25,22 @@ export const API_ENDPOINTS = {
     PUBLIC_LIST: '/testimonials',
     ADMIN_LIST: '/admin/testimonials'
   },
+  BLOGS: {
+    PUBLIC_LIST: '/blogs',
+    BY_SLUG: (slug: string) => `/blogs/${slug}`,
+    CATEGORIES: '/blogs/categories',
+    ADMIN_LIST: '/admin/blogs',
+    CREATE: '/admin/blogs',
+    UPDATE: (id: number) => `/admin/blogs/${id}`,
+    PUBLISH: (id: number) => `/admin/blogs/${id}/publish`,
+    UNPUBLISH: (id: number) => `/admin/blogs/${id}/unpublish`,
+    DELETE: (id: number) => `/admin/blogs/${id}`
+  },
+  LOGS: {
+    LIST: '/admin/logs',
+    FILES: '/admin/logs/files',
+    CLEAR: '/admin/logs/clear'
+  },
   AUTH: {
     LOGIN: '/admin/auth/login',
     FORGOT_PASSWORD: '/admin/auth/forgot-password',

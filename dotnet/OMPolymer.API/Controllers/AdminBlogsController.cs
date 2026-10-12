@@ -17,6 +17,10 @@ namespace OMPolymer.API.Controllers
             _blogService = blogService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] int? categoryId = null, [FromQuery] string? search = null)
+            => Ok(await _blogService.GetAllBlogsAsync(page, pageSize, categoryId, search));
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] BlogCreateRequest request)
         {

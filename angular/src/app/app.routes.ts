@@ -30,6 +30,18 @@ export const routes: Routes = [
           .then(m => m.ProductDetailComponent)
       },
       {
+        path: 'blogs',
+        title: 'OM POLYMER | Engineering Articles & Insights',
+        loadComponent: () => import('./features/user/blogs/blog-list.component')
+          .then(m => m.BlogListComponent)
+      },
+      {
+        path: 'blogs/:slug',
+        title: 'OM POLYMER | Article Specification',
+        loadComponent: () => import('./features/user/blogs/blog-detail.component')
+          .then(m => m.BlogDetailComponent)
+      },
+      {
         path: 'quote',
         title: 'OM POLYMER | Technical Quotation Request (RFQ)',
         loadComponent: () => import('./features/user/rfq/user-rfq.component')
@@ -88,6 +100,18 @@ export const routes: Routes = [
         title: 'Admin Console | Product Management',
         loadComponent: () => import('./features/admin/products/admin-products.component')
           .then(m => m.AdminProductsComponent)
+      },
+      {
+        path: 'blogs',
+        title: 'Admin Console | Articles & Blogs',
+        loadComponent: () => import('./features/admin/blogs/admin-blogs.component')
+          .then(m => m.AdminBlogsComponent)
+      },
+      {
+        path: 'logs',
+        title: 'Admin Console | System Logs',
+        loadComponent: () => import('./features/admin/logs/admin-logs.component')
+          .then(m => m.AdminLogsComponent)
       },
       {
         path: 'company',

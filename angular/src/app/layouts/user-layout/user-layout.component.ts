@@ -38,12 +38,15 @@ import { AuthService } from '../../core/services/auth.service';
             <a routerLink="/products" routerLinkActive="text-blue-600 dark:text-blue-400 font-bold" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               Products
             </a>
+            <a routerLink="/blogs" routerLinkActive="text-blue-600 dark:text-blue-400 font-bold" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Articles
+            </a>
             <a routerLink="/quote" routerLinkActive="text-blue-600 dark:text-blue-400 font-bold" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              Request Quotation
+              Request Quote
             </a>
             <a routerLink="/maintenance" routerLinkActive="text-blue-600 dark:text-blue-400 font-bold" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Maintenance Ref
+              Maintenance
             </a>
           </nav>
 
@@ -86,7 +89,8 @@ import { AuthService } from '../../core/services/auth.service';
             <span>· ISO 9001 Certified · High-Density Polyethylene & Polymer Extrusion</span>
           </div>
           <div class="flex items-center gap-4 text-slate-400">
-            <span>Dhoraji & Ahmedabad, Gujarat</span>
+            <a routerLink="/blogs" class="hover:text-blue-500 transition-colors">Engineering Insights</a>
+            <a routerLink="/products" class="hover:text-blue-500 transition-colors">Products</a>
             <a routerLink="/auth/login" class="hover:text-blue-500 transition-colors">Admin Console</a>
           </div>
         </div>

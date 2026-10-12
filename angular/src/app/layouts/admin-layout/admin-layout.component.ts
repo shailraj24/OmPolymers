@@ -43,10 +43,16 @@ import { ToastService } from '../../core/services/toast.service';
               <span>📊</span> Dashboard Overview
             </a>
             <a routerLink="/admin/inquiries" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
-              <span>📋</span> Inquiries & Leads CRM
+              <span>📋</span> Inquiries CRM
             </a>
             <a routerLink="/admin/products" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
               <span>📦</span> Product Catalog
+            </a>
+            <a routerLink="/admin/blogs" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
+              <span>📝</span> Articles & Blogs
+            </a>
+            <a routerLink="/admin/logs" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
+              <span>📜</span> System Logs
             </a>
             <a routerLink="/admin/company" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
               <span>🏢</span> Company & WhatsApp
@@ -82,7 +88,7 @@ import { ToastService } from '../../core/services/toast.service';
       <main class="flex-1 flex flex-col overflow-x-hidden">
         <header class="bg-slate-900/60 border-b border-slate-800 px-6 py-3.5 flex items-center justify-between">
           <div class="text-xs text-slate-400">
-            Administrative Console · <span class="text-slate-200 font-medium">OM Polymer Web API</span>
+            Administrative Console · <span class="text-slate-200 font-medium">OM Polymer Platform</span>
           </div>
           <div class="flex items-center gap-3">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>

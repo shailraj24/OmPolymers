@@ -6,6 +6,7 @@ namespace OMPolymer.API.Services.Interfaces
     public interface IBlogService
     {
         Task<ApiResponse<PaginatedResponse<BlogResponse>>> GetPublishedBlogsAsync(int page, int pageSize, int? categoryId, string? search);
+        Task<ApiResponse<PaginatedResponse<BlogResponse>>> GetAllBlogsAsync(int page, int pageSize, int? categoryId, string? search);
         Task<ApiResponse<BlogResponse>> GetBlogBySlugAsync(string slug);
         Task<ApiResponse<IEnumerable<BlogCategoryResponse>>> GetBlogCategoriesAsync();
 

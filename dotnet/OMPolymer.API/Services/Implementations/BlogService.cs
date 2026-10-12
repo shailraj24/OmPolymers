@@ -40,6 +40,27 @@ namespace OMPolymer.API.Services.Implementations
                 new PaginatedResponse<BlogResponse>(items, totalCount, page, pageSize));
         }
 
+        public async Task<ApiResponse<PaginatedResponse<BlogResponse>>> GetAllBlogsAsync(int page, int pageSize, int? categoryId, string? search)
+        {
+            var query = _context.BlogPosts
+                .Include(b => b.BlogCategory)
+                .AsNoTracking();
+
+            if (categoryId.HasValue) query = query.Where(b => b.BlogCategoryId == categoryId.Value);
+            if (!string.IsNullOrWhiteSpace(search)) query = query.Where(b => b.Title.Contains(search.Trim()));
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .OrderByDescending(b => b.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(b => MapToResponse(b))
+                .ToListAsync();
+
+            return ApiResponse<PaginatedResponse<BlogResponse>>.SuccessResponse(
+                new PaginatedResponse<BlogResponse>(items, totalCount, page, pageSize));
+        }
+
         public async Task<ApiResponse<BlogResponse>> GetBlogBySlugAsync(string slug)
         {
             var b = await _context.BlogPosts

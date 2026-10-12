@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { RequirementService } from '../../../core/services/requirement.service';
 import { ProductService } from '../../../core/services/product.service';
+import { BlogService } from '../../../core/services/blog.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ClientRequirement } from '../../../core/models/requirement.model';
 
@@ -14,7 +15,7 @@ import { ClientRequirement } from '../../../core/models/requirement.model';
     <div class="space-y-8">
       <div>
         <h1 class="text-2xl font-bold tracking-tight">System Overview Dashboard</h1>
-        <p class="text-xs text-slate-400 mt-1">OM Polymer administrative metrics and operational controls</p>
+        <p class="text-xs text-slate-400 mt-1">OM Polymer administrative metrics, dynamic articles, and operational controls</p>
       </div>
 
       <!-- KPI Summary Cards -->
@@ -22,26 +23,53 @@ import { ClientRequirement } from '../../../core/models/requirement.model';
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
           <div class="text-xs font-semibold text-slate-400">Total Leads & RFQs</div>
           <div class="text-3xl font-extrabold text-blue-400">{{ totalInquiries() }}</div>
-          <div class="text-[11px] text-slate-500">Recorded through POST /api/requirements</div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div class="text-xs font-semibold text-slate-400">New Pending Leads</div>
-          <div class="text-3xl font-extrabold text-amber-400">{{ newInquiriesCount() }}</div>
-          <div class="text-[11px] text-slate-500">Awaiting engineering response</div>
+          <div class="text-[11px] text-slate-500">Customer requests in database</div>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
           <div class="text-xs font-semibold text-slate-400">Catalog Products</div>
           <div class="text-3xl font-extrabold text-emerald-400">{{ totalProducts() }}</div>
-          <div class="text-[11px] text-slate-500">Active HDPE & polymer lines</div>
+          <div class="text-[11px] text-slate-500">Active HDPE lines & compounds</div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
+          <div class="text-xs font-semibold text-slate-400">Technical Articles</div>
+          <div class="text-3xl font-extrabold text-indigo-400">{{ totalBlogs() }}</div>
+          <div class="text-[11px] text-slate-500">Published engineering papers</div>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
           <div class="text-xs font-semibold text-slate-400">Current Role Claim</div>
           <div class="text-xl font-extrabold text-purple-400">{{ auth.role() }}</div>
-          <div class="text-[11px] text-slate-500">{{ auth.adminName() }}</div>
+          <div class="text-[11px] text-slate-500 truncate">{{ auth.adminName() }}</div>
         </div>
+      </div>
+
+      <!-- Fast Action Jump Links -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a routerLink="/admin/products" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500 transition-colors flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-950 text-blue-400 flex items-center justify-center text-lg">📦</div>
+          <div>
+            <div class="text-xs font-bold text-white">Manage Products</div>
+            <div class="text-[11px] text-slate-400">Add, edit or toggle specs</div>
+          </div>
+        </a>
+
+        <a routerLink="/admin/blogs" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500 transition-colors flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-indigo-950 text-indigo-400 flex items-center justify-center text-lg">📝</div>
+          <div>
+            <div class="text-xs font-bold text-white">Publish Articles</div>
+            <div class="text-[11px] text-slate-400">Draft, edit, or publish blogs</div>
+          </div>
+        </a>
+
+        <a routerLink="/admin/logs" class="p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500 transition-colors flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-950 text-emerald-400 flex items-center justify-center text-lg">📜</div>
+          <div>
+            <div class="text-xs font-bold text-white">System Logs</div>
+            <div class="text-[11px] text-slate-400">Dynamic file-stream logs</div>
+          </div>
+        </a>
       </div>
 
       <!-- Recent Inquiries Table -->
@@ -83,6 +111,11 @@ import { ClientRequirement } from '../../../core/models/requirement.model';
                   </span>
                 </td>
               </tr>
+              <tr *ngIf="recentInquiries().length === 0">
+                <td colspan="4" class="p-6 text-center text-slate-500">
+                  No inquiries recorded yet.
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -94,10 +127,11 @@ export class AdminDashboardComponent implements OnInit {
   auth = inject(AuthService);
   private reqService = inject(RequirementService);
   private prodService = inject(ProductService);
+  private blogService = inject(BlogService);
 
   totalInquiries = signal(0);
-  newInquiriesCount = signal(0);
   totalProducts = signal(0);
+  totalBlogs = signal(0);
   recentInquiries = signal<ClientRequirement[]>([]);
 
   ngOnInit(): void {
@@ -105,13 +139,18 @@ export class AdminDashboardComponent implements OnInit {
       if (res.success && res.data) {
         this.totalInquiries.set(res.data.totalCount);
         this.recentInquiries.set(res.data.items);
-        this.newInquiriesCount.set(res.data.items.filter(i => i.status === 'New').length);
       }
     });
 
     this.prodService.getProducts(1, 1).subscribe(res => {
       if (res.success && res.data) {
         this.totalProducts.set(res.data.totalCount);
+      }
+    });
+
+    this.blogService.getPublishedBlogs(1, 1).subscribe(res => {
+      if (res.success && res.data) {
+        this.totalBlogs.set(res.data.totalCount);
       }
     });
   }
