@@ -128,11 +128,11 @@ export class UserHomeComponent implements OnInit {
   featuredProducts = signal<Product[]>([]);
   company = signal<CompanySettings | null>(null);
 
-  phone = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;
-  phoneTel = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;
-  email = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;
-  emailMailto = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;
-  mapsUrl = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;
+  phone: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;
+  phoneTel: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;
+  email: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;
+  emailMailto: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;
+  mapsUrl: string = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;
 
   ngOnInit(): void {
     this.prodService.getFeaturedProducts().subscribe({

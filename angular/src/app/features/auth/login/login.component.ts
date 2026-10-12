@@ -32,8 +32,8 @@ import { ToastService } from '../../../core/services/toast.service';
 
         <div class="p-3 bg-slate-950/70 rounded-xl border border-slate-800 text-[11px] text-slate-400 space-y-0.5">
           <div class="font-semibold text-slate-300">Seed Administrative Credentials:</div>
-          <div>Email: <span class="text-blue-400 font-mono">admin@ompolymer.com</span></div>
-          <div>Password: <span class="text-blue-400 font-mono">Admin@123</span></div>
+          <div>Email: <span class="text-blue-400 font-mono">admin&#64;ompolymer.com</span></div>
+          <div>Password: <span class="text-blue-400 font-mono">Admin&#64;123</span></div>
         </div>
 
         <button 

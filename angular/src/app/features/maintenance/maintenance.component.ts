@@ -30,12 +30,12 @@ export class MaintenanceComponent implements OnInit {
   isSubmittingQuote = signal<boolean>(false);
 
   // Fallback defaults from original HTML
-  phone = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;
-  phoneTel = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;
-  email = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;
-  emailMailto = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;
-  address = APP_CONSTANTS.DEFAULT_CONTACT.ADDRESS;
-  mapsUrl = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;
+  phone: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;
+  phoneTel: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;
+  email: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;
+  emailMailto: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;
+  address: string = APP_CONSTANTS.DEFAULT_CONTACT.ADDRESS;
+  mapsUrl: string = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;
 
   // Reactive Quote Form with validations matching backend rules
   quoteForm: FormGroup = this.fb.group({
