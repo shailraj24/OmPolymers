@@ -3,7 +3,7 @@ import { Play, Copy, Check, Lock, Unlock, Zap, RefreshCw, AlertTriangle, FileCod
 
 interface EndpointDef {
   id: string;
-  category: 'Company' | 'Products' | 'Blogs' | 'Requirements' | 'Testimonials' | 'Admin Auth' | 'Admin Users' | 'Media Uploads';
+  category: 'Company' | 'Products' | 'Blogs' | 'Requirements' | 'Testimonials' | 'Admin Auth' | 'Admin Users' | 'Media Uploads' | 'System Logs';
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   path: string;
   summary: string;
@@ -386,6 +386,40 @@ const ENDPOINTS: EndpointDef[] = [
     defaultBody: JSON.stringify({
       path: '/uploads/products/hdpe_sample_photo.webp'
     }, null, 2)
+  },
+
+  // System Logs
+  {
+    id: 'logs-list',
+    category: 'System Logs',
+    method: 'GET',
+    path: '/api/admin/logs',
+    summary: 'Stream live structured logs from host /logs directory',
+    requiresAuth: true,
+    defaultParams: {
+      filename: 'ompolymer-api.log',
+      level: 'ALL',
+      limit: '100'
+    }
+  },
+  {
+    id: 'logs-files',
+    category: 'System Logs',
+    method: 'GET',
+    path: '/api/admin/logs/files',
+    summary: 'List available physical log files on host disk',
+    requiresAuth: true
+  },
+  {
+    id: 'logs-clear',
+    category: 'System Logs',
+    method: 'POST',
+    path: '/api/admin/logs/clear',
+    summary: 'Rotate and clear active server log file',
+    requiresAuth: true,
+    defaultBody: JSON.stringify({
+      filename: 'ompolymer-api.log'
+    }, null, 2)
   }
 ];
 
@@ -517,7 +551,7 @@ export const ApiExplorer: React.FC<ApiExplorerProps> = ({ token }) => {
     }
   };
 
-  const categories = ['All', 'Admin Auth', 'Admin Users', 'Media Uploads', 'Company', 'Products', 'Blogs', 'Requirements', 'Testimonials'];
+  const categories = ['All', 'System Logs', 'Admin Auth', 'Admin Users', 'Media Uploads', 'Company', 'Products', 'Blogs', 'Requirements', 'Testimonials'];
   const filteredEndpoints = categoryFilter === 'All'
     ? ENDPOINTS
     : ENDPOINTS.filter(e => e.category === categoryFilter);

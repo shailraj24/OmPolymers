@@ -3,10 +3,24 @@
 
 import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
+import path from 'path';
+import fs from 'fs';
 import { db } from './db.js';
 import { generateToken, requireAdminAuth, requireSuperAdminAuth, createRateLimiter } from './auth.js';
+import { logMessage, getAvailableLogFiles, readLogEntries, clearLogFile } from './logger.js';
 
 export const apiRouter = Router();
+
+// Request logging middleware
+apiRouter.use((req: Request, res: Response, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const level = res.statusCode >= 500 ? 'ERR' : res.statusCode >= 400 ? 'WRN' : 'INF';
+    logMessage(level, 'OMPolymer.API.Http', `${req.method} ${req.originalUrl || req.url} ${res.statusCode} (${duration}ms) - IP: ${req.ip || '127.0.0.1'}`);
+  });
+  next();
+});
 
 // Rate Limiters matching Program.cs policies
 const requirementRateLimiter = createRateLimiter('RequirementPolicy', 2, 60 * 1000); // 2 per min
@@ -227,6 +241,48 @@ apiRouter.get('/products/:id', (req: Request, res: Response) => {
   return ok(res, mapProductResponse(prod));
 });
 
+// ADMIN: GET /api/admin/products (All products including inactive)
+apiRouter.get('/admin/products', requireAdminAuth, (req: Request, res: Response) => {
+  const page = Math.max(1, parseInt(req.query.page as string) || 1);
+  const pageSize = Math.max(1, Math.min(100, parseInt(req.query.pageSize as string) || 20));
+  const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
+  const status = req.query.status as string | undefined; // 'active', 'inactive', 'all'
+  const search = (req.query.search as string || '').toLowerCase().trim();
+
+  let filtered = [...db.products];
+
+  if (status === 'active') {
+    filtered = filtered.filter(p => p.isActive);
+  } else if (status === 'inactive') {
+    filtered = filtered.filter(p => !p.isActive);
+  }
+
+  if (categoryId) {
+    filtered = filtered.filter(p => p.categoryId === categoryId);
+  }
+
+  if (search) {
+    filtered = filtered.filter(p =>
+      p.productName.toLowerCase().includes(search) ||
+      p.slug.toLowerCase().includes(search) ||
+      p.shortDescription.toLowerCase().includes(search) ||
+      p.specifications.toLowerCase().includes(search)
+    );
+  }
+
+  const totalCount = filtered.length;
+  const skip = (page - 1) * pageSize;
+  const pagedItems = filtered.slice(skip, skip + pageSize).map(mapProductResponse);
+
+  return ok(res, {
+    items: pagedItems,
+    totalCount,
+    pageSize,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / pageSize) || 1
+  });
+});
+
 // ADMIN: POST /api/admin/products
 apiRouter.post('/admin/products', requireAdminAuth, (req: Request, res: Response) => {
   const body = req.body;
@@ -418,6 +474,49 @@ apiRouter.get('/blogs/:slug', (req: Request, res: Response) => {
     return notFound(res, `Blog post with slug '${slug}' was not found or is in draft status.`);
   }
   return ok(res, mapBlogResponse(blog));
+});
+
+// ADMIN: GET /api/admin/blogs (All articles including drafts)
+apiRouter.get('/admin/blogs', requireAdminAuth, (req: Request, res: Response) => {
+  const page = Math.max(1, parseInt(req.query.page as string) || 1);
+  const pageSize = Math.max(1, Math.min(100, parseInt(req.query.pageSize as string) || 20));
+  const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
+  const status = req.query.status as string | undefined; // 'published', 'draft', 'all'
+  const search = (req.query.search as string || '').toLowerCase().trim();
+
+  let filtered = [...db.blogPosts];
+
+  if (status === 'published') {
+    filtered = filtered.filter(b => b.isPublished);
+  } else if (status === 'draft') {
+    filtered = filtered.filter(b => !b.isPublished);
+  }
+
+  if (categoryId) {
+    filtered = filtered.filter(b => b.blogCategoryId === categoryId);
+  }
+
+  if (search) {
+    filtered = filtered.filter(b =>
+      b.title.toLowerCase().includes(search) ||
+      b.slug.toLowerCase().includes(search) ||
+      b.shortDescription.toLowerCase().includes(search) ||
+      b.content.toLowerCase().includes(search) ||
+      b.author.toLowerCase().includes(search)
+    );
+  }
+
+  const totalCount = filtered.length;
+  const skip = (page - 1) * pageSize;
+  const pagedItems = filtered.slice(skip, skip + pageSize).map(mapBlogResponse);
+
+  return ok(res, {
+    items: pagedItems,
+    totalCount,
+    pageSize,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / pageSize) || 1
+  });
 });
 
 // ADMIN: POST /api/admin/blogs
@@ -1206,4 +1305,65 @@ apiRouter.get('/admin/database/overview', (req: Request, res: Response) => {
 apiRouter.post('/admin/database/reset', requireAdminAuth, (req: Request, res: Response) => {
   db.seed();
   return ok(res, true, 'OMPolymerDB in-memory tables re-seeded to factory demo state.');
+});
+
+// -------------------------------------------------------------
+// 10. SYSTEM & APPLICATION LOGS (DYNAMIC FROM /logs FOLDER)
+// -------------------------------------------------------------
+
+// GET /api/admin/logs/files (List physical log files)
+apiRouter.get('/admin/logs/files', requireAdminAuth, (_req: Request, res: Response) => {
+  const files = getAvailableLogFiles();
+  return ok(res, files);
+});
+
+// GET /api/admin/logs (Read dynamic log entries from disk)
+apiRouter.get('/admin/logs', requireAdminAuth, (req: Request, res: Response) => {
+  const filename = (req.query.filename as string) || 'ompolymer-api.log';
+  const level = (req.query.level as string || 'ALL').toUpperCase();
+  const search = (req.query.search as string || '').toLowerCase().trim();
+  const limit = Math.max(1, Math.min(500, parseInt(req.query.limit as string) || 150));
+
+  let entries = readLogEntries(filename, limit);
+
+  if (level && level !== 'ALL') {
+    entries = entries.filter(e => e.level === level);
+  }
+
+  if (search) {
+    entries = entries.filter(e => 
+      e.message.toLowerCase().includes(search) || 
+      e.category.toLowerCase().includes(search) ||
+      e.raw.toLowerCase().includes(search)
+    );
+  }
+
+  return ok(res, {
+    activeFile: filename,
+    totalReturned: entries.length,
+    availableFiles: getAvailableLogFiles(),
+    logs: entries
+  });
+});
+
+// POST /api/admin/logs/clear (Rotate/clear specific log file)
+apiRouter.post('/admin/logs/clear', requireAdminAuth, (req: Request, res: Response) => {
+  const filename = req.body?.filename || 'ompolymer-api.log';
+  const success = clearLogFile(filename);
+  if (success) {
+    logMessage('INF', 'OMPolymer.API.Logs', `Log file ${filename} cleared and rotated.`);
+    return ok(res, true, `Log file '${filename}' rotated and cleared.`);
+  } else {
+    return badRequest(res, `Failed to clear log file '${filename}'.`);
+  }
+});
+
+// GET /api/admin/logs/download/:fileName (Download log file raw text)
+apiRouter.get('/admin/logs/download/:fileName', requireAdminAuth, (req: Request, res: Response) => {
+  const filename = path.basename(req.params.fileName);
+  const filePath = path.resolve(process.cwd(), 'logs', filename);
+  if (!fs.existsSync(filePath)) {
+    return notFound(res, `Log file '${filename}' not found.`);
+  }
+  return res.download(filePath, filename);
 });

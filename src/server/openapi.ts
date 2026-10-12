@@ -607,6 +607,39 @@ export const openApiSpec = {
         },
         responses: { "200": { description: "Physical image deleted" } }
       }
+    },
+    "/admin/logs": {
+      get: {
+        summary: "Retrieve Live System & Host Logs",
+        description: "Streams dynamic structured logs from the physical host /logs folder with severity, file, and keyword search filters.",
+        tags: ["System Logs"],
+        security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: "filename", in: "query", schema: { type: "string", default: "ompolymer-api.log" } },
+          { name: "level", in: "query", schema: { type: "string", enum: ["ALL", "INF", "WRN", "ERR", "SEC"], default: "ALL" } },
+          { name: "search", in: "query", schema: { type: "string" } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 150 } }
+        ],
+        responses: { "200": { description: "Dynamic log entries array" } }
+      }
+    },
+    "/admin/logs/clear": {
+      post: {
+        summary: "Rotate and Clear Log File",
+        tags: ["System Logs"],
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: { filename: { type: "string", default: "ompolymer-api.log" } }
+              }
+            }
+          }
+        },
+        responses: { "200": { description: "Log rotated and cleared" } }
+      }
     }
   }
 };

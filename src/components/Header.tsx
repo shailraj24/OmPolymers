@@ -34,6 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navLinks = [
     { id: 'angular', label: 'Angular 19 App', highlight: true },
+    { id: 'logs', label: 'System Logs' },
     { id: 'explorer', label: 'API Explorer' },
     { id: 'solution', label: '.NET 10 Solution' },
     { id: 'admin_users', label: 'Admin Security' },

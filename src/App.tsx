@@ -12,6 +12,7 @@ import { DatabaseInspector } from './components/DatabaseInspector.js';
 import { RequirementsManager } from './components/RequirementsManager.js';
 import { CompanySettingsLab } from './components/CompanySettingsLab.js';
 import { AdminUsersManager } from './components/AdminUsersManager.js';
+import { LogsViewer } from './components/LogsViewer.js';
 import { KeyRound, X, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function App() {
@@ -92,6 +93,9 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8">
         {activeTab === 'angular' && (
           <AngularPortal token={token} onQuickLogin={handleQuickLogin} />
+        )}
+        {activeTab === 'logs' && (
+          <LogsViewer token={token} onQuickLogin={handleQuickLogin} />
         )}
         {activeTab === 'explorer' && (
           <ApiExplorer token={token} onSetToken={t => setToken(t)} />
