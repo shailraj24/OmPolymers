@@ -3,6 +3,7 @@ namespace OMPolymer.API.DTOs.Responses
     public class CompanySettingsResponse
     {
         public string CompanyName { get; set; } = string.Empty;
+        public string? LogoUrl { get; set; }
         public string? Description { get; set; }
         public int YearsOfExperience { get; set; }
         public string? AboutContent { get; set; }

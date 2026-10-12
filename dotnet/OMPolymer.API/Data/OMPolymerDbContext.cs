@@ -20,6 +20,7 @@ namespace OMPolymer.API.Data
         public virtual DbSet<BlogPost> BlogPosts { get; set; } = null!;
         public virtual DbSet<ClientRequirement> ClientRequirements { get; set; } = null!;
         public virtual DbSet<Testimonial> Testimonials { get; set; } = null!;
+        public virtual DbSet<UploadedFile> UploadedFiles { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -127,6 +128,21 @@ namespace OMPolymer.API.Data
             {
                 entity.HasKey(e => e.TestimonialId);
                 entity.Property(e => e.DisplayName).HasMaxLength(150);
+            });
+
+            modelBuilder.Entity<UploadedFile>(entity =>
+            {
+                entity.HasKey(e => e.FileId);
+                entity.HasIndex(e => e.UniqueFileName).IsUnique();
+                entity.HasIndex(e => e.Category);
+                entity.Property(e => e.OriginalFileName).HasMaxLength(255);
+                entity.Property(e => e.UniqueFileName).HasMaxLength(255);
+                entity.Property(e => e.RelativePath).HasMaxLength(500);
+                entity.Property(e => e.Category).HasMaxLength(50);
+                entity.Property(e => e.FileType).HasMaxLength(100);
+                entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+
+                entity.HasQueryFilter(e => !e.IsDeleted);
             });
         }
     }

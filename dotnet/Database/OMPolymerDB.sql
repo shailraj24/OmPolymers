@@ -60,12 +60,15 @@ BEGIN
 END;
 GO
 
--- 3. Company Global Settings
+-- 3. Company Global Settings (With Dynamic Logo and Favicon storage)
 IF OBJECT_ID('dbo.CompanySettings', 'U') IS NULL
 BEGIN
     CREATE TABLE CompanySettings (
         SettingID INT PRIMARY KEY IDENTITY(1,1),
         CompanyName NVARCHAR(200) NOT NULL,
+        LogoUrl NVARCHAR(1000) NULL,
+        LogoFileID INT NULL,
+        FaviconUrl NVARCHAR(1000) NULL,
         Description NVARCHAR(MAX),
         YearsOfExperience INT DEFAULT 13,
         AboutContent NVARCHAR(MAX),
@@ -78,6 +81,15 @@ BEGIN
         SocialInstagram NVARCHAR(500),
         UpdatedAt DATETIME DEFAULT GETDATE()
     );
+END
+ELSE
+BEGIN
+    IF COL_LENGTH('dbo.CompanySettings', 'LogoUrl') IS NULL
+        ALTER TABLE CompanySettings ADD LogoUrl NVARCHAR(1000) NULL;
+    IF COL_LENGTH('dbo.CompanySettings', 'LogoFileID') IS NULL
+        ALTER TABLE CompanySettings ADD LogoFileID INT NULL;
+    IF COL_LENGTH('dbo.CompanySettings', 'FaviconUrl') IS NULL
+        ALTER TABLE CompanySettings ADD FaviconUrl NVARCHAR(1000) NULL;
 END;
 
 -- 4. Product Categories
@@ -190,6 +202,24 @@ BEGIN
     );
 END;
 
+-- 11. Uploaded Files (File Storage Metadata in SQL Server)
+IF OBJECT_ID('dbo.UploadedFiles', 'U') IS NULL
+BEGIN
+    CREATE TABLE UploadedFiles (
+        FileID INT PRIMARY KEY IDENTITY(1,1),
+        OriginalFileName NVARCHAR(255) NOT NULL,
+        UniqueFileName NVARCHAR(255) NOT NULL UNIQUE,
+        RelativePath NVARCHAR(500) NOT NULL,
+        Category NVARCHAR(50) NOT NULL, -- 'products', 'blogs', 'logos', 'company', 'admins'
+        FileType NVARCHAR(100) NOT NULL,
+        FileSizeBytes BIGINT NOT NULL,
+        UploadedAt DATETIME DEFAULT GETDATE(),
+        IsDeleted BIT NOT NULL DEFAULT 0
+    );
+    CREATE NONCLUSTERED INDEX IX_UploadedFiles_Category ON UploadedFiles(Category);
+    CREATE NONCLUSTERED INDEX IX_UploadedFiles_RelativePath ON UploadedFiles(RelativePath);
+END;
+
 -- Indexes
 CREATE NONCLUSTERED INDEX IX_Products_Slug ON Products(Slug);
 CREATE NONCLUSTERED INDEX IX_BlogPosts_Slug ON BlogPosts(Slug);
@@ -213,12 +243,29 @@ BEGIN
     );
 END;
 
--- Seed Company Settings
+-- Seed Initial Uploaded Files (Default Site Logo)
+IF NOT EXISTS (SELECT 1 FROM UploadedFiles WHERE RelativePath = '/uploads/logos/om-polymer-logo.png')
+BEGIN
+    INSERT INTO UploadedFiles (OriginalFileName, UniqueFileName, RelativePath, Category, FileType, FileSizeBytes, UploadedAt, IsDeleted)
+    VALUES (
+        'om-polymer-logo.png',
+        'om-polymer-logo.png',
+        '/uploads/logos/om-polymer-logo.png',
+        'logos',
+        'image/png',
+        24576,
+        GETDATE(),
+        0
+    );
+END;
+
+-- Seed Company Settings (With Logo URL)
 IF NOT EXISTS (SELECT 1 FROM CompanySettings)
 BEGIN
-    INSERT INTO CompanySettings (CompanyName, Description, YearsOfExperience, Address, EmailContact, PhoneContact, WhatsAppNumber)
+    INSERT INTO CompanySettings (CompanyName, LogoUrl, Description, YearsOfExperience, Address, EmailContact, PhoneContact, WhatsAppNumber)
     VALUES (
         'OM Polymer',
+        '/uploads/logos/om-polymer-logo.png',
         'Leading manufacturer of high-grade engineering polymers, HDPE piping systems, and masterbatches.',
         13,
         'Plot 48/B, Industrial Area Phase II, G.I.D.C., Ahmedabad, Gujarat, India',
@@ -226,6 +273,13 @@ BEGIN
         '+91 79 4002 9180',
         '+919876543210'
     );
+END
+ELSE
+BEGIN
+    -- Ensure LogoUrl is set if previously null
+    UPDATE CompanySettings 
+    SET LogoUrl = '/uploads/logos/om-polymer-logo.png' 
+    WHERE LogoUrl IS NULL;
 END;
 
 -- Seed Product Categories

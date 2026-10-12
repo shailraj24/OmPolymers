@@ -7,6 +7,7 @@ namespace OMPolymer.API.DTOs.Requests
         [Required, StringLength(200)]
         public string CompanyName { get; set; } = string.Empty;
 
+        public string? LogoUrl { get; set; }
         public string? Description { get; set; }
         public int YearsOfExperience { get; set; } = 13;
         public string? AboutContent { get; set; }

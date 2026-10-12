@@ -115,8 +115,8 @@ apiRouter.get('/contact/whatsapp-url', (req: Request, res: Response) => {
   });
 });
 
-// PUT /api/admin/company
-apiRouter.put('/admin/company', requireAdminAuth, (req: Request, res: Response) => {
+// PUT /api/admin/company and /api/company
+apiRouter.put(['/admin/company', '/company'], requireAdminAuth, (req: Request, res: Response) => {
   const body = req.body;
   if (!body.companyName) {
     return badRequest(res, 'Validation failed', ['CompanyName is required.']);
@@ -125,6 +125,7 @@ apiRouter.put('/admin/company', requireAdminAuth, (req: Request, res: Response) 
   db.companySettings = {
     ...db.companySettings,
     companyName: body.companyName,
+    logoUrl: body.logoUrl !== undefined ? body.logoUrl : db.companySettings.logoUrl,
     description: body.description ?? db.companySettings.description,
     yearsOfExperience: typeof body.yearsOfExperience === 'number' ? body.yearsOfExperience : db.companySettings.yearsOfExperience,
     aboutContent: body.aboutContent ?? db.companySettings.aboutContent,
@@ -139,6 +140,43 @@ apiRouter.put('/admin/company', requireAdminAuth, (req: Request, res: Response) 
   };
 
   return ok(res, true, 'Company settings updated successfully.');
+});
+
+// POST /api/admin/company/logo (Dynamic logo upload & replacement)
+apiRouter.post('/admin/company/logo', requireAdminAuth, (req: Request, res: Response) => {
+  const { fileName, base64Data, contentType, logoUrl } = req.body;
+
+  let targetUrl = logoUrl;
+  if (!targetUrl && base64Data) {
+    const extMatch = (fileName || 'logo.png').match(/\.(png|jpg|jpeg|webp|svg)$/i);
+    const ext = extMatch ? extMatch[1].toLowerCase() : 'png';
+    const uniqueId = crypto.randomBytes(6).toString('hex');
+    const safeFilename = `logo_${Date.now()}_${uniqueId}.${ext}`;
+    targetUrl = `/uploads/logos/${safeFilename}`;
+
+    const newFileRecord = {
+      fileId: db.uploadedFiles.length > 0 ? Math.max(...db.uploadedFiles.map(f => f.fileId)) + 1 : 1,
+      originalFileName: fileName || 'logo.png',
+      uniqueFileName: safeFilename,
+      relativePath: targetUrl,
+      category: 'logos',
+      fileType: contentType || `image/${ext}`,
+      fileSizeBytes: Math.round(base64Data.length * 0.75),
+      uploadedAt: new Date().toISOString(),
+      isDeleted: false
+    };
+    db.uploadedFiles.push(newFileRecord);
+  }
+
+  if (targetUrl) {
+    db.companySettings.logoUrl = targetUrl;
+    db.companySettings.updatedAt = new Date().toISOString();
+  }
+
+  return ok(res, {
+    logoUrl: db.companySettings.logoUrl,
+    companyName: db.companySettings.companyName
+  }, 'Company site logo updated successfully.');
 });
 
 // -------------------------------------------------------------
@@ -1244,13 +1282,13 @@ apiRouter.delete('/admin/users/:id', requireAdminAuth, (req: Request, res: Respo
 apiRouter.post('/uploads/image', requireAdminAuth, (req: Request, res: Response) => {
   const { category, fileName, base64Data, contentType } = req.body;
 
-  const validCategories = ['products', 'admins', 'blogs', 'testimonials', 'company', 'categories'];
+  const validCategories = ['products', 'admins', 'blogs', 'testimonials', 'company', 'categories', 'logos'];
   const targetCategory = category && validCategories.includes(category.toLowerCase()) ? category.toLowerCase() : 'products';
 
   // Validate extension
-  const extensionMatch = (fileName || 'image.webp').match(/\.(jpg|jpeg|png|webp)$/i);
+  const extensionMatch = (fileName || 'image.webp').match(/\.(jpg|jpeg|png|webp|svg)$/i);
   if (!extensionMatch) {
-    return badRequest(res, 'Invalid image format. Allowed file formats: JPG, JPEG, PNG, WEBP.');
+    return badRequest(res, 'Invalid image format. Allowed file formats: JPG, JPEG, PNG, WEBP, SVG.');
   }
 
   const ext = extensionMatch[1].toLowerCase();
@@ -1259,14 +1297,109 @@ apiRouter.post('/uploads/image', requireAdminAuth, (req: Request, res: Response)
 
   // Relative storage path stored in SQL Server
   const relativePath = `/uploads/${targetCategory}/${safeFilename}`;
+  const fileSizeBytes = base64Data ? Math.round(base64Data.length * 0.75) : 102400;
+  const mimeType = contentType || (ext === 'svg' ? 'image/svg+xml' : `image/${ext}`);
+
+  // Persist file metadata in SQL Server / in-memory table
+  const newFileRecord = {
+    fileId: db.uploadedFiles.length > 0 ? Math.max(...db.uploadedFiles.map(f => f.fileId)) + 1 : 1,
+    originalFileName: fileName || safeFilename,
+    uniqueFileName: safeFilename,
+    relativePath,
+    category: targetCategory,
+    fileType: mimeType,
+    fileSizeBytes,
+    uploadedAt: new Date().toISOString(),
+    isDeleted: false
+  };
+
+  db.uploadedFiles.push(newFileRecord);
 
   return created(res, {
+    fileId: newFileRecord.fileId,
     relativeUrl: relativePath,
     category: targetCategory,
-    originalName: fileName || safeFilename,
-    fileSize: base64Data ? Math.round(base64Data.length * 0.75) : 102400,
-    contentType: contentType || `image/${ext}`
-  }, 'Image uploaded successfully. Store relative path in database.');
+    originalFileName: newFileRecord.originalFileName,
+    uniqueFileName: safeFilename,
+    fileSizeBytes,
+    contentType: mimeType,
+    uploadedAt: newFileRecord.uploadedAt
+  }, 'Image uploaded successfully. Metadata recorded.');
+});
+
+// POST /api/uploads/logo (Alias for dedicated logo upload)
+apiRouter.post('/uploads/logo', requireAdminAuth, (req: Request, res: Response) => {
+  const { fileName, base64Data, contentType } = req.body;
+  const extMatch = (fileName || 'logo.png').match(/\.(png|jpg|jpeg|webp|svg)$/i);
+  const ext = extMatch ? extMatch[1].toLowerCase() : 'png';
+  const uniqueId = crypto.randomBytes(6).toString('hex');
+  const safeFilename = `logo_${Date.now()}_${uniqueId}.${ext}`;
+  const relativePath = `/uploads/logos/${safeFilename}`;
+  const fileSizeBytes = base64Data ? Math.round(base64Data.length * 0.75) : 24576;
+  const mimeType = contentType || (ext === 'svg' ? 'image/svg+xml' : `image/${ext}`);
+
+  const newFileRecord = {
+    fileId: db.uploadedFiles.length > 0 ? Math.max(...db.uploadedFiles.map(f => f.fileId)) + 1 : 1,
+    originalFileName: fileName || 'logo.png',
+    uniqueFileName: safeFilename,
+    relativePath,
+    category: 'logos',
+    fileType: mimeType,
+    fileSizeBytes,
+    uploadedAt: new Date().toISOString(),
+    isDeleted: false
+  };
+
+  db.uploadedFiles.push(newFileRecord);
+  db.companySettings.logoUrl = relativePath;
+  db.companySettings.updatedAt = new Date().toISOString();
+
+  return created(res, {
+    fileId: newFileRecord.fileId,
+    relativeUrl: relativePath,
+    category: 'logos',
+    originalFileName: newFileRecord.originalFileName,
+    uniqueFileName: safeFilename,
+    fileSizeBytes,
+    contentType: mimeType,
+    uploadedAt: newFileRecord.uploadedAt
+  }, 'Site logo uploaded and configured successfully.');
+});
+
+// GET /api/uploads (Retrieve all uploaded files metadata)
+apiRouter.get('/uploads', requireAdminAuth, (req: Request, res: Response) => {
+  const category = req.query.category as string | undefined;
+  let files = db.uploadedFiles.filter(f => !f.isDeleted);
+  if (category) {
+    files = files.filter(f => f.category.toLowerCase() === category.toLowerCase());
+  }
+  return ok(res, files.map(f => ({
+    fileId: f.fileId,
+    relativeUrl: f.relativePath,
+    category: f.category,
+    originalFileName: f.originalFileName,
+    uniqueFileName: f.uniqueFileName,
+    fileSizeBytes: f.fileSizeBytes,
+    contentType: f.fileType,
+    uploadedAt: f.uploadedAt
+  })));
+});
+
+// GET /api/uploads/:id
+apiRouter.get('/uploads/:id', requireAdminAuth, (req: Request, res: Response) => {
+  const fileId = parseInt(req.params.id, 10);
+  const f = db.uploadedFiles.find(item => item.fileId === fileId && !item.isDeleted);
+  if (!f) return notFound(res, 'File record not found');
+  return ok(res, {
+    fileId: f.fileId,
+    relativeUrl: f.relativePath,
+    category: f.category,
+    originalFileName: f.originalFileName,
+    uniqueFileName: f.uniqueFileName,
+    fileSizeBytes: f.fileSizeBytes,
+    contentType: f.fileType,
+    uploadedAt: f.uploadedAt
+  });
 });
 
 // DELETE /api/uploads/image (Safe cleanup)
@@ -1276,7 +1409,21 @@ apiRouter.delete('/uploads/image', requireAdminAuth, (req: Request, res: Respons
     return badRequest(res, 'Invalid or unsafe image path specified.');
   }
 
+  const record = db.uploadedFiles.find(f => f.relativePath === imgPath);
+  if (record) {
+    record.isDeleted = true;
+  }
+
   return ok(res, true, `Image file '${imgPath}' safely removed from storage.`);
+});
+
+// DELETE /api/uploads/:id
+apiRouter.delete('/uploads/:id', requireAdminAuth, (req: Request, res: Response) => {
+  const fileId = parseInt(req.params.id, 10);
+  const record = db.uploadedFiles.find(f => f.fileId === fileId);
+  if (!record) return notFound(res, 'File record not found.');
+  record.isDeleted = true;
+  return ok(res, true, `File record ${fileId} safely deleted.`);
 });
 
 // -------------------------------------------------------------
@@ -1297,7 +1444,8 @@ apiRouter.get('/admin/database/overview', (req: Request, res: Response) => {
       { name: 'BlogCategories', rowCount: db.blogCategories.length, primaryKey: 'BlogCategoryID (INT)' },
       { name: 'BlogPosts', rowCount: db.blogPosts.length, primaryKey: 'BlogID (INT)' },
       { name: 'ClientRequirements', rowCount: db.clientRequirements.length, primaryKey: 'RequirementID (INT)' },
-      { name: 'Testimonials', rowCount: db.testimonials.length, primaryKey: 'TestimonialID (INT)' }
+      { name: 'Testimonials', rowCount: db.testimonials.length, primaryKey: 'TestimonialID (INT)' },
+      { name: 'UploadedFiles', rowCount: db.uploadedFiles.filter(f => !f.isDeleted).length, primaryKey: 'FileID (INT)' }
     ]
   });
 });

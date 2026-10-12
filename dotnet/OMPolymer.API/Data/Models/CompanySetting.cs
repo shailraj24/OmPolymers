@@ -4,6 +4,9 @@ namespace OMPolymer.API.Data.Models
     {
         public int SettingId { get; set; }
         public string CompanyName { get; set; } = string.Empty;
+        public string? LogoUrl { get; set; }
+        public int? LogoFileId { get; set; }
+        public string? FaviconUrl { get; set; }
         public string? Description { get; set; }
         public int? YearsOfExperience { get; set; } = 13;
         public string? AboutContent { get; set; }

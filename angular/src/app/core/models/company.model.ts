@@ -1,6 +1,8 @@
 export interface CompanySettings {
   settingId: number;
   companyName: string;
+  logoUrl?: string;
+  logoFileId?: number;
   description: string;
   yearsOfExperience: number;
   aboutContent: string;

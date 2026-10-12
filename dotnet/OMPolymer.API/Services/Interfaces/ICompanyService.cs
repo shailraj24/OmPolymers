@@ -7,6 +7,7 @@ namespace OMPolymer.API.Services.Interfaces
     {
         Task<ApiResponse<CompanySettingsResponse>> GetSettingsAsync();
         Task<ApiResponse<bool>> UpdateSettingsAsync(CompanySettingsUpdateRequest request);
+        Task<ApiResponse<bool>> UpdateLogoAsync(string logoUrl);
         string GenerateWhatsAppUrl(string? phoneNumber, string message);
     }
 }

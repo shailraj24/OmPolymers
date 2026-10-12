@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet, RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
+import { CompanyService } from '../../core/services/company.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -14,13 +15,22 @@ import { ToastService } from '../../core/services/toast.service';
       <!-- Collapsible / Fixed Admin Sidebar -->
       <aside class="w-full md:w-64 bg-slate-900 border-r border-slate-800 p-5 flex flex-col justify-between shrink-0">
         <div>
-          <!-- Sidebar Header Brand -->
+          <!-- Sidebar Header Brand with Dynamic Site Logo -->
           <div class="flex items-center gap-3 mb-8">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md">
-              OM
+            <div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md overflow-hidden">
+              <img 
+                *ngIf="company.currentLogo()" 
+                [src]="company.currentLogo()" 
+                alt="OM Polymer Site Logo" 
+                class="w-full h-full object-cover"
+                (error)="onLogoError($event)"
+              />
+              <span *ngIf="logoFailed || !company.currentLogo()">OM</span>
             </div>
             <div>
-              <span class="font-extrabold text-sm tracking-tight text-white block">OM POLYMER</span>
+              <span class="font-extrabold text-sm tracking-tight text-white block">
+                {{ company.companyProfile()?.companyName || 'OM POLYMER' }}
+              </span>
               <span class="text-[10px] font-bold tracking-wider uppercase text-blue-400">Admin Control</span>
             </div>
           </div>
@@ -103,10 +113,21 @@ import { ToastService } from '../../core/services/toast.service';
     </div>
   `
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit {
   auth = inject(AuthService);
+  company = inject(CompanyService);
   private toast = inject(ToastService);
   private router = inject(Router);
+
+  logoFailed = false;
+
+  ngOnInit(): void {
+    this.company.getCompanySettings().subscribe();
+  }
+
+  onLogoError(event: Event): void {
+    this.logoFailed = true;
+  }
 
   handleLogout(): void {
     this.auth.logout();

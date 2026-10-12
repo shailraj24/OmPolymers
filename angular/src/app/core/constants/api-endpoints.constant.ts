@@ -2,7 +2,8 @@ export const API_ENDPOINTS = {
   COMPANY: {
     GET_INFO: '/company',
     GET_WHATSAPP_URL: '/contact/whatsapp-url',
-    UPDATE: '/admin/company'
+    UPDATE: '/admin/company',
+    UPLOAD_LOGO: '/admin/company/logo'
   },
   REQUIREMENTS: {
     SUBMIT: '/requirements',
@@ -59,5 +60,12 @@ export const API_ENDPOINTS = {
   DATABASE: {
     OVERVIEW: '/admin/database/overview',
     RESET: '/admin/database/reset'
+  },
+  UPLOADS: {
+    IMAGE: '/uploads/image',
+    LOGO: '/uploads/logo',
+    LIST: '/uploads',
+    BY_ID: (id: number) => `/uploads/${id}`,
+    BY_CATEGORY: (category: string) => `/uploads/category/${category}`
   }
 } as const;

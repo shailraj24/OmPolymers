@@ -28,6 +28,9 @@ export interface PasswordResetTokenRecord {
 export interface CompanySettingRecord {
   settingId: number;
   companyName: string;
+  logoUrl?: string;
+  logoFileId?: number;
+  faviconUrl?: string;
   description: string;
   yearsOfExperience: number;
   aboutContent: string;
@@ -39,6 +42,18 @@ export interface CompanySettingRecord {
   socialLinkedIn: string;
   socialInstagram: string;
   updatedAt: string;
+}
+
+export interface UploadedFileRecord {
+  fileId: number;
+  originalFileName: string;
+  uniqueFileName: string;
+  relativePath: string;
+  category: string;
+  fileType: string;
+  fileSizeBytes: number;
+  uploadedAt: string;
+  isDeleted: boolean;
 }
 
 export interface ProductCategoryRecord {
@@ -125,6 +140,7 @@ class Database {
   companySettings: CompanySettingRecord = {
     settingId: 1,
     companyName: 'OM Polymer',
+    logoUrl: '/uploads/logos/om-polymer-logo.png',
     description: 'Leading manufacturer and exporter of high-grade engineering polymers, HDPE piping systems, masterbatches, and PVC compounds.',
     yearsOfExperience: 13,
     aboutContent: 'Established in 2011, OM Polymer has grown from a specialized compounding facility into an international benchmark for extrusion-grade resins, pressure pipes, and customized polymeric additives with over 13 years of technical excellence.',
@@ -145,6 +161,7 @@ class Database {
   clientRequirements: ClientRequirementRecord[] = [];
   testimonials: TestimonialRecord[] = [];
   passwordResetTokens: PasswordResetTokenRecord[] = [];
+  uploadedFiles: UploadedFileRecord[] = [];
 
   constructor() {
     this.seed();
@@ -412,6 +429,21 @@ class Database {
         isApproved: false,
         isPublished: false,
         createdAt: '2024-03-01T09:00:00Z'
+      }
+    ];
+
+    // 9. Uploaded Files Seed (Default Company Logo and System Media)
+    this.uploadedFiles = [
+      {
+        fileId: 1,
+        originalFileName: 'om-polymer-logo.png',
+        uniqueFileName: 'om-polymer-logo.png',
+        relativePath: '/uploads/logos/om-polymer-logo.png',
+        category: 'logos',
+        fileType: 'image/png',
+        fileSizeBytes: 24576,
+        uploadedAt: new Date().toISOString(),
+        isDeleted: false
       }
     ];
   }

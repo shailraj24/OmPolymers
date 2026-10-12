@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../core/services/blog.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { BlogPost, BlogCategory, CreateBlogRequest } from '../../../core/models/blog.model';
+import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 
 @Component({
   selector: 'app-admin-blogs',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FileUploadComponent],
   template: `
     <div class="space-y-6">
       <!-- Header -->
@@ -176,6 +177,14 @@ import { BlogPost, BlogCategory, CreateBlogRequest } from '../../../core/models/
                 </label>
               </div>
             </div>
+
+            <app-file-upload 
+              category="blogs" 
+              label="Featured Article Thumbnail" 
+              helperText="PNG, JPG, WEBP (Max 5MB) · Auto-saved to /uploads/blogs/"
+              [currentImageUrl]="formData.featuredImageUrl" 
+              (imageUrlChange)="formData.featuredImageUrl = $event"
+            ></app-file-upload>
 
             <div>
               <label class="block text-slate-300 font-semibold mb-1">Short Description / Excerpt</label>
@@ -348,6 +357,7 @@ export class AdminBlogsComponent implements OnInit {
       blogCategoryId: this.categories()[0]?.blogCategoryId || null,
       shortDescription: '',
       content: '',
+      featuredImageUrl: '',
       author: 'OM Polymer Technical Team',
       isPublished: true
     };
@@ -363,6 +373,7 @@ export class AdminBlogsComponent implements OnInit {
       blogCategoryId: b.category?.blogCategoryId || null,
       shortDescription: b.shortDescription || '',
       content: b.content,
+      featuredImageUrl: b.featuredImageUrl || '',
       author: b.author || '',
       isPublished: b.isPublished
     };

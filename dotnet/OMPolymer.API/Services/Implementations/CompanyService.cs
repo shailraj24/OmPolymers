@@ -25,6 +25,7 @@ namespace OMPolymer.API.Services.Implementations
             var res = new CompanySettingsResponse
             {
                 CompanyName = s.CompanyName,
+                LogoUrl = s.LogoUrl ?? "/uploads/logos/om-polymer-logo.png",
                 Description = s.Description,
                 YearsOfExperience = s.YearsOfExperience ?? 13,
                 AboutContent = s.AboutContent,
@@ -51,6 +52,10 @@ namespace OMPolymer.API.Services.Implementations
             }
 
             s.CompanyName = request.CompanyName;
+            if (!string.IsNullOrWhiteSpace(request.LogoUrl))
+            {
+                s.LogoUrl = request.LogoUrl;
+            }
             s.Description = request.Description;
             s.YearsOfExperience = request.YearsOfExperience;
             s.AboutContent = request.AboutContent;
@@ -65,6 +70,27 @@ namespace OMPolymer.API.Services.Implementations
 
             await _context.SaveChangesAsync();
             return ApiResponse<bool>.SuccessResponse(true, "Company settings updated successfully.");
+        }
+
+        public async Task<ApiResponse<bool>> UpdateLogoAsync(string logoUrl)
+        {
+            if (string.IsNullOrWhiteSpace(logoUrl))
+            {
+                return ApiResponse<bool>.FailureResponse("Logo URL cannot be empty.");
+            }
+
+            var s = await _context.CompanySettings.FirstOrDefaultAsync();
+            if (s == null)
+            {
+                s = new CompanySetting { CompanyName = "OM Polymer" };
+                _context.CompanySettings.Add(s);
+            }
+
+            s.LogoUrl = logoUrl;
+            s.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return ApiResponse<bool>.SuccessResponse(true, "Site logo updated successfully.");
         }
 
         public string GenerateWhatsAppUrl(string? phoneNumber, string message)

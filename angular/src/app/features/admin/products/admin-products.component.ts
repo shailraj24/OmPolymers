@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { Product, ProductCategory, CreateProductRequest } from '../../../core/models/product.model';
+import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 
 @Component({
   selector: 'app-admin-products',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FileUploadComponent],
   template: `
     <div class="space-y-6">
       <!-- Header -->
@@ -164,19 +165,16 @@ import { Product, ProductCategory, CreateProductRequest } from '../../../core/mo
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-slate-300 font-semibold mb-1">Main Image URL / Asset</label>
-                <input 
-                  type="text" 
-                  [(ngModel)]="formData.mainImageUrl" 
-                  name="mainImageUrl" 
-                  placeholder="https://... or /assets/products/..."
-                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+            <div class="space-y-3">
+              <app-file-upload 
+                category="products" 
+                label="Product Main Image" 
+                helperText="PNG, JPG, WEBP (Max 5MB) · Auto-saved to /uploads/products/"
+                [currentImageUrl]="formData.mainImageUrl" 
+                (imageUrlChange)="formData.mainImageUrl = $event"
+              ></app-file-upload>
 
-              <div class="flex items-center gap-3 pt-6">
+              <div class="flex items-center gap-3 pt-2">
                 <label class="flex items-center gap-2 cursor-pointer text-slate-300">
                   <input 
                     type="checkbox" 

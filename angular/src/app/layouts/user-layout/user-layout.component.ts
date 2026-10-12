@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
+import { CompanyService } from '../../core/services/company.service';
 
 @Component({
   selector: 'app-user-layout',
@@ -15,14 +16,21 @@ import { AuthService } from '../../core/services/auth.service';
       <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-3.5 transition-colors">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-6">
           
-          <!-- Logo & Brand Mark -->
+          <!-- Logo & Brand Mark (Dynamic Site Logo from Backend API) -->
           <a routerLink="/" class="flex items-center gap-3 shrink-0">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md">
-              OM
+            <div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md overflow-hidden">
+              <img 
+                *ngIf="company.currentLogo()" 
+                [src]="company.currentLogo()" 
+                alt="OM Polymer Site Logo" 
+                class="w-full h-full object-cover"
+                (error)="onLogoError($event)"
+              />
+              <span *ngIf="logoFailed || !company.currentLogo()">OM</span>
             </div>
             <div>
               <span class="font-extrabold text-base tracking-tight leading-none text-[#172554] dark:text-white block">
-                OM POLYMER
+                {{ company.companyProfile()?.companyName || 'OM POLYMER' }}
               </span>
               <span class="text-[10px] font-semibold tracking-wider uppercase text-blue-600 dark:text-blue-400">
                 Extrusion & Compounding
@@ -98,7 +106,18 @@ import { AuthService } from '../../core/services/auth.service';
     </div>
   `
 })
-export class UserLayoutComponent {
+export class UserLayoutComponent implements OnInit {
   theme = inject(ThemeService);
   auth = inject(AuthService);
+  company = inject(CompanyService);
+
+  logoFailed = false;
+
+  ngOnInit(): void {
+    this.company.getCompanySettings().subscribe();
+  }
+
+  onLogoError(event: Event): void {
+    this.logoFailed = true;
+  }
 }

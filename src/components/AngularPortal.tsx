@@ -43,6 +43,7 @@ import {
   HardDrive,
   RotateCw
 } from 'lucide-react';
+import { ImageUploadDropzone } from './ImageUploadDropzone.js';
 import { angularSolutionFiles, AngularCodeFile } from '../angular-solution/angularFiles.js';
 import { exportAngularZip, exportFullStackZip } from '../utils/zipExporter.js';
 
@@ -843,8 +844,16 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                   isDarkMode ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-slate-200'
                 }`}>
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-bold text-white shadow-md">
-                      OM
+                    <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-bold text-white shadow-md overflow-hidden">
+                      {companyData?.logoUrl ? (
+                        <img 
+                          src={companyData.logoUrl} 
+                          alt="OM Polymer Logo" 
+                          className="w-full h-full object-cover"
+                          onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                        />
+                      ) : null}
+                      <span className="text-xs">OM</span>
                     </div>
                     <div>
                       <div className="font-bold text-sm tracking-tight">{companyData?.companyName || 'OM Polymer'}</div>
@@ -1575,12 +1584,20 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                 {/* Admin Sidebar */}
                 <aside className="w-full md:w-60 bg-slate-950 border-r border-slate-800 p-4 flex flex-col justify-between shrink-0">
                   <div className="space-y-6">
-                    <div className="flex items-center gap-2 px-2">
-                      <div className="w-7 h-7 rounded-lg bg-amber-600 flex items-center justify-center text-white font-bold text-xs">
-                        🛡️
+                    <div className="flex items-center gap-2.5 px-2">
+                      <div className="relative w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-white font-bold text-xs overflow-hidden shadow-sm shrink-0">
+                        {companyData?.logoUrl ? (
+                          <img 
+                            src={companyData.logoUrl} 
+                            alt="OM Polymer Logo" 
+                            className="w-full h-full object-cover"
+                            onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                          />
+                        ) : null}
+                        <span>🛡️</span>
                       </div>
                       <div>
-                        <div className="font-bold text-xs text-white">Admin Console</div>
+                        <div className="font-bold text-xs text-white">{companyData?.companyName || 'OM Polymer'}</div>
                         <div className="text-[10px] text-slate-400 font-mono">Role: SuperAdmin</div>
                       </div>
                     </div>
@@ -2110,6 +2127,54 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                         </div>
                       )}
 
+                      {/* Dynamic Logo Management Card */}
+                      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                              <span>🖼️</span> Dynamic Site Logo Management
+                            </h3>
+                            <p className="text-slate-400 text-[11px] mt-0.5">
+                              Uploaded logo is stored in <code className="text-blue-400 font-mono">/uploads/logos/</code> and synchronizes across the public website and admin portal.
+                            </p>
+                          </div>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950 text-blue-400 border border-blue-800">
+                            Dynamic Logo
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-2">
+                          <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-2">
+                            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Active Logo Preview</span>
+                            <div className="w-28 h-16 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center p-2 overflow-hidden shadow-inner">
+                              {companyForm.logoUrl ? (
+                                <img 
+                                  src={companyForm.logoUrl} 
+                                  alt="Site Logo" 
+                                  className="max-w-full max-h-full object-contain"
+                                  onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                                />
+                              ) : (
+                                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xs">OM</div>
+                              )}
+                            </div>
+                            <span className="text-[10px] font-mono text-slate-500 truncate max-w-full">{companyForm.logoUrl || '/uploads/logos/om-polymer-logo.png'}</span>
+                          </div>
+
+                          <ImageUploadDropzone
+                            category="logos"
+                            label="Upload / Replace Logo File"
+                            helperText="PNG (transparent), SVG, WEBP (Max 5MB)"
+                            value={companyForm.logoUrl || ''}
+                            onChange={(url) => {
+                              setCompanyForm({ ...companyForm, logoUrl: url });
+                              if (companyData) setCompanyData({ ...companyData, logoUrl: url });
+                            }}
+                            token={token}
+                          />
+                        </div>
+                      </div>
+
                       <form onSubmit={handleSaveCompanySettings} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 text-xs">
                         <div>
                           <label className="block text-slate-300 font-semibold mb-1">Company Name</label>
@@ -2393,16 +2458,14 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                     </select>
                   </div>
 
-                  <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Main Image URL</label>
-                    <input 
-                      type="url" 
-                      value={productForm.mainImageUrl}
-                      onChange={e => setProductForm({ ...productForm, mainImageUrl: e.target.value })}
-                      placeholder="https://..."
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono"
-                    />
-                  </div>
+                  <ImageUploadDropzone
+                    category="products"
+                    label="Product Showcase Image"
+                    helperText="PNG, JPG, WEBP, SVG (Max 5MB) · Auto-saved to /uploads/products/"
+                    value={productForm.mainImageUrl}
+                    onChange={(url) => setProductForm({ ...productForm, mainImageUrl: url })}
+                    token={token}
+                  />
 
                   <div>
                     <label className="block text-slate-400 font-semibold mb-1">Short Description</label>
@@ -2513,15 +2576,14 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Featured Image URL</label>
-                    <input 
-                      type="url" 
-                      value={blogForm.featuredImageUrl}
-                      onChange={e => setBlogForm({ ...blogForm, featuredImageUrl: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono"
-                    />
-                  </div>
+                  <ImageUploadDropzone
+                    category="blogs"
+                    label="Featured Article Thumbnail"
+                    helperText="PNG, JPG, WEBP, SVG (Max 5MB) · Auto-saved to /uploads/blogs/"
+                    value={blogForm.featuredImageUrl}
+                    onChange={(url) => setBlogForm({ ...blogForm, featuredImageUrl: url })}
+                    token={token}
+                  />
 
                   <div>
                     <label className="block text-slate-400 font-semibold mb-1">Short Summary</label>

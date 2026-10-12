@@ -20,6 +20,18 @@ export const Header: React.FC<HeaderProps> = ({
   adminName
 }) => {
   const [downloading, setDownloading] = React.useState(false);
+  const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/company')
+      .then(res => res.json())
+      .then(data => {
+        if (data?.data?.logoUrl) {
+          setLogoUrl(data.data.logoUrl);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleDownload = async () => {
     try {
@@ -48,8 +60,16 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-8">
         {/* Zone 1: Single text wordmark */}
         <div className="flex items-center gap-3 shrink-0">
-          <div className="w-8 h-8 rounded bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-bold text-white shadow-sm">
-            OM
+          <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-bold text-white shadow-sm overflow-hidden shrink-0">
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="OM Polymer Logo"
+                className="w-full h-full object-cover"
+                onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+              />
+            ) : null}
+            <span className="text-xs">OM</span>
           </div>
           <div className="flex flex-col">
             <span className="text-base font-semibold text-slate-100 tracking-tight leading-none whitespace-nowrap">
