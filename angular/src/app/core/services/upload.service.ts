@@ -1,20 +1,35 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpEvent, HttpEventType, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '@env/environment';
 import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
+import { APP_CONSTANTS } from '../constants/app.constant';
 import { ApiResponse } from '../models/api-response.model';
 import { ImageUploadResponse, UploadProgressEvent } from '../models/upload.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UploadService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   readonly maxSizeBytes = 5 * 1024 * 1024; // 5 MB
   readonly allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.svg'];
   readonly allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
+
+  private getAuthHeaders(): HttpHeaders {
+    let headers = new HttpHeaders();
+    const token = this.authService.getToken() || 
+      (typeof localStorage !== 'undefined' 
+        ? (localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.AUTH_TOKEN) || localStorage.getItem('om_token') || localStorage.getItem('token'))
+        : null);
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+  }
 
   /**
    * Validates file size, extension, and empty file client-side before dispatching network request.
@@ -51,7 +66,8 @@ export class UploadService {
 
     const url = `${environment.apiUrl}${API_ENDPOINTS.UPLOADS.IMAGE}`;
     const req = new HttpRequest('POST', url, formData, {
-      reportProgress: true
+      reportProgress: true,
+      headers: this.getAuthHeaders()
     });
 
     return this.http.request<ApiResponse<ImageUploadResponse>>(req).pipe(
@@ -80,7 +96,9 @@ export class UploadService {
     formData.append('category', category);
 
     const url = `${environment.apiUrl}${API_ENDPOINTS.UPLOADS.IMAGE}`;
-    return this.http.post<ApiResponse<ImageUploadResponse>>(url, formData);
+    return this.http.post<ApiResponse<ImageUploadResponse>>(url, formData, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   /**
@@ -92,7 +110,9 @@ export class UploadService {
     formData.append('category', 'logos');
 
     const url = `${environment.apiUrl}${API_ENDPOINTS.COMPANY.UPLOAD_LOGO}`;
-    return this.http.post<ApiResponse<ImageUploadResponse>>(url, formData);
+    return this.http.post<ApiResponse<ImageUploadResponse>>(url, formData, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   /**
@@ -101,6 +121,7 @@ export class UploadService {
   deleteImage(relativePath: string): Observable<ApiResponse<boolean>> {
     const url = `${environment.apiUrl}${API_ENDPOINTS.UPLOADS.IMAGE}`;
     return this.http.delete<ApiResponse<boolean>>(url, {
+      headers: this.getAuthHeaders(),
       body: { path: relativePath }
     });
   }
@@ -113,6 +134,9 @@ export class UploadService {
     if (category) {
       url += `?category=${encodeURIComponent(category)}`;
     }
-    return this.http.get<ApiResponse<ImageUploadResponse[]>>(url);
+    return this.http.get<ApiResponse<ImageUploadResponse[]>>(url, {
+      headers: this.getAuthHeaders()
+    });
   }
 }
+

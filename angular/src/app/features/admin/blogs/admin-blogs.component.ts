@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../core/services/blog.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { UploadService } from '../../../core/services/upload.service';
 import { BlogPost, BlogCategory, CreateBlogRequest } from '../../../core/models/blog.model';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 
@@ -181,9 +182,11 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
             <app-file-upload 
               category="blogs" 
               label="Featured Article Thumbnail" 
-              helperText="PNG, JPG, WEBP (Max 5MB) · Auto-saved to /uploads/blogs/"
+              helperText="PNG, JPG, WEBP (Max 5MB) · Uploads to API on Save"
               [currentImageUrl]="formData.featuredImageUrl" 
+              (fileSelected)="stagedBlogFile = $event"
               (imageUrlChange)="formData.featuredImageUrl = $event"
+              (imageRemoved)="stagedBlogFile = null; formData.featuredImageUrl = ''"
             ></app-file-upload>
 
             <div>
@@ -295,6 +298,7 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
 export class AdminBlogsComponent implements OnInit {
   private blogService = inject(BlogService);
   private toast = inject(ToastService);
+  private uploadService = inject(UploadService);
 
   blogs = signal<BlogPost[]>([]);
   categories = signal<BlogCategory[]>([]);
@@ -306,6 +310,7 @@ export class AdminBlogsComponent implements OnInit {
   blogToDelete: BlogPost | null = null;
   saving = false;
   formError: string | null = null;
+  stagedBlogFile: File | null = null;
 
   formData: CreateBlogRequest = {
     title: '',
@@ -351,6 +356,7 @@ export class AdminBlogsComponent implements OnInit {
 
   openCreateModal(): void {
     this.editingBlogId = null;
+    this.stagedBlogFile = null;
     this.formData = {
       title: '',
       slug: '',
@@ -367,6 +373,7 @@ export class AdminBlogsComponent implements OnInit {
 
   openEditModal(b: BlogPost): void {
     this.editingBlogId = b.blogId;
+    this.stagedBlogFile = null;
     this.formData = {
       title: b.title,
       slug: b.slug,
@@ -406,6 +413,30 @@ export class AdminBlogsComponent implements OnInit {
     this.saving = true;
     this.formError = null;
 
+    // Only upload image to API if a new file was staged
+    if (this.stagedBlogFile) {
+      this.uploadService.uploadImage(this.stagedBlogFile, 'blogs').subscribe({
+        next: (uploadRes) => {
+          if (uploadRes.success && uploadRes.data?.relativeUrl) {
+            this.formData.featuredImageUrl = uploadRes.data.relativeUrl;
+            this.stagedBlogFile = null;
+            this.executeSaveBlog();
+          } else {
+            this.saving = false;
+            this.formError = uploadRes.message || 'Image upload failed.';
+          }
+        },
+        error: (err) => {
+          this.saving = false;
+          this.formError = err?.error?.message || 'Image upload failed. Please verify admin session.';
+        }
+      });
+    } else {
+      this.executeSaveBlog();
+    }
+  }
+
+  private executeSaveBlog(): void {
     if (this.editingBlogId) {
       this.blogService.updateBlog(this.editingBlogId, this.formData).subscribe({
         next: res => {

@@ -43,7 +43,7 @@ import {
   HardDrive,
   RotateCw
 } from 'lucide-react';
-import { ImageUploadDropzone } from './ImageUploadDropzone.js';
+import { ImageUploadDropzone, uploadImageFile } from './ImageUploadDropzone.js';
 import { angularSolutionFiles, AngularCodeFile } from '../angular-solution/angularFiles.js';
 import { exportAngularZip, exportFullStackZip } from '../utils/zipExporter.js';
 
@@ -132,6 +132,8 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   });
   const [productToDelete, setProductToDelete] = useState<any | null>(null);
   const [productFormError, setProductFormError] = useState<string | null>(null);
+  const [stagedProductFile, setStagedProductFile] = useState<File | null>(null);
+  const [isSavingProduct, setIsSavingProduct] = useState(false);
 
   // Admin Blog Add/Edit Modal
   const [showBlogModal, setShowBlogModal] = useState(false);
@@ -148,9 +150,12 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   });
   const [blogToDelete, setBlogToDelete] = useState<any | null>(null);
   const [blogFormError, setBlogFormError] = useState<string | null>(null);
+  const [stagedBlogFile, setStagedBlogFile] = useState<File | null>(null);
+  const [isSavingBlog, setIsSavingBlog] = useState(false);
 
   // Admin Company Settings Form
   const [companyForm, setCompanyForm] = useState<any>({});
+  const [stagedLogoFile, setStagedLogoFile] = useState<File | null>(null);
   const [savingCompany, setSavingCompany] = useState(false);
   const [companyFeedback, setCompanyFeedback] = useState<string | null>(null);
 
@@ -367,6 +372,7 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   // Product CRUD Handlers
   const handleOpenAddProduct = () => {
     setEditingProduct(null);
+    setStagedProductFile(null);
     setProductForm({
       productName: '',
       slug: '',
@@ -383,6 +389,7 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
 
   const handleOpenEditProduct = (prod: any) => {
     setEditingProduct(prod);
+    setStagedProductFile(null);
     setProductForm({
       productName: prod.productName,
       slug: prod.slug,
@@ -409,7 +416,29 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
       return;
     }
 
+    setIsSavingProduct(true);
+    setProductFormError(null);
+
     try {
+      let finalImageUrl = productForm.mainImageUrl;
+
+      // Defer image upload to API until user clicks Save / Update button
+      if (stagedProductFile) {
+        try {
+          finalImageUrl = await uploadImageFile(stagedProductFile, 'products', token);
+          setStagedProductFile(null);
+        } catch (uploadErr: any) {
+          setIsSavingProduct(false);
+          setProductFormError(uploadErr?.message || 'Image upload failed. Please verify credentials.');
+          return;
+        }
+      }
+
+      const payload = {
+        ...productForm,
+        mainImageUrl: finalImageUrl
+      };
+
       const url = editingProduct 
         ? `/api/admin/products/${editingProduct.productId}`
         : '/api/admin/products';
@@ -421,18 +450,21 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(productForm)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
 
       if (res.ok && data.success) {
         setShowProductModal(false);
+        setStagedProductFile(null);
         loadData();
       } else {
         setProductFormError((data.errors && data.errors[0]) || data.message || 'Operation failed.');
       }
     } catch {
       setProductFormError('Network error communicating with API.');
+    } finally {
+      setIsSavingProduct(false);
     }
   };
 
@@ -469,6 +501,7 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   // Blog CRUD Handlers
   const handleOpenAddBlog = () => {
     setEditingBlog(null);
+    setStagedBlogFile(null);
     setBlogForm({
       title: '',
       slug: '',
@@ -485,6 +518,7 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
 
   const handleOpenEditBlog = (b: any) => {
     setEditingBlog(b);
+    setStagedBlogFile(null);
     setBlogForm({
       title: b.title,
       slug: b.slug,
@@ -511,7 +545,29 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
       return;
     }
 
+    setIsSavingBlog(true);
+    setBlogFormError(null);
+
     try {
+      let finalImageUrl = blogForm.featuredImageUrl;
+
+      // Defer image upload to API until user clicks Save / Publish button
+      if (stagedBlogFile) {
+        try {
+          finalImageUrl = await uploadImageFile(stagedBlogFile, 'blogs', token);
+          setStagedBlogFile(null);
+        } catch (uploadErr: any) {
+          setIsSavingBlog(false);
+          setBlogFormError(uploadErr?.message || 'Thumbnail upload failed. Please verify credentials.');
+          return;
+        }
+      }
+
+      const payload = {
+        ...blogForm,
+        featuredImageUrl: finalImageUrl
+      };
+
       const url = editingBlog 
         ? `/api/admin/blogs/${editingBlog.blogId}`
         : '/api/admin/blogs';
@@ -523,18 +579,21 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(blogForm)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
 
       if (res.ok && data.success) {
         setShowBlogModal(false);
+        setStagedBlogFile(null);
         loadData();
       } else {
         setBlogFormError((data.errors && data.errors[0]) || data.message || 'Operation failed.');
       }
     } catch {
       setBlogFormError('Network error communicating with API.');
+    } finally {
+      setIsSavingBlog(false);
     }
   };
 
@@ -601,19 +660,42 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
     setSavingCompany(true);
     setCompanyFeedback(null);
     try {
+      let finalLogoUrl = companyForm.logoUrl;
+
+      // Defer logo upload to API until user clicks Save Settings button
+      if (stagedLogoFile) {
+        try {
+          finalLogoUrl = await uploadImageFile(stagedLogoFile, 'logos', token);
+          setStagedLogoFile(null);
+        } catch (uploadErr: any) {
+          setSavingCompany(false);
+          setCompanyFeedback(uploadErr?.message || 'Logo upload failed before saving settings.');
+          return;
+        }
+      }
+
+      const payload = {
+        ...companyForm,
+        logoUrl: finalLogoUrl
+      };
+
       const res = await fetch('/api/company', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(companyForm)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (data.success) {
-        setCompanyFeedback('Company profile & WhatsApp configuration saved!');
+        setCompanyForm(payload);
+        if (companyData) setCompanyData({ ...companyData, logoUrl: finalLogoUrl });
+        setCompanyFeedback('Company profile & dynamic logo saved successfully!');
         loadData();
         setTimeout(() => setCompanyFeedback(null), 3000);
+      } else {
+        setCompanyFeedback(data.message || 'Failed to update company settings.');
       }
     } catch {
       setCompanyFeedback('Failed to update company settings.');
@@ -2164,12 +2246,13 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                           <ImageUploadDropzone
                             category="logos"
                             label="Upload / Replace Logo File"
-                            helperText="PNG (transparent), SVG, WEBP (Max 5MB)"
+                            helperText="PNG (transparent), SVG, WEBP (Max 5MB) · Uploads on Save"
                             value={companyForm.logoUrl || ''}
                             onChange={(url) => {
                               setCompanyForm({ ...companyForm, logoUrl: url });
                               if (companyData) setCompanyData({ ...companyData, logoUrl: url });
                             }}
+                            onFileSelect={(file) => setStagedLogoFile(file)}
                             token={token}
                           />
                         </div>
@@ -2461,9 +2544,10 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                   <ImageUploadDropzone
                     category="products"
                     label="Product Showcase Image"
-                    helperText="PNG, JPG, WEBP, SVG (Max 5MB) · Auto-saved to /uploads/products/"
+                    helperText="PNG, JPG, WEBP, SVG (Max 5MB) · Uploads to API on Save"
                     value={productForm.mainImageUrl}
                     onChange={(url) => setProductForm({ ...productForm, mainImageUrl: url })}
+                    onFileSelect={(file) => setStagedProductFile(file)}
                     token={token}
                   />
 
@@ -2579,9 +2663,10 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                   <ImageUploadDropzone
                     category="blogs"
                     label="Featured Article Thumbnail"
-                    helperText="PNG, JPG, WEBP, SVG (Max 5MB) · Auto-saved to /uploads/blogs/"
+                    helperText="PNG, JPG, WEBP, SVG (Max 5MB) · Uploads to API on Save"
                     value={blogForm.featuredImageUrl}
                     onChange={(url) => setBlogForm({ ...blogForm, featuredImageUrl: url })}
+                    onFileSelect={(file) => setStagedBlogFile(file)}
                     token={token}
                   />
 

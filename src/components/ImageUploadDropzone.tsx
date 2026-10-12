@@ -1,10 +1,47 @@
-import React, { useState, useRef } from 'react';
-import { Upload, X, CheckCircle, AlertTriangle, RefreshCw } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Upload, X, CheckCircle, AlertTriangle, RefreshCw, Clock } from 'lucide-react';
+
+export async function uploadImageFile(file: File, category: string, token?: string | null): Promise<string> {
+  const base64Data = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const res = reader.result as string;
+      resolve(res.split(',')[1] || res);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const authToken = token || (typeof localStorage !== 'undefined' ? (localStorage.getItem('om_token') || localStorage.getItem('token')) : null);
+
+  const res = await fetch('/api/uploads/image', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+    },
+    body: JSON.stringify({
+      category,
+      fileName: file.name,
+      base64Data,
+      contentType: file.type || 'image/jpeg'
+    })
+  });
+
+  const data = await res.json();
+  if (!res.ok || !data.success || !data.data?.relativeUrl) {
+    throw new Error(data.message || (data.errors && data.errors[0]) || 'Image upload failed.');
+  }
+
+  return data.data.relativeUrl;
+}
 
 interface ImageUploadDropzoneProps {
+
   category: 'products' | 'blogs' | 'logos' | 'company' | 'admins';
   value: string;
   onChange: (relativeUrl: string) => void;
+  onFileSelect?: (file: File | null) => void;
   label?: string;
   helperText?: string;
   token?: string | null;
@@ -14,19 +51,25 @@ export const ImageUploadDropzone: React.FC<ImageUploadDropzoneProps> = ({
   category,
   value,
   onChange,
+  onFileSelect,
   label = 'Upload Image',
-  helperText = 'PNG, JPG, WEBP, SVG up to 5MB',
+  helperText = 'PNG, JPG, WEBP, SVG (Max 5MB) · Uploads on Save',
   token
 }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(value || null);
+  const [stagedFileName, setStagedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const maxSizeBytes = 5 * 1024 * 1024; // 5MB
   const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.svg'];
+
+  useEffect(() => {
+    if (!stagedFileName) {
+      setLocalPreview(value || null);
+    }
+  }, [value, stagedFileName]);
 
   const validateFile = (file: File): string | null => {
     if (!file || file.size === 0) return 'Selected file is empty.';
@@ -40,7 +83,7 @@ export const ImageUploadDropzone: React.FC<ImageUploadDropzoneProps> = ({
     return null;
   };
 
-  const processFile = async (file: File) => {
+  const processFile = (file: File) => {
     setError(null);
     const validationErr = validateFile(file);
     if (validationErr) {
@@ -48,57 +91,16 @@ export const ImageUploadDropzone: React.FC<ImageUploadDropzoneProps> = ({
       return;
     }
 
-    // Set immediate client preview
+    // Set immediate client-side preview without triggering API upload
     const reader = new FileReader();
     reader.onload = (e) => {
       setLocalPreview(e.target?.result as string);
     };
     reader.readAsDataURL(file);
 
-    setUploading(true);
-    setUploadProgress(20);
-
-    try {
-      // Convert to base64 for API dispatch
-      const base64Data = await new Promise<string>((resolve, reject) => {
-        const fileReader = new FileReader();
-        fileReader.onload = () => {
-          const res = fileReader.result as string;
-          resolve(res.split(',')[1] || res);
-        };
-        fileReader.onerror = reject;
-        fileReader.readAsDataURL(file);
-      });
-
-      setUploadProgress(60);
-
-      const res = await fetch('/api/uploads/image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({
-          category,
-          fileName: file.name,
-          base64Data,
-          contentType: file.type || 'image/jpeg'
-        })
-      });
-
-      const data = await res.json();
-      setUploadProgress(100);
-
-      if (res.ok && data.success && data.data?.relativeUrl) {
-        setLocalPreview(data.data.relativeUrl);
-        onChange(data.data.relativeUrl);
-      } else {
-        setError(data.message || 'Server upload failed.');
-      }
-    } catch (err: any) {
-      setError(err?.message || 'Network error during upload.');
-    } finally {
-      setUploading(false);
+    setStagedFileName(file.name);
+    if (onFileSelect) {
+      onFileSelect(file);
     }
   };
 
@@ -120,8 +122,10 @@ export const ImageUploadDropzone: React.FC<ImageUploadDropzoneProps> = ({
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
     setLocalPreview(null);
+    setStagedFileName(null);
     setError(null);
     onChange('');
+    if (onFileSelect) onFileSelect(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -139,6 +143,7 @@ export const ImageUploadDropzone: React.FC<ImageUploadDropzoneProps> = ({
         onDrop={handleDrop}
         className={`relative border-2 border-dashed rounded-xl p-3 transition-all flex flex-col items-center justify-center text-center cursor-pointer overflow-hidden min-h-[110px] ${
           isDragging ? 'border-blue-500 bg-blue-950/30' :
+          stagedFileName ? 'border-amber-500/70 bg-amber-950/20' :
           localPreview ? 'border-slate-800 bg-slate-950/80 hover:border-slate-700' :
           'border-slate-700 bg-slate-950/50 hover:border-blue-600 hover:bg-slate-900/50'
         }`}
@@ -164,12 +169,21 @@ export const ImageUploadDropzone: React.FC<ImageUploadDropzoneProps> = ({
               />
             </div>
             <div className="flex-1 text-left min-w-0">
-              <div className="text-[11px] font-mono text-slate-300 truncate">
-                {localPreview}
+              <div className="text-[11px] font-mono text-slate-200 truncate">
+                {stagedFileName ? `Staged: ${stagedFileName}` : localPreview}
               </div>
-              <div className="flex items-center gap-1.5 mt-1 text-[10px] text-emerald-400 font-medium">
-                <CheckCircle className="w-3 h-3" />
-                <span>Uploaded to /uploads/{category}/</span>
+              <div className="flex items-center gap-1.5 mt-1 text-[10px]">
+                {stagedFileName ? (
+                  <span className="text-amber-400 font-semibold flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    <span>Ready — uploads when you click Save</span>
+                  </span>
+                ) : (
+                  <span className="text-emerald-400 font-medium flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" />
+                    <span>Active stored in /uploads/{category}/</span>
+                  </span>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -195,20 +209,10 @@ export const ImageUploadDropzone: React.FC<ImageUploadDropzoneProps> = ({
           <div className="py-2 space-y-1">
             <Upload className="w-6 h-6 mx-auto text-blue-400" />
             <div className="text-[11px] font-semibold text-slate-200">
-              Click to select or drop file here
+              Click to select or drag & drop image
             </div>
-            <div className="text-[10px] text-slate-500">
-              Auto-stored to server folder: <span className="font-mono text-slate-400">/uploads/{category}/</span>
-            </div>
-          </div>
-        )}
-
-        {uploading && (
-          <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-xs flex flex-col items-center justify-center p-4 space-y-2 z-10">
-            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <div className="text-[11px] font-semibold text-slate-200">Uploading... {uploadProgress}%</div>
-            <div className="w-32 bg-slate-800 rounded-full h-1 overflow-hidden">
-              <div className="bg-blue-500 h-full transition-all duration-150" style={{ width: `${uploadProgress}%` }}></div>
+            <div className="text-[10px] text-slate-400">
+              Staged locally · uploads to server folder <span className="font-mono text-slate-300">/uploads/{category}/</span> on Save
             </div>
           </div>
         )}

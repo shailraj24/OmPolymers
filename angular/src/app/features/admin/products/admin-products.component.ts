@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { UploadService } from '../../../core/services/upload.service';
 import { Product, ProductCategory, CreateProductRequest } from '../../../core/models/product.model';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 
@@ -169,9 +170,11 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
               <app-file-upload 
                 category="products" 
                 label="Product Main Image" 
-                helperText="PNG, JPG, WEBP (Max 5MB) · Auto-saved to /uploads/products/"
+                helperText="PNG, JPG, WEBP (Max 5MB) · Uploads to API on Save"
                 [currentImageUrl]="formData.mainImageUrl" 
+                (fileSelected)="stagedProductFile = $event"
                 (imageUrlChange)="formData.mainImageUrl = $event"
+                (imageRemoved)="stagedProductFile = null; formData.mainImageUrl = ''"
               ></app-file-upload>
 
               <div class="flex items-center gap-3 pt-2">
@@ -305,6 +308,7 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
 export class AdminProductsComponent implements OnInit {
   private prodService = inject(ProductService);
   private toast = inject(ToastService);
+  private uploadService = inject(UploadService);
 
   products = signal<Product[]>([]);
   categories = signal<ProductCategory[]>([]);
@@ -317,6 +321,7 @@ export class AdminProductsComponent implements OnInit {
   productToDelete: Product | null = null;
   saving = false;
   formError: string | null = null;
+  stagedProductFile: File | null = null;
 
   formData: CreateProductRequest = {
     productName: '',
@@ -361,6 +366,7 @@ export class AdminProductsComponent implements OnInit {
 
   openCreateModal(): void {
     this.editingProductId = null;
+    this.stagedProductFile = null;
     this.formData = {
       productName: '',
       slug: '',
@@ -377,6 +383,7 @@ export class AdminProductsComponent implements OnInit {
 
   openEditModal(p: Product): void {
     this.editingProductId = p.productId;
+    this.stagedProductFile = null;
     this.formData = {
       productName: p.productName,
       slug: p.slug,
@@ -416,6 +423,30 @@ export class AdminProductsComponent implements OnInit {
     this.saving = true;
     this.formError = null;
 
+    // Only upload image to API if a new file was staged
+    if (this.stagedProductFile) {
+      this.uploadService.uploadImage(this.stagedProductFile, 'products').subscribe({
+        next: (uploadRes) => {
+          if (uploadRes.success && uploadRes.data?.relativeUrl) {
+            this.formData.mainImageUrl = uploadRes.data.relativeUrl;
+            this.stagedProductFile = null;
+            this.executeSaveProduct();
+          } else {
+            this.saving = false;
+            this.formError = uploadRes.message || 'Image upload failed.';
+          }
+        },
+        error: (err) => {
+          this.saving = false;
+          this.formError = err?.error?.message || 'Image upload failed. Please verify admin session.';
+        }
+      });
+    } else {
+      this.executeSaveProduct();
+    }
+  }
+
+  private executeSaveProduct(): void {
     if (this.editingProductId) {
       this.prodService.updateProduct(this.editingProductId, this.formData).subscribe({
         next: res => {

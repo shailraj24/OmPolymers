@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CompanyService } from '../../../core/services/company.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { UploadService } from '../../../core/services/upload.service';
 import { CompanySettings } from '../../../core/models/company.model';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
-import { ImageUploadResponse } from '../../../core/models/upload.model';
 
 @Component({
   selector: 'app-admin-company',
@@ -28,44 +28,47 @@ import { ImageUploadResponse } from '../../../core/models/upload.model';
               <span>🖼️</span> Dynamic Site Logo
             </h2>
             <p class="text-xs text-slate-400 mt-0.5">
-              The logo uploaded here is stored in <code class="text-blue-400 font-mono">/uploads/logos/</code> and synchronizes across the public website header and admin navigation in real time.
+              Select or replace the company logo. Changes are uploaded to <code class="text-blue-400 font-mono">/uploads/logos/</code> and updated across public and admin interfaces when you click Save Settings.
             </p>
           </div>
           <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950 text-blue-400 border border-blue-800">
-            Live Asset
+            Brand Asset
           </span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center pt-2">
           <!-- Active Logo Preview Card -->
           <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-3">
-            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Current Active Logo</div>
+            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Logo Preview</div>
             <div class="w-32 h-20 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center p-2 shadow-inner overflow-hidden">
               <img 
-                *ngIf="logoUrl" 
-                [src]="logoUrl" 
+                *ngIf="previewLogoUrl()" 
+                [src]="previewLogoUrl()" 
                 alt="Current Logo" 
                 class="max-w-full max-h-full object-contain"
                 (error)="onLogoError()"
               />
-              <div *ngIf="!logoUrl" class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-sm">
+              <div *ngIf="!previewLogoUrl()" class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-sm">
                 OM
               </div>
             </div>
             <div class="text-[10px] font-mono text-slate-400 break-all max-w-full">
-              {{ logoUrl || 'No custom logo configured' }}
+              {{ stagedLogoFile ? ('Staged: ' + stagedLogoFile.name) : (logoUrl || 'Default logo') }}
             </div>
+            <span *ngIf="stagedLogoFile" class="text-[10px] text-amber-400 font-semibold">
+              ⏳ Ready to upload on Save
+            </span>
           </div>
 
           <!-- File Upload Dropzone for Logo -->
           <div>
             <app-file-upload 
               category="logos" 
-              label="Upload / Replace Site Logo" 
-              helperText="PNG (transparent), SVG, WEBP, or JPG · Max 5MB"
+              label="Select / Replace Site Logo" 
+              helperText="PNG, SVG, WEBP, JPG (Max 5MB) · Uploads on Save"
               [currentImageUrl]="logoUrl"
-              (imageUrlChange)="onLogoUploaded($event)"
-              (fileUploaded)="onLogoMetadata($event)"
+              (fileSelected)="onLogoFileSelected($event)"
+              (imageRemoved)="onLogoRemoved()"
             ></app-file-upload>
           </div>
         </div>
@@ -135,7 +138,7 @@ import { ImageUploadResponse } from '../../../core/models/upload.model';
             class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition-colors shadow-md disabled:opacity-50 flex items-center gap-2"
           >
             <span>💾</span>
-            <span>{{ saving ? 'Saving...' : 'Save Settings' }}</span>
+            <span>{{ saving ? 'Saving & Uploading...' : 'Save Settings' }}</span>
           </button>
         </div>
       </div>
@@ -145,6 +148,7 @@ import { ImageUploadResponse } from '../../../core/models/upload.model';
 export class AdminCompanyComponent implements OnInit {
   private compService = inject(CompanyService);
   private toast = inject(ToastService);
+  private uploadService = inject(UploadService);
 
   settings = signal<CompanySettings | null>(null);
 
@@ -154,6 +158,8 @@ export class AdminCompanyComponent implements OnInit {
   emailContact = '';
   address = '';
   logoUrl = '';
+  previewLogoUrl = signal<string>('/uploads/logos/om-polymer-logo.png');
+  stagedLogoFile: File | null = null;
   saving = false;
 
   ngOnInit(): void {
@@ -166,31 +172,30 @@ export class AdminCompanyComponent implements OnInit {
         this.emailContact = res.data.emailContact;
         this.address = res.data.address;
         this.logoUrl = res.data.logoUrl || '/uploads/logos/om-polymer-logo.png';
+        this.previewLogoUrl.set(this.logoUrl);
       }
     });
   }
 
-  onLogoUploaded(newUrl: string): void {
-    this.logoUrl = newUrl;
-    // Automatically save new logo URL
-    this.compService.updateCompanySettings({
-      companyName: this.companyName,
-      logoUrl: this.logoUrl,
-      whatsAppNumber: this.whatsAppNumber,
-      phoneContact: this.phoneContact,
-      emailContact: this.emailContact,
-      address: this.address
-    }).subscribe({
-      next: () => {
-        this.toast.success('Site logo uploaded and configured successfully.');
-      }
-    });
-  }
-
-  onLogoMetadata(meta: ImageUploadResponse): void {
-    if (meta.relativeUrl) {
-      this.logoUrl = meta.relativeUrl;
+  onLogoFileSelected(file: File | null): void {
+    this.stagedLogoFile = file;
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          this.previewLogoUrl.set(e.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.previewLogoUrl.set(this.logoUrl);
     }
+  }
+
+  onLogoRemoved(): void {
+    this.stagedLogoFile = null;
+    this.logoUrl = '';
+    this.previewLogoUrl.set('');
   }
 
   onLogoError(): void {
@@ -199,6 +204,32 @@ export class AdminCompanyComponent implements OnInit {
 
   saveSettings(): void {
     this.saving = true;
+
+    // Only upload to API when clicking Save Settings
+    if (this.stagedLogoFile) {
+      this.compService.uploadLogo(this.stagedLogoFile).subscribe({
+        next: (uploadRes) => {
+          if (uploadRes.success && uploadRes.data?.relativeUrl) {
+            this.logoUrl = uploadRes.data.relativeUrl;
+            this.previewLogoUrl.set(this.logoUrl);
+            this.stagedLogoFile = null;
+            this.executeSaveSettings();
+          } else {
+            this.saving = false;
+            this.toast.error(uploadRes.message || 'Logo upload failed.');
+          }
+        },
+        error: (err) => {
+          this.saving = false;
+          this.toast.error(err?.error?.message || 'Logo upload failed. Please verify credentials.');
+        }
+      });
+    } else {
+      this.executeSaveSettings();
+    }
+  }
+
+  private executeSaveSettings(): void {
     this.compService.updateCompanySettings({
       companyName: this.companyName,
       logoUrl: this.logoUrl,
@@ -209,7 +240,7 @@ export class AdminCompanyComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.saving = false;
-        this.toast.success('Company profile and settings updated.');
+        this.toast.success('Company profile and settings saved successfully.');
       },
       error: () => {
         this.saving = false;

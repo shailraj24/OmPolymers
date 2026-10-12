@@ -6,7 +6,7 @@ using OMPolymer.API.Services.Interfaces;
 
 namespace OMPolymer.API.Controllers
 {
-    [Authorize(Roles = "SuperAdmin,Admin")]
+    [Authorize]
     [ApiController]
     [Route("api/uploads")]
     public class UploadsController : ControllerBase
