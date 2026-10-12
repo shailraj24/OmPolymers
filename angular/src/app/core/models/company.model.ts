@@ -13,6 +13,7 @@ export interface CompanySettings {
   socialInstagram: string;
   updatedAt: string;
   whatsAppUrl?: string;
+   whatsappContact?: string;
 }
 
 export interface WhatsAppUrlResponse {
