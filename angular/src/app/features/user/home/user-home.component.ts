@@ -65,44 +65,81 @@ import { APP_CONSTANTS } from '../../../core/constants/app.constant';
 
       <!-- 3. Featured Products Grid -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-bold">Featured Industrial Products</h2>
-            <p class="text-xs text-slate-500 mt-1">Certified to ISO 4427, ASTM D3035, and IS 4984 hydrostatic ratings</p>
+            <div class="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Precision Manufacturing Lines</div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5">Featured Industrial Products</h2>
+            <p class="text-xs text-slate-500 mt-1">Tested to ISO 4427, ASTM D3035, and IS 4984 standards for high-pressure installations</p>
           </div>
-          <a routerLink="/products" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-            View All Products →
+          <a routerLink="/products" class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+            <span>Explore Full Catalog ({{ featuredProducts().length }}+ lines)</span>
+            <span>→</span>
           </a>
         </div>
 
-        <div *ngIf="loadingProducts()" class="p-12 text-center text-slate-400 text-xs">
-          Loading featured product catalog...
+        <div *ngIf="loadingProducts()" class="p-16 text-center text-slate-400 text-xs">
+          <div class="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+          <div>Loading featured product specifications...</div>
         </div>
 
         <div *ngIf="!loadingProducts()" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div *ngFor="let p of featuredProducts()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-xl transition-all">
-            <div class="p-5 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                  {{ p.category?.categoryName || 'Industrial' }}
-                </span>
-                <span *ngIf="p.isFeatured" class="text-[10px] font-bold text-amber-500 flex items-center gap-1">
+          <div *ngFor="let p of featuredProducts()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group">
+            <div class="p-5 space-y-4">
+              <!-- Product Image Showcase -->
+              <div class="h-48 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative">
+                <img 
+                  [src]="p.mainImageUrl || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80'" 
+                  [alt]="p.productName" 
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+                <div *ngIf="p.isFeatured" class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 shadow-md">
                   ★ Highlighted
-                </span>
+                </div>
               </div>
-              <h3 class="font-bold text-base leading-tight">{{ p.productName }}</h3>
-              <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">{{ p.shortDescription }}</p>
-              <div *ngIf="p.specifications" class="text-[11px] font-mono bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 truncate">
-                {{ p.specifications }}
+
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs text-slate-500">
+                  <span class="font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider text-[11px]">
+                    {{ p.category?.categoryName || 'Standard' }}
+                  </span>
+                  <span class="font-mono text-[11px]">PN6 — PN16</span>
+                </div>
+
+                <h3 class="font-extrabold text-base leading-snug group-hover:text-blue-600 transition-colors">
+                  <a [routerLink]="['/products', p.slug]">{{ p.productName }}</a>
+                </h3>
+
+                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                  {{ p.shortDescription }}
+                </p>
+
+                <div *ngIf="p.specifications" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/80 font-mono text-[11px] text-slate-600 dark:text-slate-400 truncate">
+                  {{ p.specifications }}
+                </div>
               </div>
             </div>
-            <div class="p-5 pt-0 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 mt-4">
+
+            <!-- Card Actions -->
+            <div class="p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 mt-2 flex items-center justify-between gap-2">
               <a [routerLink]="['/products', p.slug]" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                 View Specifications →
               </a>
-              <a routerLink="/quote" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">
-                Request RFQ
-              </a>
+              <div class="flex items-center gap-2">
+                <button 
+                  (click)="openProductWhatsApp(p)"
+                  class="p-2 rounded-xl bg-emerald-600/10 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-500/20 transition-all text-xs font-semibold"
+                  title="Inquire about this product on WhatsApp"
+                >
+                  <span>💬</span>
+                </button>
+                <a 
+                  [routerLink]="['/quote']" 
+                  [queryParams]="{ product: p.productName }"
+                  class="px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors"
+                >
+                  RFQ
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -110,75 +147,109 @@ import { APP_CONSTANTS } from '../../../core/constants/app.constant';
 
       <!-- 4. About Us Section -->
       <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8">
-        <div class="max-w-3xl">
-          <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">About OM Polymer</span>
-          <h2 class="text-3xl font-extrabold mt-1 tracking-tight">Precision Polymer Engineering for Heavy Infrastructure</h2>
-          <p class="text-sm text-slate-600 dark:text-slate-300 mt-4 leading-relaxed">
-            Founded with a vision to deliver uncompromising quality in polymer engineering, OM Polymer operates state-of-the-art continuous extrusion and compounding lines at Vegdi GIDC, Dhoraji, Gujarat. We engineer high-performance HDPE pipes, MDPE gas lines, PP-R hot-water conduits, and customized polymer compounds serving municipal water grids, mining slurries, agricultural micro-irrigation, and industrial effluent transport.
-          </p>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div class="space-y-4">
+            <div class="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">Infrastructure & Legacy</div>
+            <h2 class="text-3xl font-extrabold tracking-tight leading-tight">Precision Polymer Engineering for Heavy Infrastructure</h2>
+            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              {{ company()?.aboutContent || 'Founded with a vision to deliver uncompromising quality in polymer engineering, OM Polymer operates state-of-the-art continuous extrusion and compounding lines at Vegdi GIDC, Dhoraji, Gujarat. We engineer high-performance HDPE pipes, MDPE gas lines, PP-R hot-water conduits, and customized polymer compounds serving municipal water grids, mining slurries, agricultural micro-irrigation, and industrial effluent transport.' }}
+            </p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
-            <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold">
-              ⚙️
+            <div class="grid grid-cols-2 gap-4 pt-2">
+              <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                <div class="text-2xl font-extrabold text-blue-600 dark:text-blue-400">18,000 MT</div>
+                <div class="text-[11px] text-slate-500 font-medium">Annual Extrusion Capacity</div>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">50+ Years</div>
+                <div class="text-[11px] text-slate-500 font-medium">Design Pipeline Life</div>
+              </div>
             </div>
-            <h4 class="font-bold text-sm">German Extrusion Lines</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Equipped with gravimetric dosing and ultrasonic wall thickness control ensuring uniform SDR thickness across high diameters.</p>
           </div>
 
-          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
-            <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
-              🔬
+          <div class="space-y-4">
+            <div class="rounded-2xl overflow-hidden bg-slate-800 h-56 relative shadow-lg">
+              <img 
+                src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80" 
+                alt="OM Polymer Extrusion Facility" 
+                class="w-full h-full object-cover" 
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent p-5 flex flex-col justify-end">
+                <div class="text-white font-bold text-sm">Industrial Compounding Line 02</div>
+                <div class="text-slate-300 text-xs">Continuous gravimetric dosing and automated ultrasonic wall-thickness scanning</div>
+              </div>
             </div>
-            <h4 class="font-bold text-sm">In-House Hydrostatic Lab</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Full lot-traceable testing for Carbon Black dispersion, Melt Flow Index (MFI), Slow Crack Growth (SCG), and tensile elongation.</p>
-          </div>
 
-          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
-            <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold">
-              🌱
+            <div class="grid grid-cols-3 gap-3">
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-center">
+                <div class="text-lg">⚙️</div>
+                <div class="text-[11px] font-bold text-slate-800 dark:text-white mt-1">German Lines</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-center">
+                <div class="text-lg">🔬</div>
+                <div class="text-[11px] font-bold text-slate-800 dark:text-white mt-1">In-House Lab</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-center">
+                <div class="text-lg">🌱</div>
+                <div class="text-[11px] font-bold text-slate-800 dark:text-white mt-1">Zero Defect</div>
+              </div>
             </div>
-            <h4 class="font-bold text-sm">Zero-Defect Sustainability</h4>
-            <p class="text-xs text-slate-500 leading-relaxed">Closed-loop water cooling and 100% prime virgin raw material usage conforming strictly to drinking water safety norms.</p>
           </div>
         </div>
       </section>
 
       <!-- 5. Latest Engineering Blogs Section -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-bold">Engineering Insights & Technical Articles</h2>
-            <p class="text-xs text-slate-500 mt-1">Industry research on piping standards, trenchless installation, and resin technology</p>
+            <div class="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono">R&D & Engineering Articles</div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5">Engineering Insights & Research</h2>
+            <p class="text-xs text-slate-500 mt-1">Material science analysis, hydrostatic pressure benchmarks, and installation whitepapers</p>
           </div>
-          <a routerLink="/blogs" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-            Browse All Articles →
+          <a routerLink="/blogs" class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">
+            <span>Browse All Technical Papers</span>
+            <span>→</span>
           </a>
         </div>
 
-        <div *ngIf="loadingBlogs()" class="p-10 text-center text-slate-400 text-xs">
-          Loading engineering articles...
+        <div *ngIf="loadingBlogs()" class="p-16 text-center text-slate-400 text-xs">
+          <div class="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+          <div>Loading engineering articles...</div>
         </div>
 
         <div *ngIf="!loadingBlogs()" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div *ngFor="let blog of latestBlogs()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-xl transition-all">
+          <div *ngFor="let blog of latestBlogs()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group">
             <div class="p-5 space-y-3">
+              <!-- Blog Image -->
+              <div class="h-44 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950">
+                <img 
+                  [src]="blog.featuredImageUrl || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'" 
+                  [alt]="blog.title" 
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+              </div>
+
               <div class="flex items-center justify-between text-[11px] text-slate-400">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                <span class="font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider text-[10px]">
                   {{ blog.category?.categoryName || 'Technical' }}
                 </span>
                 <span>{{ blog.createdAt | date:'mediumDate' }}</span>
               </div>
-              <h3 class="font-bold text-base leading-snug hover:text-blue-600 transition-colors">
+
+              <h3 class="font-extrabold text-base leading-snug group-hover:text-blue-600 transition-colors">
                 <a [routerLink]="['/blogs', blog.slug]">{{ blog.title }}</a>
               </h3>
-              <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">{{ blog.shortDescription }}</p>
+
+              <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">
+                {{ blog.shortDescription }}
+              </p>
             </div>
-            <div class="p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 mt-4 flex items-center justify-between">
-              <span class="text-[11px] text-slate-400">By {{ blog.author || 'OM Polymer Lab' }}</span>
-              <a [routerLink]="['/blogs', blog.slug]" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                Read Article →
+
+            <div class="p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 mt-3 flex items-center justify-between">
+              <span class="text-[11px] text-slate-400 font-medium">By {{ blog.author || 'OM Polymer Lab' }}</span>
+              <a [routerLink]="['/blogs', blog.slug]" class="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
+                <span>Read Article</span>
+                <span>→</span>
               </a>
             </div>
           </div>
@@ -301,6 +372,11 @@ export class UserHomeComponent implements OnInit {
 
   openWhatsApp(): void {
     const text = encodeURIComponent('Hello OM Polymer Team, I would like to inquire about your HDPE pipe extrusion and polymer compounds.');
+    window.location.href = `https://wa.me/${this.whatsappNumber}?text=${text}`;
+  }
+
+  openProductWhatsApp(p: Product): void {
+    const text = encodeURIComponent(`Hello OM Polymer Team, I would like to inquire about specifications and pricing for: ${p.productName}`);
     window.location.href = `https://wa.me/${this.whatsappNumber}?text=${text}`;
   }
 }

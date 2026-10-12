@@ -1,5 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RequirementService } from '../../../core/services/requirement.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -70,8 +71,9 @@ import { ToastService } from '../../../core/services/toast.service';
     </div>
   `
 })
-export class UserRfqComponent {
+export class UserRfqComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
   private reqService = inject(RequirementService);
   private toast = inject(ToastService);
 
@@ -86,6 +88,16 @@ export class UserRfqComponent {
     quantity: [''],
     requirementDescription: ['', [Validators.required, Validators.minLength(5)]]
   });
+
+  ngOnInit(): void {
+    const prodParam = this.route.snapshot.queryParamMap.get('product');
+    if (prodParam) {
+      this.rfqForm.patchValue({
+        productOfInterest: prodParam,
+        requirementDescription: `Inquiry regarding specifications and commercial terms for ${prodParam}.`
+      });
+    }
+  }
 
   onSubmit(): void {
     if (this.rfqForm.invalid) {

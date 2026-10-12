@@ -1314,20 +1314,27 @@ apiRouter.post('/admin/database/reset', requireAdminAuth, (req: Request, res: Re
 // GET /api/admin/logs/files (List physical log files)
 apiRouter.get('/admin/logs/files', requireAdminAuth, (_req: Request, res: Response) => {
   const files = getAvailableLogFiles();
-  return ok(res, files);
+  return ok(res, files.map(f => f.fileName));
 });
 
 // GET /api/admin/logs (Read dynamic log entries from disk)
 apiRouter.get('/admin/logs', requireAdminAuth, (req: Request, res: Response) => {
-  const filename = (req.query.filename as string) || 'ompolymer-api.log';
-  const level = (req.query.level as string || 'ALL').toUpperCase();
+  const filename = (req.query.file as string) || (req.query.filename as string) || 'ompolymer-api.log';
+  const rawLevel = ((req.query.severity as string) || (req.query.level as string) || 'ALL').toUpperCase();
   const search = (req.query.search as string || '').toLowerCase().trim();
   const limit = Math.max(1, Math.min(500, parseInt(req.query.limit as string) || 150));
 
   let entries = readLogEntries(filename, limit);
 
-  if (level && level !== 'ALL') {
-    entries = entries.filter(e => e.level === level);
+  if (rawLevel && rawLevel !== 'ALL') {
+    const targetLevels: string[] = [rawLevel];
+    if (rawLevel === 'INFO' || rawLevel === 'INF') targetLevels.push('INFO', 'INF');
+    if (rawLevel === 'WARN' || rawLevel === 'WRN') targetLevels.push('WARN', 'WRN');
+    if (rawLevel === 'ERROR' || rawLevel === 'ERR') targetLevels.push('ERROR', 'ERR');
+    if (rawLevel === 'DEBUG' || rawLevel === 'DBG') targetLevels.push('DEBUG', 'DBG');
+    if (rawLevel === 'SECURITY' || rawLevel === 'SEC') targetLevels.push('SECURITY', 'SEC');
+    
+    entries = entries.filter(e => targetLevels.includes(e.level.toUpperCase()));
   }
 
   if (search) {
@@ -1338,21 +1345,32 @@ apiRouter.get('/admin/logs', requireAdminAuth, (req: Request, res: Response) => 
     );
   }
 
+  const normalizedLogs = entries.map(e => ({
+    ...e,
+    level: (e.level === 'INF' ? 'INFO' : e.level === 'WRN' ? 'WARN' : e.level === 'ERR' ? 'ERROR' : e.level) as any,
+    sourceFile: filename
+  }));
+
+  const availableFiles = getAvailableLogFiles();
+
   return ok(res, {
+    total: normalizedLogs.length,
+    filtered: normalizedLogs.length,
+    files: availableFiles.map(f => f.fileName),
     activeFile: filename,
-    totalReturned: entries.length,
-    availableFiles: getAvailableLogFiles(),
-    logs: entries
+    totalReturned: normalizedLogs.length,
+    availableFiles: availableFiles,
+    logs: normalizedLogs
   });
 });
 
 // POST /api/admin/logs/clear (Rotate/clear specific log file)
 apiRouter.post('/admin/logs/clear', requireAdminAuth, (req: Request, res: Response) => {
-  const filename = req.body?.filename || 'ompolymer-api.log';
+  const filename = req.body?.fileName || req.body?.filename || 'ompolymer-api.log';
   const success = clearLogFile(filename);
   if (success) {
     logMessage('INF', 'OMPolymer.API.Logs', `Log file ${filename} cleared and rotated.`);
-    return ok(res, true, `Log file '${filename}' rotated and cleared.`);
+    return ok(res, { cleared: true }, `Log file '${filename}' rotated and cleared.`);
   } else {
     return badRequest(res, `Failed to clear log file '${filename}'.`);
   }

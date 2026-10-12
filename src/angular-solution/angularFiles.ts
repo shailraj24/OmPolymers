@@ -1,3409 +1,563 @@
-// Registry of Complete Angular 19 Standalone Source Code Files
-// Complete role-based enterprise application: Admin Panel + User Client Portal
-
 export interface AngularCodeFile {
-  path: string;
   name: string;
-  category: 'Configuration' | 'Core & Services' | 'Interceptors & Guards' | 'Models & DTOs' | 'Layouts' | 'User Portal' | 'Admin Panel' | 'Auth' | 'Shared & Shell' | 'Unit Tests' | 'Documentation';
-  language: 'typescript' | 'html' | 'css' | 'json' | 'markdown';
+  path: string;
+  category: string;
+  language: string;
   description: string;
   content: string;
 }
 
 export const angularSolutionFiles: AngularCodeFile[] = [
-  // ==========================================
-  // 1. CONFIGURATION
-  // ==========================================
   {
-    path: '.gitignore',
-    name: '.gitignore',
-    category: 'Configuration',
-    language: 'json',
-    description: 'Git ignore rules for node_modules, build outputs, and configuration files',
-    content: `# Angular & Node.js dependencies
-node_modules/
-.angular/
-dist/
-tmp/
-out-tsc/
-bazel-out/
-
-# Environments & secrets
-.env*
-!.env.example
-appsettings.json
-appsettings.*.json
-
-# IDEs and OS files
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-.DS_Store
-Thumbs.db
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-`
+    "name": ".gitignore",
+    "path": ".gitignore",
+    "category": "Documentation",
+    "language": "text",
+    "description": "OM Polymer Angular 19 solution file: .gitignore",
+    "content": "# Angular & Node.js dependencies\nnode_modules/\n.angular/\ndist/\ntmp/\nout-tsc/\nbazel-out/\n\n# Environments & secrets\n.env*\n!.env.example\nappsettings.json\nappsettings.*.json\n\n# IDEs and OS files\n.idea/\n.project\n.classpath\n.c9/\n*.launch\n.settings/\n*.sublime-workspace\n.DS_Store\nThumbs.db\n*.log\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\n"
   },
   {
-    path: 'package.json',
-    name: 'package.json',
-    category: 'Configuration',
-    language: 'json',
-    description: 'Angular 19 project dependencies and npm scripts',
-    content: `{
-  "name": "om-polymer-angular",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve --port 4200",
-    "build": "ng build --configuration production",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test --watch=false --browsers=ChromeHeadless",
-    "lint": "ng lint"
-  },
-  "dependencies": {
-    "@angular/animations": "^19.1.0",
-    "@angular/common": "^19.1.0",
-    "@angular/compiler": "^19.1.0",
-    "@angular/core": "^19.1.0",
-    "@angular/forms": "^19.1.0",
-    "@angular/platform-browser": "^19.1.0",
-    "@angular/platform-browser-dynamic": "^19.1.0",
-    "@angular/router": "^19.1.0",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
-  },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "^19.1.0",
-    "@angular/cli": "^19.1.0",
-    "@angular/compiler-cli": "^19.1.0",
-    "@types/jasmine": "~5.1.0",
-    "autoprefixer": "^10.4.20",
-    "jasmine-core": "~5.1.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17",
-    "typescript": "~5.6.2"
-  }
-}
-`
+    "name": "README.md",
+    "path": "README.md",
+    "category": "Documentation",
+    "language": "text",
+    "description": "OM Polymer Angular 19 solution file: README.md",
+    "content": "# OM Polymer — Angular 19 Production Frontend Application\n\n## Single Application with Two Role-Based Experiences\n1. **User Client Portal (`/`)**:\n   - Modern corporate landing page with engineering capabilities & stats.\n   - Products catalog with category filtering and keyword search.\n   - Product detail specification sheets with ISO standard tags.\n   - Client technical requirement (RFQ) submission form with backend validation and rate limit protection.\n   - Maintenance reference page with animated laptop, floating technician, and interactive contact cards.\n   - Dynamic Light / Dark mode toggling.\n\n2. **Admin Panel (`/admin`)**:\n   - Protected layout with sidebar navigation, role indicator, and logout.\n   - Admin KPI Dashboard with lead counters and recent inquiries.\n   - Client Inquiries & Leads CRM with search, status filtering, and remarks update.\n   - Product Catalog CRUD & active status toggling.\n   - Company Settings and WhatsApp phone configuration.\n   - **SuperAdmin Exclusive Area (`/admin/users`)**: Administrator management and role assignments.\n\n---\n\n## Prerequisites\n- **Node.js**: v18.19.0 or v20.x+ LTS\n- **Angular CLI**: v19.x (`npm install -g @angular/cli`)\n\n---\n\n## Quick Start\n```bash\ncd om-polymer-angular\nnpm install\nnpm start\n```\nThe application will launch on `http://localhost:4200/` and proxy all `/api/*` calls to your ASP.NET Core API server on `http://localhost:5000`.\n\n---\n\n## Run Unit Tests\n```bash\nnpm test\n```\n\n---\n\n## Production Build\n```bash\nnpm run build\n```\nOutput directory: `dist/om-polymer-angular/browser`\n"
   },
   {
-    path: 'angular.json',
-    name: 'angular.json',
-    category: 'Configuration',
-    language: 'json',
-    description: 'Angular CLI workspace and build configuration',
-    content: `{
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "newProjectRoot": "projects",
-  "projects": {
-    "om-polymer-angular": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "css",
-          "standalone": true,
-          "skipTests": false
-        }
-      },
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:application",
-          "options": {
-            "outputPath": "dist/om-polymer-angular",
-            "index": "src/index.html",
-            "browser": "src/main.ts",
-            "polyfills": ["zone.js"],
-            "tsConfig": "tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
-            "styles": ["src/styles.css"],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                { "type": "initial", "maximumWarning": "500kB", "maximumError": "1MB" },
-                { "type": "anyComponentStyle", "maximumWarning": "4kB", "maximumError": "8kB" }
-              ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.production.ts"
-                }
-              ]
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "om-polymer-angular:build:production"
-            },
-            "development": {
-              "buildTarget": "om-polymer-angular:build:development",
-              "proxyConfig": "proxy.conf.json"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
-            "tsConfig": "tsconfig.spec.json",
-            "assets": [{ "glob": "**/*", "input": "public" }],
-            "styles": ["src/styles.css"],
-            "scripts": []
-          }
-        }
-      }
-    }
-  }
-}
-`
+    "name": "angular.json",
+    "path": "angular.json",
+    "category": "Configuration",
+    "language": "json",
+    "description": "OM Polymer Angular 19 solution file: angular.json",
+    "content": "{\n  \"$schema\": \"./node_modules/@angular/cli/lib/config/schema.json\",\n  \"version\": 1,\n  \"newProjectRoot\": \"projects\",\n  \"projects\": {\n    \"om-polymer-angular\": {\n      \"projectType\": \"application\",\n      \"schematics\": {\n        \"@schematics/angular:component\": {\n          \"style\": \"css\",\n          \"standalone\": true,\n          \"skipTests\": false\n        }\n      },\n      \"root\": \"\",\n      \"sourceRoot\": \"src\",\n      \"prefix\": \"app\",\n      \"architect\": {\n        \"build\": {\n          \"builder\": \"@angular-devkit/build-angular:application\",\n          \"options\": {\n            \"outputPath\": \"dist/om-polymer-angular\",\n            \"index\": \"src/index.html\",\n            \"browser\": \"src/main.ts\",\n            \"polyfills\": [\"zone.js\"],\n            \"tsConfig\": \"tsconfig.app.json\",\n            \"assets\": [\n              {\n                \"glob\": \"**/*\",\n                \"input\": \"public\"\n              }\n            ],\n            \"styles\": [\"src/styles.css\"],\n            \"scripts\": []\n          },\n          \"configurations\": {\n            \"production\": {\n              \"budgets\": [\n                { \"type\": \"initial\", \"maximumWarning\": \"500kB\", \"maximumError\": \"1MB\" },\n                { \"type\": \"anyComponentStyle\", \"maximumWarning\": \"4kB\", \"maximumError\": \"8kB\" }\n              ],\n              \"outputHashing\": \"all\",\n              \"fileReplacements\": [\n                {\n                  \"replace\": \"src/environments/environment.ts\",\n                  \"with\": \"src/environments/environment.production.ts\"\n                }\n              ]\n            },\n            \"development\": {\n              \"optimization\": false,\n              \"extractLicenses\": false,\n              \"sourceMap\": true\n            }\n          },\n          \"defaultConfiguration\": \"production\"\n        },\n        \"serve\": {\n          \"builder\": \"@angular-devkit/build-angular:dev-server\",\n          \"configurations\": {\n            \"production\": {\n              \"buildTarget\": \"om-polymer-angular:build:production\"\n            },\n            \"development\": {\n              \"buildTarget\": \"om-polymer-angular:build:development\",\n              \"proxyConfig\": \"proxy.conf.json\"\n            }\n          },\n          \"defaultConfiguration\": \"development\"\n        },\n        \"test\": {\n          \"builder\": \"@angular-devkit/build-angular:karma\",\n          \"options\": {\n            \"polyfills\": [\"zone.js\", \"zone.js/testing\"],\n            \"tsConfig\": \"tsconfig.spec.json\",\n            \"assets\": [{ \"glob\": \"**/*\", \"input\": \"public\" }],\n            \"styles\": [\"src/styles.css\"],\n            \"scripts\": []\n          }\n        }\n      }\n    }\n  },\n  \"cli\": {\n    \"analytics\": false\n  }\n}\n"
   },
   {
-    path: 'proxy.conf.json',
-    name: 'proxy.conf.json',
-    category: 'Configuration',
-    language: 'json',
-    description: 'Angular development proxy configuration routing /api to ASP.NET Core server',
-    content: `{
-  "/api": {
-    "target": "http://localhost:5000",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  }
-}
-`
+    "name": "package.json",
+    "path": "package.json",
+    "category": "Configuration",
+    "language": "json",
+    "description": "OM Polymer Angular 19 solution file: package.json",
+    "content": "{\n  \"name\": \"om-polymer-angular\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"ng\": \"ng\",\n    \"start\": \"ng serve --port 4200 --open\",\n    \"build\": \"ng build --configuration production\",\n    \"watch\": \"ng build --watch --configuration development\",\n    \"test\": \"ng test --watch=false --browsers=ChromeHeadless\",\n    \"lint\": \"ng lint\"\n  },\n  \"dependencies\": {\n    \"@angular/animations\": \"^19.1.0\",\n    \"@angular/common\": \"^19.1.0\",\n    \"@angular/compiler\": \"^19.1.0\",\n    \"@angular/core\": \"^19.1.0\",\n    \"@angular/forms\": \"^19.1.0\",\n    \"@angular/platform-browser\": \"^19.1.0\",\n    \"@angular/platform-browser-dynamic\": \"^19.1.0\",\n    \"@angular/router\": \"^19.1.0\",\n    \"rxjs\": \"~7.8.0\",\n    \"tslib\": \"^2.3.0\",\n    \"zone.js\": \"~0.15.0\"\n  },\n  \"devDependencies\": {\n    \"@angular-devkit/build-angular\": \"^19.1.0\",\n    \"@angular/cli\": \"^19.1.0\",\n    \"@angular/compiler-cli\": \"^19.1.0\",\n    \"@types/jasmine\": \"~5.1.0\",\n    \"autoprefixer\": \"^10.4.20\",\n    \"jasmine-core\": \"~5.1.0\",\n    \"karma\": \"~6.4.0\",\n    \"karma-chrome-launcher\": \"~3.2.0\",\n    \"karma-coverage\": \"~2.2.0\",\n    \"karma-jasmine\": \"~5.1.0\",\n    \"karma-jasmine-html-reporter\": \"~2.1.0\",\n    \"postcss\": \"^8.4.49\",\n    \"tailwindcss\": \"^3.4.17\",\n    \"typescript\": \"~5.6.2\"\n  }\n}\n"
   },
   {
-    path: 'tailwind.config.js',
-    name: 'tailwind.config.js',
-    category: 'Configuration',
-    language: 'typescript',
-    description: 'Tailwind CSS design tokens, colors, and keyframe animations',
-    content: `/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./src/**/*.{html,ts}"],
-  darkMode: 'class',
-  theme: {
-    extend: {
-      colors: {
-        brand: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
-        }
-      },
-      fontFamily: {
-        sans: ['"Segoe UI"', 'system-ui', '-apple-system', 'Arial', 'sans-serif'],
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
-        },
-        rotateGear: {
-          'from': { transform: 'rotate(0deg)' },
-          'to': { transform: 'rotate(360deg)' },
-        },
-        loadingBar: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(230%)' },
-        }
-      },
-      animation: {
-        'float-slow': 'float 7s ease-in-out infinite',
-        'float-reverse': 'float 8s ease-in-out infinite reverse',
-        'gear-spin': 'rotateGear 5s linear infinite',
-        'progress-bar': 'loadingBar 2s ease-in-out infinite',
-      }
-    },
-  },
-  plugins: [],
-}
-`
+    "name": "proxy.conf.json",
+    "path": "proxy.conf.json",
+    "category": "Configuration",
+    "language": "json",
+    "description": "OM Polymer Angular 19 solution file: proxy.conf.json",
+    "content": "{\n  \"/api\": {\n    \"target\": \"http://localhost:5000\",\n    \"secure\": false,\n    \"changeOrigin\": true,\n    \"logLevel\": \"debug\"\n  }\n}\n"
   },
   {
-    path: 'tsconfig.json',
-    name: 'tsconfig.json',
-    category: 'Configuration',
-    language: 'json',
-    description: 'TypeScript compiler configuration with path aliases',
-    content: `{
-  "compileOnSave": false,
-  "compilerOptions": {
-    "outDir": "./dist/out-tsc",
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "bundler",
-    "importHelpers": true,
-    "target": "ES2022",
-    "module": "ES2022",
-    "paths": {
-      "@core/*": ["src/app/core/*"],
-      "@shared/*": ["src/app/shared/*"],
-      "@features/*": ["src/app/features/*"],
-      "@layouts/*": ["src/app/layouts/*"],
-      "@env/*": ["src/environments/*"]
-    }
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
-  }
-}
-`
+    "name": "app.component.ts",
+    "path": "src/app/app.component.ts",
+    "category": "Configuration",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/app.component.ts",
+    "content": "import { Component, inject } from '@angular/core';\nimport { RouterOutlet } from '@angular/router';\nimport { ToastComponent } from './shared/components/toast.component';\nimport { ThemeService } from './core/services/theme.service';\n\n@Component({\n  selector: 'app-root',\n  standalone: true,\n  imports: [RouterOutlet, ToastComponent],\n  template: `\n    <div class=\"min-h-screen\">\n      <router-outlet></router-outlet>\n      <app-toast></app-toast>\n    </div>\n  `\n})\nexport class AppComponent {\n  private themeService = inject(ThemeService);\n}\n"
   },
   {
-    path: 'src/environments/environment.ts',
-    name: 'environment.ts',
-    category: 'Configuration',
-    language: 'typescript',
-    description: 'Development environment configuration',
-    content: `export const environment = {
-  production: false,
-  apiUrl: '/api',
-  companyName: 'OM POLYMER',
-  apiVersion: '1.0.0',
-  defaultPageSize: 10
-};
-`
+    "name": "app.config.ts",
+    "path": "src/app/app.config.ts",
+    "category": "Configuration",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/app.config.ts",
+    "content": "import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';\nimport { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';\nimport { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';\nimport { routes } from './app.routes';\nimport { authInterceptor } from './core/interceptors/auth.interceptor';\nimport { errorInterceptor } from './core/interceptors/error.interceptor';\n\nexport const appConfig: ApplicationConfig = {\n  providers: [\n    provideZoneChangeDetection({ eventCoalescing: true }),\n    provideRouter(routes, withComponentInputBinding(), withViewTransitions()),\n    provideHttpClient(\n      withFetch(),\n      withInterceptors([authInterceptor, errorInterceptor])\n    )\n  ]\n};\n"
   },
   {
-    path: 'src/environments/environment.production.ts',
-    name: 'environment.production.ts',
-    category: 'Configuration',
-    language: 'typescript',
-    description: 'Production environment configuration',
-    content: `export const environment = {
-  production: true,
-  apiUrl: '/api',
-  companyName: 'OM POLYMER',
-  apiVersion: '1.0.0',
-  defaultPageSize: 10
-};
-`
+    "name": "app.routes.ts",
+    "path": "src/app/app.routes.ts",
+    "category": "Configuration",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/app.routes.ts",
+    "content": "import { Routes } from '@angular/router';\nimport { authGuard } from './core/guards/auth.guard';\nimport { superAdminGuard } from './core/guards/role.guard';\nimport { UserLayoutComponent } from './layouts/user-layout/user-layout.component';\nimport { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';\nimport { PublicLayoutComponent } from './layouts/public-layout/public-layout.component';\n\nexport const routes: Routes = [\n  // 1. USER INTERFACE (Public Client Portal)\n  {\n    path: '',\n    component: UserLayoutComponent,\n    children: [\n      {\n        path: '',\n        title: 'OM POLYMER | Industrial Extrusion & Polymer Engineering',\n        loadComponent: () => import('./features/user/home/user-home.component')\n          .then(m => m.UserHomeComponent)\n      },\n      {\n        path: 'products',\n        title: 'OM POLYMER | Products Catalog',\n        loadComponent: () => import('./features/user/catalog/product-catalog.component')\n          .then(m => m.ProductCatalogComponent)\n      },\n      {\n        path: 'products/:slug',\n        title: 'OM POLYMER | Technical Specifications',\n        loadComponent: () => import('./features/user/product-detail/product-detail.component')\n          .then(m => m.ProductDetailComponent)\n      },\n      {\n        path: 'blogs',\n        title: 'OM POLYMER | Engineering Articles & Insights',\n        loadComponent: () => import('./features/user/blogs/blog-list.component')\n          .then(m => m.BlogListComponent)\n      },\n      {\n        path: 'blogs/:slug',\n        title: 'OM POLYMER | Article Specification',\n        loadComponent: () => import('./features/user/blogs/blog-detail.component')\n          .then(m => m.BlogDetailComponent)\n      },\n      {\n        path: 'quote',\n        title: 'OM POLYMER | Technical Quotation Request (RFQ)',\n        loadComponent: () => import('./features/user/rfq/user-rfq.component')\n          .then(m => m.UserRfqComponent)\n      },\n      {\n        path: 'maintenance',\n        title: 'OM POLYMER | Maintenance Reference',\n        loadComponent: () => import('./features/user/maintenance-ref/maintenance-ref.component')\n          .then(m => m.MaintenanceRefComponent)\n      }\n    ]\n  },\n\n  // 2. AUTHENTICATION (Public Layout)\n  {\n    path: 'auth',\n    component: PublicLayoutComponent,\n    children: [\n      {\n        path: 'login',\n        title: 'OM POLYMER | Administrator Sign In',\n        loadComponent: () => import('./features/auth/login/login.component')\n          .then(m => m.LoginComponent)\n      },\n      {\n        path: 'forgot-password',\n        title: 'OM POLYMER | Password Recovery',\n        loadComponent: () => import('./features/auth/forgot-password/forgot-password.component')\n          .then(m => m.ForgotPasswordComponent)\n      }\n    ]\n  },\n\n  // 3. ADMIN PANEL (Protected Role-Based Layout)\n  {\n    path: 'admin',\n    component: AdminLayoutComponent,\n    canActivate: [authGuard],\n    children: [\n      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },\n      {\n        path: 'dashboard',\n        title: 'Admin Console | Dashboard',\n        loadComponent: () => import('./features/admin/dashboard/admin-dashboard.component')\n          .then(m => m.AdminDashboardComponent)\n      },\n      {\n        path: 'inquiries',\n        title: 'Admin Console | Inquiries CRM',\n        loadComponent: () => import('./features/admin/inquiries/admin-inquiries.component')\n          .then(m => m.AdminInquiriesComponent)\n      },\n      {\n        path: 'products',\n        title: 'Admin Console | Product Management',\n        loadComponent: () => import('./features/admin/products/admin-products.component')\n          .then(m => m.AdminProductsComponent)\n      },\n      {\n        path: 'blogs',\n        title: 'Admin Console | Articles & Blogs',\n        loadComponent: () => import('./features/admin/blogs/admin-blogs.component')\n          .then(m => m.AdminBlogsComponent)\n      },\n      {\n        path: 'logs',\n        title: 'Admin Console | System Logs',\n        loadComponent: () => import('./features/admin/logs/admin-logs.component')\n          .then(m => m.AdminLogsComponent)\n      },\n      {\n        path: 'company',\n        title: 'Admin Console | Company Settings',\n        loadComponent: () => import('./features/admin/company/admin-company.component')\n          .then(m => m.AdminCompanyComponent)\n      },\n      // SuperAdmin Exclusive Route\n      {\n        path: 'users',\n        title: 'Admin Console | System Administrators',\n        canActivate: [superAdminGuard],\n        loadComponent: () => import('./features/admin/users/admin-users.component')\n          .then(m => m.AdminUsersComponent)\n      }\n    ]\n  },\n\n  { path: '**', redirectTo: '' }\n];\n"
   },
   {
-    path: 'src/styles.css',
-    name: 'styles.css',
-    category: 'Configuration',
-    language: 'css',
-    description: 'Global stylesheet with Tailwind CSS base layers and custom keyframes',
-    content: `@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  body {
-    @apply antialiased transition-colors duration-300;
-    font-family: "Segoe UI", Arial, sans-serif;
-  }
-}
-
-@keyframes floatAnim {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-
-@keyframes rotateGear {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes loadingBar {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(230%); }
-}
-
-.anim-gear {
-  animation: rotateGear 5s linear infinite;
-}
-
-.anim-loading-bar::before {
-  content: "";
-  display: block;
-  height: 100%;
-  width: 45%;
-  background: #2563eb;
-  border-radius: 10px;
-  animation: loadingBar 2s ease-in-out infinite;
-}
-`
+    "name": "api-endpoints.constant.ts",
+    "path": "src/app/core/constants/api-endpoints.constant.ts",
+    "category": "Configuration",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/constants/api-endpoints.constant.ts",
+    "content": "export const API_ENDPOINTS = {\n  COMPANY: {\n    GET_INFO: '/company',\n    GET_WHATSAPP_URL: '/contact/whatsapp-url',\n    UPDATE: '/admin/company'\n  },\n  REQUIREMENTS: {\n    SUBMIT: '/requirements',\n    GET_ALL: '/admin/requirements',\n    GET_BY_ID: (id: number) => `/admin/requirements/${id}`,\n    UPDATE_STATUS: (id: number) => `/admin/requirements/${id}/status`\n  },\n  PRODUCTS: {\n    LIST: '/products',\n    FEATURED: '/products/featured',\n    CATEGORIES: '/products/categories',\n    BY_SLUG: (slug: string) => `/products/slug/${slug}`,\n    BY_ID: (id: number) => `/products/${id}`,\n    CREATE: '/admin/products',\n    UPDATE: (id: number) => `/admin/products/${id}`,\n    TOGGLE_STATUS: (id: number) => `/admin/products/${id}/status`,\n    DELETE: (id: number) => `/admin/products/${id}`\n  },\n  TESTIMONIALS: {\n    PUBLIC_LIST: '/testimonials',\n    ADMIN_LIST: '/admin/testimonials'\n  },\n  BLOGS: {\n    PUBLIC_LIST: '/blogs',\n    BY_SLUG: (slug: string) => `/blogs/${slug}`,\n    CATEGORIES: '/blogs/categories',\n    ADMIN_LIST: '/admin/blogs',\n    CREATE: '/admin/blogs',\n    UPDATE: (id: number) => `/admin/blogs/${id}`,\n    PUBLISH: (id: number) => `/admin/blogs/${id}/publish`,\n    UNPUBLISH: (id: number) => `/admin/blogs/${id}/unpublish`,\n    DELETE: (id: number) => `/admin/blogs/${id}`\n  },\n  LOGS: {\n    LIST: '/admin/logs',\n    FILES: '/admin/logs/files',\n    CLEAR: '/admin/logs/clear'\n  },\n  AUTH: {\n    LOGIN: '/admin/auth/login',\n    FORGOT_PASSWORD: '/admin/auth/forgot-password',\n    RESET_PASSWORD: '/admin/auth/reset-password',\n    CHANGE_PASSWORD: '/admin/auth/change-password',\n    VERIFY: '/admin/auth/verify'\n  },\n  USERS: {\n    LIST: '/admin/users',\n    BY_ID: (id: number) => `/admin/users/${id}`,\n    CREATE: '/admin/users',\n    UPDATE: (id: number) => `/admin/users/${id}`,\n    TOGGLE_STATUS: (id: number) => `/admin/users/${id}/status`,\n    DELETE: (id: number) => `/admin/users/${id}`\n  },\n  DATABASE: {\n    OVERVIEW: '/admin/database/overview',\n    RESET: '/admin/database/reset'\n  }\n} as const;\n"
   },
   {
-    path: 'src/index.html',
-    name: 'index.html',
-    category: 'Configuration',
-    language: 'html',
-    description: 'HTML5 entry document with viewport and fonts',
-    content: `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>OM POLYMER | Industrial Extrusion & Web API Platform</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="OM Polymer - ISO 9001 certified manufacturer of HDPE pipes, polymer compounds, and technical extrusion solutions.">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-</head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
-  <app-root></app-root>
-</body>
-</html>
-`
+    "name": "app.constant.ts",
+    "path": "src/app/core/constants/app.constant.ts",
+    "category": "Configuration",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/constants/app.constant.ts",
+    "content": "export const APP_CONSTANTS = {\n  STORAGE_KEYS: {\n    AUTH_TOKEN: 'om_token',\n    ADMIN_NAME: 'om_admin_name',\n    ADMIN_ROLE: 'om_admin_role',\n    THEME: 'om_theme_preference'\n  },\n  DEFAULT_CONTACT: {\n    PHONE: '+91 8866246042',\n    PHONE_TEL: 'tel:+918866246042',\n    EMAIL: 'sales@ompolymer.com',\n    EMAIL_MAILTO: 'mailto:sales@ompolymer.com',\n    ADDRESS: 'Vegdi GIDC, Plot No. 59, Dhoraji, Gujarat, India',\n    MAPS_URL: 'https://maps.google.com/?q=Vegdi+GIDC,+Plot+No.+59,+Dhoraji,+Gujarat,+India'\n  },\n  PAGINATION: {\n    DEFAULT_PAGE: 1,\n    DEFAULT_SIZE: 10\n  }\n} as const;\n"
   },
   {
-    path: 'src/main.ts',
-    name: 'main.ts',
-    category: 'Configuration',
-    language: 'typescript',
-    description: 'Angular bootstrap file initializing standalone root component',
-    content: `import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component';
-
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error('Failed to bootstrap OM Polymer Angular application:', err));
-`
-  },
-
-  // ==========================================
-  // 2. CORE MODELS & DTOs
-  // ==========================================
-  {
-    path: 'src/app/core/models/api-response.model.ts',
-    name: 'api-response.model.ts',
-    category: 'Models & DTOs',
-    language: 'typescript',
-    description: 'Generic response envelope matching ASP.NET Core ApiResponse<T>',
-    content: `export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  errors: string[] | null;
-}
-
-export interface PagedResponse<T> {
-  items: T[];
-  totalCount: number;
-  pageSize: number;
-  currentPage: number;
-  totalPages: number;
-}
-`
+    "name": "auth.guard.spec.ts",
+    "path": "src/app/core/guards/auth.guard.spec.ts",
+    "category": "Interceptors & Guards",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/guards/auth.guard.spec.ts",
+    "content": "import { TestBed } from '@angular/core/testing';\nimport { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';\nimport { authGuard } from './auth.guard';\nimport { AuthService } from '../services/auth.service';\n\ndescribe('authGuard', () => {\n  let authServiceSpy: jasmine.SpyObj<AuthService>;\n  let routerSpy: jasmine.SpyObj<Router>;\n\n  beforeEach(() => {\n    authServiceSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated']);\n    routerSpy = jasmine.createSpyObj('Router', ['createUrlTree']);\n\n    TestBed.configureTestingModule({\n      providers: [\n        { provide: AuthService, useValue: authServiceSpy },\n        { provide: Router, useValue: routerSpy }\n      ]\n    });\n  });\n\n  it('should allow access when authenticated', () => {\n    authServiceSpy.isAuthenticated.and.returnValue(true);\n    const result = TestBed.runInInjectionContext(() =>\n      authGuard({} as ActivatedRouteSnapshot, { url: '/admin/dashboard' } as RouterStateSnapshot)\n    );\n    expect(result).toBeTrue();\n  });\n});\n"
   },
   {
-    path: 'src/app/core/models/auth.model.ts',
-    name: 'auth.model.ts',
-    category: 'Models & DTOs',
-    language: 'typescript',
-    description: 'Authentication request, response, and administrator data models',
-    content: `export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  fullName: string;
-  email: string;
-  role: 'SuperAdmin' | 'Admin';
-  profileImageUrl?: string;
-  expiry: string;
-}
-
-export interface AdminUser {
-  adminId: number;
-  email: string;
-  fullName: string;
-  role: 'SuperAdmin' | 'Admin';
-  profileImageUrl?: string | null;
-  isActive: boolean;
-  lastLoginAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateAdminRequest {
-  fullName: string;
-  email: string;
-  password: string;
-  role: 'SuperAdmin' | 'Admin';
-  profileImageUrl?: string;
-  isActive?: boolean;
-}
-
-export interface UpdateAdminRequest {
-  fullName?: string;
-  email?: string;
-  role?: 'SuperAdmin' | 'Admin';
-  profileImageUrl?: string;
-  isActive?: boolean;
-}
-`
+    "name": "auth.guard.ts",
+    "path": "src/app/core/guards/auth.guard.ts",
+    "category": "Interceptors & Guards",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/guards/auth.guard.ts",
+    "content": "import { CanActivateFn, Router } from '@angular/router';\nimport { inject } from '@angular/core';\nimport { AuthService } from '../services/auth.service';\nimport { ToastService } from '../services/toast.service';\n\nexport const authGuard: CanActivateFn = (route, state) => {\n  const authService = inject(AuthService);\n  const router = inject(Router);\n  const toast = inject(ToastService);\n\n  if (authService.isAuthenticated()) {\n    return true;\n  }\n\n  toast.info('Please log in with administrator credentials to enter the Admin Panel.', 'Authentication Required');\n  return router.createUrlTree(['/auth/login'], {\n    queryParams: { returnUrl: state.url }\n  });\n};\n"
   },
   {
-    path: 'src/app/core/models/company.model.ts',
-    name: 'company.model.ts',
-    category: 'Models & DTOs',
-    language: 'typescript',
-    description: 'Company information and WhatsApp communication models',
-    content: `export interface CompanySettings {
-  settingId: number;
-  companyName: string;
-  description: string;
-  yearsOfExperience: number;
-  aboutContent: string;
-  address: string;
-  emailContact: string;
-  phoneContact: string;
-  whatsAppNumber: string;
-  socialFacebook: string;
-  socialLinkedIn: string;
-  socialInstagram: string;
-  updatedAt: string;
-  whatsAppUrl?: string;
-}
-
-export interface WhatsAppUrlResponse {
-  phoneNumber: string;
-  rawNumber: string;
-  message: string;
-  url: string;
-}
-`
+    "name": "role.guard.ts",
+    "path": "src/app/core/guards/role.guard.ts",
+    "category": "Interceptors & Guards",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/guards/role.guard.ts",
+    "content": "import { CanActivateFn, Router } from '@angular/router';\nimport { inject } from '@angular/core';\nimport { AuthService } from '../services/auth.service';\nimport { ToastService } from '../services/toast.service';\n\nexport const superAdminGuard: CanActivateFn = (route, state) => {\n  const authService = inject(AuthService);\n  const router = inject(Router);\n  const toast = inject(ToastService);\n\n  if (authService.isAuthenticated() && authService.isSuperAdmin()) {\n    return true;\n  }\n\n  toast.error('This administrative module requires Super Administrator privileges.', 'Access Denied');\n  return router.createUrlTree(['/admin/dashboard']);\n};\n"
   },
   {
-    path: 'src/app/core/models/product.model.ts',
-    name: 'product.model.ts',
-    category: 'Models & DTOs',
-    language: 'typescript',
-    description: 'Product catalog, categories, and gallery models',
-    content: `export interface ProductCategory {
-  categoryId: number;
-  categoryName: string;
-  slug: string;
-}
-
-export interface ProductImage {
-  imageId: number;
-  imageUrl: string;
-}
-
-export interface Product {
-  productId: number;
-  productName: string;
-  slug: string;
-  shortDescription: string;
-  fullDescription: string;
-  specifications: string;
-  mainImageUrl: string;
-  isFeatured: boolean;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
-  category: ProductCategory | null;
-  additionalImages: ProductImage[];
-}
-
-export interface CreateProductRequest {
-  productName: string;
-  slug: string;
-  categoryId: number;
-  shortDescription?: string;
-  fullDescription?: string;
-  specifications?: string;
-  mainImageUrl?: string;
-  isFeatured?: boolean;
-  additionalImages?: string[];
-}
-`
+    "name": "auth.interceptor.spec.ts",
+    "path": "src/app/core/interceptors/auth.interceptor.spec.ts",
+    "category": "Interceptors & Guards",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/interceptors/auth.interceptor.spec.ts",
+    "content": "import { TestBed } from '@angular/core/testing';\nimport { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';\nimport { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';\nimport { authInterceptor } from './auth.interceptor';\nimport { AuthService } from '../services/auth.service';\n\ndescribe('authInterceptor', () => {\n  let http: HttpClient;\n  let httpTesting: HttpTestingController;\n  let authService: AuthService;\n\n  beforeEach(() => {\n    TestBed.configureTestingModule({\n      providers: [\n        AuthService,\n        provideHttpClient(withInterceptors([authInterceptor])),\n        provideHttpClientTesting()\n      ]\n    });\n\n    http = TestBed.inject(HttpClient);\n    httpTesting = TestBed.inject(HttpTestingController);\n    authService = TestBed.inject(AuthService);\n  });\n\n  afterEach(() => {\n    httpTesting.verify();\n  });\n\n  it('should attach Bearer header to /api/admin requests', () => {\n    authService.token.set('valid-test-jwt');\n\n    http.get('/api/admin/requirements').subscribe();\n\n    const req = httpTesting.expectOne('/api/admin/requirements');\n    expect(req.request.headers.has('Authorization')).toBeTrue();\n    expect(req.request.headers.get('Authorization')).toBe('Bearer valid-test-jwt');\n    req.flush({ success: true, data: [] });\n  });\n\n  it('should not attach Authorization header for public customer endpoints', () => {\n    authService.token.set('valid-test-jwt');\n\n    http.get('/api/products').subscribe();\n\n    const req = httpTesting.expectOne('/api/products');\n    expect(req.request.headers.has('Authorization')).toBeFalse();\n    req.flush({ success: true, data: [] });\n  });\n});\n"
   },
   {
-    path: 'src/app/core/models/requirement.model.ts',
-    name: 'requirement.model.ts',
-    category: 'Models & DTOs',
-    language: 'typescript',
-    description: 'Client technical requirement and lead models',
-    content: `export interface RequirementCreateRequest {
-  fullName: string;
-  companyName?: string;
-  email: string;
-  phoneNumber: string;
-  productOfInterest?: string;
-  quantity?: string;
-  requirementDescription: string;
-  city?: string;
-  state?: string;
-}
-
-export type RequirementStatus = 'New' | 'Contacted' | 'In Progress' | 'Completed' | 'Rejected';
-
-export interface ClientRequirement {
-  requirementId: number;
-  fullName: string;
-  companyName: string;
-  email: string;
-  phoneNumber: string;
-  productOfInterest: string;
-  quantity: string;
-  requirementDescription: string;
-  city: string;
-  state: string;
-  status: RequirementStatus;
-  adminRemarks: string;
-  createdAt: string;
-}
-
-export interface UpdateRequirementStatusRequest {
-  status: RequirementStatus;
-  adminRemarks?: string;
-}
-`
+    "name": "auth.interceptor.ts",
+    "path": "src/app/core/interceptors/auth.interceptor.ts",
+    "category": "Interceptors & Guards",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/interceptors/auth.interceptor.ts",
+    "content": "import { HttpInterceptorFn } from '@angular/common/http';\nimport { inject } from '@angular/core';\nimport { AuthService } from '../services/auth.service';\n\nexport const authInterceptor: HttpInterceptorFn = (req, next) => {\n  const authService = inject(AuthService);\n  const token = authService.getToken();\n\n  // Attach Authorization Bearer token to administrative routes\n  if (token && req.url.includes('/admin/')) {\n    const cloned = req.clone({\n      setHeaders: {\n        Authorization: `Bearer ${token}`\n      }\n    });\n    return next(cloned);\n  }\n\n  return next(req);\n};\n"
   },
   {
-    path: 'src/app/core/models/testimonial.model.ts',
-    name: 'testimonial.model.ts',
-    category: 'Models & DTOs',
-    language: 'typescript',
-    description: 'Customer testimonial and reviews model',
-    content: `export interface Testimonial {
-  testimonialId: number;
-  displayName: string;
-  companyOrDesignation: string;
-  reviewText: string;
-  rating: number;
-  isApproved: boolean;
-  isPublished: boolean;
-  createdAt: string;
-}
-`
-  },
-
-  // ==========================================
-  // 3. CONSTANTS
-  // ==========================================
-  {
-    path: 'src/app/core/constants/api-endpoints.constant.ts',
-    name: 'api-endpoints.constant.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'Centralized API routes matching ASP.NET Core controllers',
-    content: `export const API_ENDPOINTS = {
-  COMPANY: {
-    GET_INFO: '/company',
-    GET_WHATSAPP_URL: '/contact/whatsapp-url',
-    UPDATE: '/admin/company'
-  },
-  REQUIREMENTS: {
-    SUBMIT: '/requirements',
-    GET_ALL: '/admin/requirements',
-    GET_BY_ID: (id: number) => \`/admin/requirements/\${id}\`,
-    UPDATE_STATUS: (id: number) => \`/admin/requirements/\${id}/status\`
-  },
-  PRODUCTS: {
-    LIST: '/products',
-    FEATURED: '/products/featured',
-    CATEGORIES: '/products/categories',
-    BY_SLUG: (slug: string) => \`/products/slug/\${slug}\`,
-    BY_ID: (id: number) => \`/products/\${id}\`,
-    CREATE: '/admin/products',
-    UPDATE: (id: number) => \`/admin/products/\${id}\`,
-    TOGGLE_STATUS: (id: number) => \`/admin/products/\${id}/status\`,
-    DELETE: (id: number) => \`/admin/products/\${id}\`
-  },
-  TESTIMONIALS: {
-    PUBLIC_LIST: '/testimonials',
-    ADMIN_LIST: '/admin/testimonials'
-  },
-  AUTH: {
-    LOGIN: '/admin/auth/login',
-    FORGOT_PASSWORD: '/admin/auth/forgot-password',
-    RESET_PASSWORD: '/admin/auth/reset-password',
-    CHANGE_PASSWORD: '/admin/auth/change-password',
-    VERIFY: '/admin/auth/verify'
-  },
-  USERS: {
-    LIST: '/admin/users',
-    BY_ID: (id: number) => \`/admin/users/\${id}\`,
-    CREATE: '/admin/users',
-    UPDATE: (id: number) => \`/admin/users/\${id}\`,
-    TOGGLE_STATUS: (id: number) => \`/admin/users/\${id}/status\`,
-    DELETE: (id: number) => \`/admin/users/\${id}\`
-  },
-  DATABASE: {
-    OVERVIEW: '/admin/database/overview',
-    RESET: '/admin/database/reset'
-  }
-} as const;
-`
+    "name": "error.interceptor.ts",
+    "path": "src/app/core/interceptors/error.interceptor.ts",
+    "category": "Interceptors & Guards",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/interceptors/error.interceptor.ts",
+    "content": "import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';\nimport { inject } from '@angular/core';\nimport { catchError, throwError } from 'rxjs';\nimport { Router } from '@angular/router';\nimport { ToastService } from '../services/toast.service';\nimport { AuthService } from '../services/auth.service';\n\nexport const errorInterceptor: HttpInterceptorFn = (req, next) => {\n  const toast = inject(ToastService);\n  const router = inject(Router);\n  const authService = inject(AuthService);\n\n  return next(req).pipe(\n    catchError((error: HttpErrorResponse) => {\n      let errorMessage = 'An unexpected network error occurred.';\n\n      if (error.error) {\n        if (typeof error.error.message === 'string') {\n          errorMessage = error.error.message;\n        } else if (Array.isArray(error.error.errors) && error.error.errors.length > 0) {\n          errorMessage = error.error.errors[0];\n        }\n      }\n\n      switch (error.status) {\n        case 400:\n          toast.error(errorMessage, 'Validation Notice');\n          break;\n        case 401:\n          toast.error('Session expired or unauthorized. Please log in again.', 'Authentication Required');\n          authService.logout();\n          if (router.url.startsWith('/admin')) {\n            router.navigate(['/auth/login'], { queryParams: { returnUrl: router.url } });\n          }\n          break;\n        case 403:\n          toast.error('Access restricted. Your current role does not permit this operation.', 'Access Forbidden');\n          break;\n        case 404:\n          toast.error('The requested record or resource was not found.', 'Not Found');\n          break;\n        case 429:\n          toast.error('Rate limit reached. Please wait a minute before making further submissions.', 'Too Many Requests');\n          break;\n        case 500:\n          toast.error('Server encountered an issue. Our engineering team has been notified.', 'Server Error');\n          break;\n        default:\n          toast.error(errorMessage, `HTTP ${error.status || 'Network'} Error`);\n          break;\n      }\n\n      return throwError(() => error);\n    })\n  );\n};\n"
   },
   {
-    path: 'src/app/core/constants/app.constant.ts',
-    name: 'app.constant.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'Application branding, storage keys, and contact defaults',
-    content: `export const APP_CONSTANTS = {
-  STORAGE_KEYS: {
-    AUTH_TOKEN: 'om_token',
-    ADMIN_NAME: 'om_admin_name',
-    ADMIN_ROLE: 'om_admin_role',
-    THEME: 'om_theme_preference'
-  },
-  DEFAULT_CONTACT: {
-    PHONE: '+91 8866246042',
-    PHONE_TEL: 'tel:+918866246042',
-    EMAIL: 'sales@ompolymer.com',
-    EMAIL_MAILTO: 'mailto:sales@ompolymer.com',
-    ADDRESS: 'Vegdi GIDC, Plot No. 59, Dhoraji, Gujarat, India',
-    MAPS_URL: 'https://maps.google.com/?q=Vegdi+GIDC,+Plot+No.+59,+Dhoraji,+Gujarat,+India'
-  },
-  PAGINATION: {
-    DEFAULT_PAGE: 1,
-    DEFAULT_SIZE: 10
-  }
-} as const;
-`
-  },
-
-  // ==========================================
-  // 4. CORE SERVICES & INTERCEPTORS
-  // ==========================================
-  {
-    path: 'src/app/core/services/auth.service.ts',
-    name: 'auth.service.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'Authentication state manager with Angular signals, JWT storage and role tracking',
-    content: `import { Injectable, inject, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap, map } from 'rxjs';
-import { environment } from '@env/environment';
-import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
-import { APP_CONSTANTS } from '../constants/app.constant';
-import { ApiResponse } from '../models/api-response.model';
-import { LoginRequest, LoginResponse } from '../models/auth.model';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthService {
-  private http = inject(HttpClient);
-
-  token = signal<string | null>(this.getStoredToken());
-  adminName = signal<string | null>(this.getStoredName());
-  role = signal<'SuperAdmin' | 'Admin' | null>(this.getStoredRole());
-  currentUser = signal<LoginResponse | null>(null);
-
-  isAuthenticated = computed(() => !!this.token());
-  isSuperAdmin = computed(() => this.role() === 'SuperAdmin');
-
-  login(credentials: LoginRequest): Observable<ApiResponse<LoginResponse>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.AUTH.LOGIN}\`;
-    return this.http.post<ApiResponse<LoginResponse>>(url, credentials).pipe(
-      tap(res => {
-        if (res.success && res.data) {
-          this.setSession(res.data);
-        }
-      })
-    );
-  }
-
-  logout(): void {
-    this.token.set(null);
-    this.adminName.set(null);
-    this.role.set(null);
-    this.currentUser.set(null);
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.AUTH_TOKEN);
-      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_NAME);
-      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_ROLE);
-    }
-  }
-
-  getToken(): string | null {
-    return this.token();
-  }
-
-  verifySession(): Observable<boolean> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.AUTH.VERIFY}\`;
-    return this.http.get<ApiResponse<any>>(url).pipe(
-      map(res => res.success),
-      tap({
-        error: () => this.logout()
-      })
-    );
-  }
-
-  private setSession(authData: LoginResponse): void {
-    this.token.set(authData.token);
-    this.adminName.set(authData.fullName);
-    this.role.set(authData.role);
-    this.currentUser.set(authData);
-
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.AUTH_TOKEN, authData.token);
-      localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_NAME, authData.fullName);
-      localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_ROLE, authData.role);
-    }
-  }
-
-  private getStoredToken(): string | null {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.AUTH_TOKEN);
-    }
-    return null;
-  }
-
-  private getStoredName(): string | null {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_NAME);
-    }
-    return null;
-  }
-
-  private getStoredRole(): 'SuperAdmin' | 'Admin' | null {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_ROLE) as 'SuperAdmin' | 'Admin' | null;
-    }
-    return null;
-  }
-}
-`
+    "name": "api-response.model.ts",
+    "path": "src/app/core/models/api-response.model.ts",
+    "category": "Models & DTOs",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/models/api-response.model.ts",
+    "content": "export interface ApiResponse<T> {\n  success: boolean;\n  message: string;\n  data: T;\n  errors: string[] | null;\n}\n\nexport interface PagedResponse<T> {\n  items: T[];\n  totalCount: number;\n  pageSize: number;\n  currentPage: number;\n  totalPages: number;\n}\n"
   },
   {
-    path: 'src/app/core/services/theme.service.ts',
-    name: 'theme.service.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'Angular Signal-based theme manager with dark mode synchronization',
-    content: `import { Injectable, signal, effect } from '@angular/core';
-import { APP_CONSTANTS } from '../constants/app.constant';
-
-export type ThemeMode = 'light' | 'dark';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class ThemeService {
-  theme = signal<ThemeMode>(this.getInitialTheme());
-
-  constructor() {
-    effect(() => {
-      const current = this.theme();
-      if (typeof document !== 'undefined') {
-        const root = document.documentElement;
-        if (current === 'dark') {
-          root.classList.add('dark');
-          document.body.classList.add('dark');
-        } else {
-          root.classList.remove('dark');
-          document.body.classList.remove('dark');
-        }
-        localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.THEME, current);
-      }
-    });
-  }
-
-  toggleTheme(): void {
-    this.theme.update(current => (current === 'light' ? 'dark' : 'light'));
-  }
-
-  isDark(): boolean {
-    return this.theme() === 'dark';
-  }
-
-  private getInitialTheme(): ThemeMode {
-    if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.THEME) as ThemeMode;
-      if (saved === 'dark' || saved === 'light') return saved;
-      if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-      }
-    }
-    return 'light';
-  }
-}
-`
+    "name": "auth.model.ts",
+    "path": "src/app/core/models/auth.model.ts",
+    "category": "Models & DTOs",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/models/auth.model.ts",
+    "content": "export interface LoginRequest {\n  email: string;\n  password: string;\n}\n\nexport interface LoginResponse {\n  token: string;\n  fullName: string;\n  email: string;\n  role: 'SuperAdmin' | 'Admin';\n  profileImageUrl?: string;\n  expiry: string;\n}\n\nexport interface AdminUser {\n  adminId: number;\n  email: string;\n  fullName: string;\n  role: 'SuperAdmin' | 'Admin';\n  profileImageUrl?: string | null;\n  isActive: boolean;\n  lastLoginAt: string | null;\n  createdAt: string;\n  updatedAt: string;\n}\n\nexport interface CreateAdminRequest {\n  fullName: string;\n  email: string;\n  password: string;\n  role: 'SuperAdmin' | 'Admin';\n  profileImageUrl?: string;\n  isActive?: boolean;\n}\n\nexport interface UpdateAdminRequest {\n  fullName?: string;\n  email?: string;\n  role?: 'SuperAdmin' | 'Admin';\n  profileImageUrl?: string;\n  isActive?: boolean;\n}\n"
   },
   {
-    path: 'src/app/core/services/toast.service.ts',
-    name: 'toast.service.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'Reactive toast notification service using signals',
-    content: `import { Injectable, signal } from '@angular/core';
-
-export interface ToastMessage {
-  id: string;
-  type: 'success' | 'error' | 'info' | 'warning';
-  title?: string;
-  message: string;
-  duration?: number;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
-export class ToastService {
-  messages = signal<ToastMessage[]>([]);
-
-  show(toast: Omit<ToastMessage, 'id'>): void {
-    const id = Math.random().toString(36).substring(2, 9);
-    const newToast: ToastMessage = {
-      ...toast,
-      id,
-      duration: toast.duration ?? 4500
-    };
-
-    this.messages.update(list => [...list, newToast]);
-
-    if (newToast.duration && newToast.duration > 0) {
-      setTimeout(() => this.remove(id), newToast.duration);
-    }
-  }
-
-  success(message: string, title = 'Success'): void {
-    this.show({ type: 'success', title, message });
-  }
-
-  error(message: string, title = 'Error'): void {
-    this.show({ type: 'error', title, message, duration: 6000 });
-  }
-
-  info(message: string, title = 'Notice'): void {
-    this.show({ type: 'info', title, message });
-  }
-
-  remove(id: string): void {
-    this.messages.update(list => list.filter(m => m.id !== id));
-  }
-}
-`
+    "name": "blog.model.ts",
+    "path": "src/app/core/models/blog.model.ts",
+    "category": "Models & DTOs",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/models/blog.model.ts",
+    "content": "export interface BlogCategory {\n  blogCategoryId: number;\n  categoryName: string;\n  slug: string;\n}\n\nexport interface BlogPost {\n  blogId: number;\n  title: string;\n  slug: string;\n  shortDescription?: string;\n  content: string;\n  featuredImageUrl?: string;\n  author?: string;\n  metaTitle?: string;\n  metaDescription?: string;\n  isPublished: boolean;\n  publishedAt?: string;\n  createdAt: string;\n  category?: BlogCategory | null;\n}\n\nexport interface CreateBlogRequest {\n  title: string;\n  slug: string;\n  blogCategoryId?: number | null;\n  shortDescription?: string;\n  content: string;\n  featuredImageUrl?: string;\n  author?: string;\n  metaTitle?: string;\n  metaDescription?: string;\n  isPublished: boolean;\n}\n"
   },
   {
-    path: 'src/app/core/services/company.service.ts',
-    name: 'company.service.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'Company information and WhatsApp communication service',
-    content: `import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '@env/environment';
-import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
-import { ApiResponse } from '../models/api-response.model';
-import { CompanySettings, WhatsAppUrlResponse } from '../models/company.model';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class CompanyService {
-  private http = inject(HttpClient);
-
-  getCompanySettings(): Observable<ApiResponse<CompanySettings>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.COMPANY.GET_INFO}\`;
-    return this.http.get<ApiResponse<CompanySettings>>(url);
-  }
-
-  getWhatsAppUrl(productSlug?: string, customMessage?: string): Observable<WhatsAppUrlResponse> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.COMPANY.GET_WHATSAPP_URL}\`;
-    let params = new HttpParams();
-    if (productSlug) params = params.set('productSlug', productSlug);
-    if (customMessage) params = params.set('message', customMessage);
-
-    return this.http.get<WhatsAppUrlResponse>(url, { params });
-  }
-
-  updateCompanySettings(settings: Partial<CompanySettings>): Observable<ApiResponse<boolean>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.COMPANY.UPDATE}\`;
-    return this.http.put<ApiResponse<boolean>>(url, settings);
-  }
-}
-`
+    "name": "company.model.ts",
+    "path": "src/app/core/models/company.model.ts",
+    "category": "Models & DTOs",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/models/company.model.ts",
+    "content": "export interface CompanySettings {\n  settingId: number;\n  companyName: string;\n  description: string;\n  yearsOfExperience: number;\n  aboutContent: string;\n  address: string;\n  emailContact: string;\n  phoneContact: string;\n  whatsAppNumber: string;\n  socialFacebook: string;\n  socialLinkedIn: string;\n  socialInstagram: string;\n  updatedAt: string;\n  whatsAppUrl?: string;\n   whatsappContact?: string;\n}\n\nexport interface WhatsAppUrlResponse {\n  phoneNumber: string;\n  rawNumber: string;\n  message: string;\n  url: string;\n}\n"
   },
   {
-    path: 'src/app/core/services/product.service.ts',
-    name: 'product.service.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'Product catalog service for public browsing and admin management',
-    content: `import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '@env/environment';
-import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
-import { ApiResponse, PagedResponse } from '../models/api-response.model';
-import { Product, ProductCategory, CreateProductRequest } from '../models/product.model';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class ProductService {
-  private http = inject(HttpClient);
-
-  getProducts(page = 1, pageSize = 10, categoryId?: number, search?: string): Observable<ApiResponse<PagedResponse<Product>>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.PRODUCTS.LIST}\`;
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('pageSize', pageSize.toString());
-
-    if (categoryId) params = params.set('categoryId', categoryId.toString());
-    if (search?.trim()) params = params.set('search', search.trim());
-
-    return this.http.get<ApiResponse<PagedResponse<Product>>>(url, { params });
-  }
-
-  getFeaturedProducts(): Observable<ApiResponse<Product[]>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.PRODUCTS.FEATURED}\`;
-    return this.http.get<ApiResponse<Product[]>>(url);
-  }
-
-  getCategories(): Observable<ApiResponse<ProductCategory[]>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.PRODUCTS.CATEGORIES}\`;
-    return this.http.get<ApiResponse<ProductCategory[]>>(url);
-  }
-
-  getProductBySlug(slug: string): Observable<ApiResponse<Product>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.PRODUCTS.BY_SLUG(slug)}\`;
-    return this.http.get<ApiResponse<Product>>(url);
-  }
-
-  createProduct(data: CreateProductRequest): Observable<ApiResponse<Product>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.PRODUCTS.CREATE}\`;
-    return this.http.post<ApiResponse<Product>>(url, data);
-  }
-
-  updateProduct(id: number, data: Partial<CreateProductRequest>): Observable<ApiResponse<boolean>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.PRODUCTS.UPDATE(id)}\`;
-    return this.http.put<ApiResponse<boolean>>(url, data);
-  }
-
-  toggleProductStatus(id: number): Observable<ApiResponse<{ isActive: boolean }>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.PRODUCTS.TOGGLE_STATUS(id)}\`;
-    return this.http.patch<ApiResponse<{ isActive: boolean }>>(url, {});
-  }
-
-  deleteProduct(id: number): Observable<ApiResponse<boolean>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.PRODUCTS.DELETE(id)}\`;
-    return this.http.delete<ApiResponse<boolean>>(url);
-  }
-}
-`
+    "name": "log.model.ts",
+    "path": "src/app/core/models/log.model.ts",
+    "category": "Models & DTOs",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/models/log.model.ts",
+    "content": "export interface LogEntry {\n  timestamp: string;\n  level: 'INFO' | 'WARN' | 'ERROR' | 'DEBUG' | string;\n  category: string;\n  message: string;\n  details?: any;\n  sourceFile?: string;\n}\n\nexport interface LogsResponse {\n  total: number;\n  filtered: number;\n  files: string[];\n  logs: LogEntry[];\n}\n"
   },
   {
-    path: 'src/app/core/services/requirement.service.ts',
-    name: 'requirement.service.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'Client requirement submission and admin CRM inquiries service',
-    content: `import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '@env/environment';
-import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
-import { ApiResponse, PagedResponse } from '../models/api-response.model';
-import { 
-  RequirementCreateRequest, 
-  ClientRequirement, 
-  UpdateRequirementStatusRequest 
-} from '../models/requirement.model';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class RequirementService {
-  private http = inject(HttpClient);
-
-  // Public client submission (Rate limited to 2 req/min)
-  submitRequirement(req: RequirementCreateRequest): Observable<ApiResponse<boolean>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.REQUIREMENTS.SUBMIT}\`;
-    return this.http.post<ApiResponse<boolean>>(url, req);
-  }
-
-  // Admin inquiries CRM
-  getAdminRequirements(page = 1, pageSize = 10, status = 'All', search = ''): Observable<ApiResponse<PagedResponse<ClientRequirement>>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.REQUIREMENTS.GET_ALL}\`;
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('pageSize', pageSize.toString());
-
-    if (status && status !== 'All') params = params.set('status', status);
-    if (search.trim()) params = params.set('search', search.trim());
-
-    return this.http.get<ApiResponse<PagedResponse<ClientRequirement>>>(url, { params });
-  }
-
-  updateStatus(id: number, payload: UpdateRequirementStatusRequest): Observable<ApiResponse<ClientRequirement>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.REQUIREMENTS.UPDATE_STATUS(id)}\`;
-    return this.http.patch<ApiResponse<ClientRequirement>>(url, payload);
-  }
-}
-`
+    "name": "product.model.ts",
+    "path": "src/app/core/models/product.model.ts",
+    "category": "Models & DTOs",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/models/product.model.ts",
+    "content": "export interface ProductCategory {\n  categoryId: number;\n  categoryName: string;\n  slug: string;\n}\n\nexport interface ProductImage {\n  imageId: number;\n  imageUrl: string;\n}\n\nexport interface Product {\n  productId: number;\n  productName: string;\n  slug: string;\n  shortDescription: string;\n  fullDescription: string;\n  specifications: string;\n  mainImageUrl: string;\n  isFeatured: boolean;\n  isActive: boolean;\n  createdAt: string;\n  updatedAt: string;\n  category: ProductCategory | null;\n  additionalImages: ProductImage[];\n}\n\nexport interface CreateProductRequest {\n  productName: string;\n  slug: string;\n  categoryId: number;\n  shortDescription?: string;\n  fullDescription?: string;\n  specifications?: string;\n  mainImageUrl?: string;\n  isFeatured?: boolean;\n  additionalImages?: string[];\n}\n"
   },
   {
-    path: 'src/app/core/services/admin-user.service.ts',
-    name: 'admin-user.service.ts',
-    category: 'Core & Services',
-    language: 'typescript',
-    description: 'SuperAdmin administrative users CRUD service',
-    content: `import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '@env/environment';
-import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
-import { ApiResponse, PagedResponse } from '../models/api-response.model';
-import { AdminUser, CreateAdminRequest, UpdateAdminRequest } from '../models/auth.model';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class AdminUserService {
-  private http = inject(HttpClient);
-
-  getUsers(page = 1, pageSize = 10, role = 'All', status = 'All', search = ''): Observable<ApiResponse<PagedResponse<AdminUser>>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.USERS.LIST}\`;
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('pageSize', pageSize.toString());
-
-    if (role && role !== 'All') params = params.set('role', role);
-    if (status && status !== 'All') params = params.set('status', status);
-    if (search.trim()) params = params.set('search', search.trim());
-
-    return this.http.get<ApiResponse<PagedResponse<AdminUser>>>(url, { params });
-  }
-
-  createUser(data: CreateAdminRequest): Observable<ApiResponse<AdminUser>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.USERS.CREATE}\`;
-    return this.http.post<ApiResponse<AdminUser>>(url, data);
-  }
-
-  updateUser(id: number, data: UpdateAdminRequest): Observable<ApiResponse<AdminUser>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.USERS.UPDATE(id)}\`;
-    return this.http.put<ApiResponse<AdminUser>>(url, data);
-  }
-
-  toggleUserStatus(id: number): Observable<ApiResponse<AdminUser>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.USERS.TOGGLE_STATUS(id)}\`;
-    return this.http.patch<ApiResponse<AdminUser>>(url, {});
-  }
-
-  deleteUser(id: number): Observable<ApiResponse<boolean>> {
-    const url = \`\${environment.apiUrl}\${API_ENDPOINTS.USERS.DELETE(id)}\`;
-    return this.http.delete<ApiResponse<boolean>>(url);
-  }
-}
-`
-  },
-
-  // ==========================================
-  // 5. INTERCEPTORS & GUARDS
-  // ==========================================
-  {
-    path: 'src/app/core/interceptors/auth.interceptor.ts',
-    name: 'auth.interceptor.ts',
-    category: 'Interceptors & Guards',
-    language: 'typescript',
-    description: 'Functional HTTP interceptor attaching JWT Bearer token to /api/admin/* endpoints',
-    content: `import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
-
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const token = authService.getToken();
-
-  // Attach Authorization Bearer token to administrative routes
-  if (token && req.url.includes('/admin/')) {
-    const cloned = req.clone({
-      setHeaders: {
-        Authorization: \`Bearer \${token}\`
-      }
-    });
-    return next(cloned);
-  }
-
-  return next(req);
-};
-`
+    "name": "requirement.model.ts",
+    "path": "src/app/core/models/requirement.model.ts",
+    "category": "Models & DTOs",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/models/requirement.model.ts",
+    "content": "export interface RequirementCreateRequest {\n  fullName: string;\n  companyName?: string;\n  email: string;\n  phoneNumber: string;\n  productOfInterest?: string;\n  quantity?: string;\n  requirementDescription: string;\n  city?: string;\n  state?: string;\n}\n\nexport type RequirementStatus = 'New' | 'Contacted' | 'In Progress' | 'Completed' | 'Rejected';\n\nexport interface ClientRequirement {\n  requirementId: number;\n  fullName: string;\n  companyName: string;\n  email: string;\n  phoneNumber: string;\n  productOfInterest: string;\n  quantity: string;\n  requirementDescription: string;\n  city: string;\n  state: string;\n  status: RequirementStatus;\n  adminRemarks: string;\n  createdAt: string;\n}\n\nexport interface UpdateRequirementStatusRequest {\n  status: RequirementStatus;\n  adminRemarks?: string;\n}\n"
   },
   {
-    path: 'src/app/core/interceptors/error.interceptor.ts',
-    name: 'error.interceptor.ts',
-    category: 'Interceptors & Guards',
-    language: 'typescript',
-    description: 'Functional HTTP interceptor handling 400, 401, 403, 404, 429 and 500 status codes',
-    content: `import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
-import { Router } from '@angular/router';
-import { ToastService } from '../services/toast.service';
-import { AuthService } from '../services/auth.service';
-
-export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const toast = inject(ToastService);
-  const router = inject(Router);
-  const authService = inject(AuthService);
-
-  return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
-      let errorMessage = 'An unexpected network error occurred.';
-
-      if (error.error) {
-        if (typeof error.error.message === 'string') {
-          errorMessage = error.error.message;
-        } else if (Array.isArray(error.error.errors) && error.error.errors.length > 0) {
-          errorMessage = error.error.errors[0];
-        }
-      }
-
-      switch (error.status) {
-        case 400:
-          toast.error(errorMessage, 'Validation Notice');
-          break;
-        case 401:
-          toast.error('Session expired or unauthorized. Please log in again.', 'Authentication Required');
-          authService.logout();
-          if (router.url.startsWith('/admin')) {
-            router.navigate(['/auth/login'], { queryParams: { returnUrl: router.url } });
-          }
-          break;
-        case 403:
-          toast.error('Access restricted. Your current role does not permit this operation.', 'Access Forbidden');
-          break;
-        case 404:
-          toast.error('The requested record or resource was not found.', 'Not Found');
-          break;
-        case 429:
-          toast.error('Rate limit reached. Please wait a minute before making further submissions.', 'Too Many Requests');
-          break;
-        case 500:
-          toast.error('Server encountered an issue. Our engineering team has been notified.', 'Server Error');
-          break;
-        default:
-          toast.error(errorMessage, \`HTTP \${error.status || 'Network'} Error\`);
-          break;
-      }
-
-      return throwError(() => error);
-    })
-  );
-};
-`
+    "name": "testimonial.model.ts",
+    "path": "src/app/core/models/testimonial.model.ts",
+    "category": "Models & DTOs",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/models/testimonial.model.ts",
+    "content": "export interface Testimonial {\n  testimonialId: number;\n  displayName: string;\n  companyOrDesignation: string;\n  reviewText: string;\n  rating: number;\n  isApproved: boolean;\n  isPublished: boolean;\n  createdAt: string;\n}\n"
   },
   {
-    path: 'src/app/core/guards/auth.guard.ts',
-    name: 'auth.guard.ts',
-    category: 'Interceptors & Guards',
-    language: 'typescript',
-    description: 'Functional CanActivate guard securing the /admin route hierarchy',
-    content: `import { CanActivateFn, Router } from '@angular/router';
-import { inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
-import { ToastService } from '../services/toast.service';
-
-export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const toast = inject(ToastService);
-
-  if (authService.isAuthenticated()) {
-    return true;
-  }
-
-  toast.info('Please log in with administrator credentials to enter the Admin Panel.', 'Authentication Required');
-  return router.createUrlTree(['/auth/login'], {
-    queryParams: { returnUrl: state.url }
-  });
-};
-`
+    "name": "admin-user.service.ts",
+    "path": "src/app/core/services/admin-user.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/admin-user.service.ts",
+    "content": "import { Injectable, inject } from '@angular/core';\nimport { HttpClient, HttpParams } from '@angular/common/http';\nimport { Observable } from 'rxjs';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\nimport { ApiResponse, PagedResponse } from '../models/api-response.model';\nimport { AdminUser, CreateAdminRequest, UpdateAdminRequest } from '../models/auth.model';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class AdminUserService {\n  private http = inject(HttpClient);\n\n  getUsers(page = 1, pageSize = 10, role = 'All', status = 'All', search = ''): Observable<ApiResponse<PagedResponse<AdminUser>>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.USERS.LIST}`;\n    let params = new HttpParams()\n      .set('page', page.toString())\n      .set('pageSize', pageSize.toString());\n\n    if (role && role !== 'All') params = params.set('role', role);\n    if (status && status !== 'All') params = params.set('status', status);\n    if (search.trim()) params = params.set('search', search.trim());\n\n    return this.http.get<ApiResponse<PagedResponse<AdminUser>>>(url, { params });\n  }\n\n  createUser(data: CreateAdminRequest): Observable<ApiResponse<AdminUser>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.USERS.CREATE}`;\n    return this.http.post<ApiResponse<AdminUser>>(url, data);\n  }\n\n  updateUser(id: number, data: UpdateAdminRequest): Observable<ApiResponse<AdminUser>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.USERS.UPDATE(id)}`;\n    return this.http.put<ApiResponse<AdminUser>>(url, data);\n  }\n\n  toggleUserStatus(id: number): Observable<ApiResponse<AdminUser>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.USERS.TOGGLE_STATUS(id)}`;\n    return this.http.patch<ApiResponse<AdminUser>>(url, {});\n  }\n\n  deleteUser(id: number): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.USERS.DELETE(id)}`;\n    return this.http.delete<ApiResponse<boolean>>(url);\n  }\n}\n"
   },
   {
-    path: 'src/app/core/guards/role.guard.ts',
-    name: 'role.guard.ts',
-    category: 'Interceptors & Guards',
-    language: 'typescript',
-    description: 'Functional CanActivate guard restricting SuperAdmin-only administrative actions',
-    content: `import { CanActivateFn, Router } from '@angular/router';
-import { inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
-import { ToastService } from '../services/toast.service';
-
-export const superAdminGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const toast = inject(ToastService);
-
-  if (authService.isAuthenticated() && authService.isSuperAdmin()) {
-    return true;
-  }
-
-  toast.error('This administrative module requires Super Administrator privileges.', 'Access Denied');
-  return router.createUrlTree(['/admin/dashboard']);
-};
-`
-  },
-
-  // ==========================================
-  // 6. LAYOUTS
-  // ==========================================
-  {
-    path: 'src/app/layouts/public-layout/public-layout.component.ts',
-    name: 'public-layout.component.ts',
-    category: 'Layouts',
-    language: 'typescript',
-    description: 'Public minimal layout shell used for authentication screens',
-    content: `import { Component } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-
-@Component({
-  selector: 'app-public-layout',
-  standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule],
-  template: \`
-    <div class="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between p-4">
-      <header class="max-w-7xl w-full mx-auto py-4 flex items-center justify-between">
-        <a routerLink="/" class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center font-bold text-white shadow-md">
-            OM
-          </div>
-          <span class="font-bold text-base tracking-tight text-white">OM POLYMER</span>
-        </a>
-        <a routerLink="/" class="text-xs text-slate-400 hover:text-white transition-colors">
-          ← Back to Client Portal
-        </a>
-      </header>
-
-      <main class="flex-1 flex items-center justify-center py-8">
-        <router-outlet></router-outlet>
-      </main>
-
-      <footer class="text-center py-4 text-xs text-slate-500">
-        © 2026 OM POLYMER · Administrative Access Portal · ISO 9001
-      </footer>
-    </div>
-  \`
-})
-export class PublicLayoutComponent {}
-`
+    "name": "auth.service.spec.ts",
+    "path": "src/app/core/services/auth.service.spec.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/auth.service.spec.ts",
+    "content": "import { TestBed } from '@angular/core/testing';\nimport { provideHttpClient } from '@angular/common/http';\nimport { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';\nimport { AuthService } from './auth.service';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\n\ndescribe('AuthService', () => {\n  let service: AuthService;\n  let httpTesting: HttpTestingController;\n\n  beforeEach(() => {\n    TestBed.configureTestingModule({\n      providers: [\n        AuthService,\n        provideHttpClient(),\n        provideHttpClientTesting()\n      ]\n    });\n    service = TestBed.inject(AuthService);\n    httpTesting = TestBed.inject(HttpTestingController);\n  });\n\n  afterEach(() => {\n    httpTesting.verify();\n    localStorage.clear();\n  });\n\n  it('should initialize with unauthenticated state when storage is empty', () => {\n    expect(service.token()).toBeNull();\n    expect(service.isAuthenticated()).toBeFalse();\n  });\n\n  it('should authenticate user and store token upon successful login', () => {\n    const mockCredentials = { email: 'admin@ompolymer.com', password: 'Admin@123' };\n    const mockResponse = {\n      success: true,\n      message: 'Login successful',\n      data: {\n        token: 'mock-jwt-token-xyz',\n        fullName: 'System Administrator',\n        email: 'admin@ompolymer.com',\n        role: 'SuperAdmin' as const,\n        expiry: '2026-10-11T20:00:00Z'\n      },\n      errors: null\n    };\n\n    service.login(mockCredentials).subscribe(res => {\n      expect(res.success).toBeTrue();\n      expect(service.token()).toBe('mock-jwt-token-xyz');\n      expect(service.isAuthenticated()).toBeTrue();\n      expect(service.role()).toBe('SuperAdmin');\n    });\n\n    const req = httpTesting.expectOne(`${environment.apiUrl}${API_ENDPOINTS.AUTH.LOGIN}`);\n    expect(req.request.method).toBe('POST');\n    req.flush(mockResponse);\n  });\n\n  it('should clear token and signals on logout', () => {\n    service.token.set('existing-token');\n    service.adminName.set('Admin');\n    service.role.set('Admin');\n    service.logout();\n\n    expect(service.token()).toBeNull();\n    expect(service.isAuthenticated()).toBeFalse();\n  });\n});\n"
   },
   {
-    path: 'src/app/layouts/user-layout/user-layout.component.ts',
-    name: 'user-layout.component.ts',
-    category: 'Layouts',
-    language: 'typescript',
-    description: 'User client-facing layout with top navigation header, theme switch and contact footer',
-    content: `import { Component, inject } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { ThemeService } from '../../core/services/theme.service';
-import { AuthService } from '../../core/services/auth.service';
-
-@Component({
-  selector: 'app-user-layout',
-  standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule],
-  template: \`
-    <div class="min-h-screen bg-[#f5f8ff] text-[#172554] dark:bg-[#0f172a] dark:text-[#e2e8f0] flex flex-col transition-colors duration-300">
-      
-      <!-- Top Navigation Header -->
-      <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-3.5 transition-colors">
-        <div class="max-w-7xl mx-auto flex items-center justify-between gap-6">
-          
-          <!-- Logo & Brand Mark -->
-          <a routerLink="/" class="flex items-center gap-3 shrink-0">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md">
-              OM
-            </div>
-            <div>
-              <span class="font-extrabold text-base tracking-tight leading-none text-[#172554] dark:text-white block">
-                OM POLYMER
-              </span>
-              <span class="text-[10px] font-semibold tracking-wider uppercase text-blue-600 dark:text-blue-400">
-                Extrusion & Compounding
-              </span>
-            </div>
-          </a>
-
-          <!-- Navigation Links -->
-          <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider">
-            <a routerLink="/" routerLinkActive="text-blue-600 dark:text-blue-400 font-bold" [routerLinkActiveOptions]="{exact: true}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              Home
-            </a>
-            <a routerLink="/products" routerLinkActive="text-blue-600 dark:text-blue-400 font-bold" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              Products
-            </a>
-            <a routerLink="/quote" routerLinkActive="text-blue-600 dark:text-blue-400 font-bold" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              Request Quotation
-            </a>
-            <a routerLink="/maintenance" routerLinkActive="text-blue-600 dark:text-blue-400 font-bold" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Maintenance Ref
-            </a>
-          </nav>
-
-          <!-- Action Buttons & Auth Switcher -->
-          <div class="flex items-center gap-3">
-            <!-- Theme Toggle -->
-            <button 
-              (click)="theme.toggleTheme()" 
-              class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm flex items-center justify-center text-base hover:scale-110 active:scale-95 transition-all"
-              [title]="theme.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-            >
-              {{ theme.isDark() ? '☀️' : '🌙' }}
-            </button>
-
-            <!-- Admin Entry -->
-            <ng-container *ngIf="auth.isAuthenticated(); else loginLink">
-              <a routerLink="/admin/dashboard" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all">
-                <span>⚡ Admin Dashboard</span>
-              </a>
-            </ng-container>
-            <ng-template #loginLink>
-              <a routerLink="/auth/login" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors">
-                Admin Login
-              </a>
-            </ng-template>
-          </div>
-        </div>
-      </header>
-
-      <!-- Main User Page Content -->
-      <main class="flex-1">
-        <router-outlet></router-outlet>
-      </main>
-
-      <!-- User Experience Footer -->
-      <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 px-6 text-xs text-slate-500 transition-colors">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="font-extrabold text-sm text-slate-800 dark:text-white">OM POLYMER</div>
-            <span>· ISO 9001 Certified · High-Density Polyethylene & Polymer Extrusion</span>
-          </div>
-          <div class="flex items-center gap-4 text-slate-400">
-            <span>Dhoraji & Ahmedabad, Gujarat</span>
-            <a routerLink="/auth/login" class="hover:text-blue-500 transition-colors">Admin Console</a>
-          </div>
-        </div>
-      </footer>
-    </div>
-  \`
-})
-export class UserLayoutComponent {
-  theme = inject(ThemeService);
-  auth = inject(AuthService);
-}
-`
+    "name": "auth.service.ts",
+    "path": "src/app/core/services/auth.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/auth.service.ts",
+    "content": "import { Injectable, inject, signal, computed } from '@angular/core';\nimport { HttpClient } from '@angular/common/http';\nimport { Observable, tap, map } from 'rxjs';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\nimport { APP_CONSTANTS } from '../constants/app.constant';\nimport { ApiResponse } from '../models/api-response.model';\nimport { LoginRequest, LoginResponse } from '../models/auth.model';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class AuthService {\n  private http = inject(HttpClient);\n\n  token = signal<string | null>(this.getStoredToken());\n  adminName = signal<string | null>(this.getStoredName());\n  role = signal<'SuperAdmin' | 'Admin' | null>(this.getStoredRole());\n  currentUser = signal<LoginResponse | null>(null);\n\n  isAuthenticated = computed(() => !!this.token());\n  isSuperAdmin = computed(() => this.role() === 'SuperAdmin');\n\n  login(credentials: LoginRequest): Observable<ApiResponse<LoginResponse>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.AUTH.LOGIN}`;\n    return this.http.post<ApiResponse<LoginResponse>>(url, credentials).pipe(\n      tap(res => {\n        if (res.success && res.data) {\n          this.setSession(res.data);\n        }\n      })\n    );\n  }\n\n  logout(): void {\n    this.token.set(null);\n    this.adminName.set(null);\n    this.role.set(null);\n    this.currentUser.set(null);\n    if (typeof localStorage !== 'undefined') {\n      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.AUTH_TOKEN);\n      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_NAME);\n      localStorage.removeItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_ROLE);\n    }\n  }\n\n  getToken(): string | null {\n    return this.token();\n  }\n\n  verifySession(): Observable<boolean> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.AUTH.VERIFY}`;\n    return this.http.get<ApiResponse<any>>(url).pipe(\n      map(res => res.success),\n      tap({\n        error: () => this.logout()\n      })\n    );\n  }\n\n  private setSession(authData: LoginResponse): void {\n    this.token.set(authData.token);\n    this.adminName.set(authData.fullName);\n    this.role.set(authData.role);\n    this.currentUser.set(authData);\n\n    if (typeof localStorage !== 'undefined') {\n      localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.AUTH_TOKEN, authData.token);\n      localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_NAME, authData.fullName);\n      localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_ROLE, authData.role);\n    }\n  }\n\n  private getStoredToken(): string | null {\n    if (typeof localStorage !== 'undefined') {\n      return localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.AUTH_TOKEN);\n    }\n    return null;\n  }\n\n  private getStoredName(): string | null {\n    if (typeof localStorage !== 'undefined') {\n      return localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_NAME);\n    }\n    return null;\n  }\n\n  private getStoredRole(): 'SuperAdmin' | 'Admin' | null {\n    if (typeof localStorage !== 'undefined') {\n      return localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.ADMIN_ROLE) as 'SuperAdmin' | 'Admin' | null;\n    }\n    return null;\n  }\n}\n"
   },
   {
-    path: 'src/app/layouts/admin-layout/admin-layout.component.ts',
-    name: 'admin-layout.component.ts',
-    category: 'Layouts',
-    language: 'typescript',
-    description: 'Admin layout with dark sidebar, top admin header, role pill and logout workflow',
-    content: `import { Component, inject } from '@angular/core';
-import { RouterOutlet, RouterModule, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { AuthService } from '../../core/services/auth.service';
-import { ToastService } from '../../core/services/toast.service';
-
-@Component({
-  selector: 'app-admin-layout',
-  standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule],
-  template: \`
-    <div class="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">
-      
-      <!-- Collapsible / Fixed Admin Sidebar -->
-      <aside class="w-full md:w-64 bg-slate-900 border-r border-slate-800 p-5 flex flex-col justify-between shrink-0">
-        <div>
-          <!-- Sidebar Header Brand -->
-          <div class="flex items-center gap-3 mb-8">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md">
-              OM
-            </div>
-            <div>
-              <span class="font-extrabold text-sm tracking-tight text-white block">OM POLYMER</span>
-              <span class="text-[10px] font-bold tracking-wider uppercase text-blue-400">Admin Control</span>
-            </div>
-          </div>
-
-          <!-- Role Pill -->
-          <div class="mb-6 p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-            <div>
-              <div class="text-[11px] text-slate-400">Logged in as</div>
-              <div class="text-xs font-semibold text-white truncate max-w-[130px]">{{ auth.adminName() }}</div>
-            </div>
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider"
-              [ngClass]="auth.isSuperAdmin() ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'">
-              {{ auth.role() }}
-            </span>
-          </div>
-
-          <!-- Navigation Links -->
-          <nav class="space-y-1 text-xs font-medium">
-            <a routerLink="/admin/dashboard" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
-              <span>📊</span> Dashboard Overview
-            </a>
-            <a routerLink="/admin/inquiries" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
-              <span>📋</span> Inquiries & Leads CRM
-            </a>
-            <a routerLink="/admin/products" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
-              <span>📦</span> Product Catalog
-            </a>
-            <a routerLink="/admin/company" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
-              <span>🏢</span> Company & WhatsApp
-            </a>
-
-            <!-- SuperAdmin Exclusive Navigation Link -->
-            <a 
-              *ngIf="auth.isSuperAdmin()"
-              routerLink="/admin/users" 
-              routerLinkActive="bg-blue-600 text-white font-semibold" 
-              class="flex items-center justify-between px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors"
-            >
-              <div class="flex items-center gap-3">
-                <span>🛡️</span> Administrators
-              </div>
-              <span class="text-[9px] uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold">Root</span>
-            </a>
-          </nav>
-        </div>
-
-        <!-- Sidebar Bottom Actions -->
-        <div class="pt-6 border-t border-slate-800 space-y-2 text-xs">
-          <a routerLink="/" class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-            <span>🌐</span> Client Portal
-          </a>
-          <button (click)="handleLogout()" class="w-full text-left flex items-center gap-2 px-3.5 py-2 rounded-lg text-rose-400 hover:bg-rose-950/40 transition-colors font-medium">
-            <span>🚪</span> Log Out
-          </button>
-        </div>
-      </aside>
-
-      <!-- Main Admin Workspace Viewport -->
-      <main class="flex-1 flex flex-col overflow-x-hidden">
-        <header class="bg-slate-900/60 border-b border-slate-800 px-6 py-3.5 flex items-center justify-between">
-          <div class="text-xs text-slate-400">
-            Administrative Console · <span class="text-slate-200 font-medium">OM Polymer Web API</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span class="text-xs font-mono text-emerald-400">API Connected</span>
-          </div>
-        </header>
-
-        <div class="flex-1 p-6 md:p-8">
-          <router-outlet></router-outlet>
-        </div>
-      </main>
-    </div>
-  \`
-})
-export class AdminLayoutComponent {
-  auth = inject(AuthService);
-  private toast = inject(ToastService);
-  private router = inject(Router);
-
-  handleLogout(): void {
-    this.auth.logout();
-    this.toast.info('You have logged out of the Admin Panel.');
-    this.router.navigate(['/']);
-  }
-}
-`
-  },
-
-  // ==========================================
-  // 7. USER FEATURES
-  // ==========================================
-  {
-    path: 'src/app/features/user/home/user-home.component.ts',
-    name: 'user-home.component.ts',
-    category: 'User Portal',
-    language: 'typescript',
-    description: 'User landing page featuring hero section, capabilities, featured products, and contact cards',
-    content: `import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { ProductService } from '../../../core/services/product.service';
-import { CompanyService } from '../../../core/services/company.service';
-import { Product } from '../../../core/models/product.model';
-import { CompanySettings } from '../../../core/models/company.model';
-import { APP_CONSTANTS } from '../../../core/constants/app.constant';
-
-@Component({
-  selector: 'app-user-home',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: \`
-    <div class="space-y-16 py-10 px-6 max-w-7xl mx-auto">
-      
-      <!-- Hero Section -->
-      <section class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-900 via-slate-900 to-indigo-950 p-8 sm:p-14 text-white shadow-2xl">
-        <div class="max-w-2xl space-y-6 relative z-10">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            ISO 9001:2015 CERTIFIED MANUFACTURING
-          </div>
-          <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-            Advanced Polymer Extrusion & High-Tensile Piping Solutions
-          </h1>
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Delivering high-density polyethylene (HDPE) pipes, custom compounding resins, and specialized industrial polymers designed for extreme hydrostatic pressures.
-          </p>
-          <div class="flex flex-wrap gap-3 pt-2">
-            <a routerLink="/products" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition-transform hover:scale-105 active:scale-95">
-              Browse Products Catalog
-            </a>
-            <a routerLink="/quote" class="px-5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-white font-bold text-xs transition-colors">
-              Request Technical Quote
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <!-- Key Engineering Statistics -->
-      <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-sm">
-          <div class="text-3xl font-extrabold text-blue-600 dark:text-blue-400">13+</div>
-          <div class="text-xs text-slate-500 mt-1">Years of Manufacturing</div>
-        </div>
-        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-sm">
-          <div class="text-3xl font-extrabold text-blue-600 dark:text-blue-400">50K+</div>
-          <div class="text-xs text-slate-500 mt-1">Metric Tons Annual Output</div>
-        </div>
-        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-sm">
-          <div class="text-3xl font-extrabold text-blue-600 dark:text-blue-400">ISO</div>
-          <div class="text-xs text-slate-500 mt-1">9001:2015 Accredited</div>
-        </div>
-        <div class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-sm">
-          <div class="text-3xl font-extrabold text-blue-600 dark:text-blue-400">100%</div>
-          <div class="text-xs text-slate-500 mt-1">Virgin Polymer Raw Resins</div>
-        </div>
-      </section>
-
-      <!-- Featured Products Grid -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-2xl font-bold">Featured Industrial Products</h2>
-            <p class="text-xs text-slate-500 mt-1">Pre-tested specifications conforming to ISO 4427 and ASTM standards</p>
-          </div>
-          <a routerLink="/products" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-            View All Products →
-          </a>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div *ngFor="let p of featuredProducts()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-xl transition-all">
-            <div class="p-5 space-y-3">
-              <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                {{ p.category?.categoryName || 'Industrial' }}
-              </span>
-              <h3 class="font-bold text-base leading-tight">{{ p.productName }}</h3>
-              <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">{{ p.shortDescription }}</p>
-            </div>
-            <div class="p-5 pt-0 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 mt-4">
-              <a [routerLink]="['/products', p.slug]" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                View Specs
-              </a>
-              <a routerLink="/quote" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 dark:bg-slate-800 text-white hover:bg-blue-600 transition-colors">
-                Request RFQ
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Interactive Contact Cards from Design Reference -->
-      <section class="space-y-6 pt-6">
-        <div class="text-center max-w-xl mx-auto">
-          <h2 class="text-2xl font-bold">Direct Engineering Contacts</h2>
-          <p class="text-xs text-slate-500 mt-1">Connect directly with our materials engineering sales desk</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <a [href]="phoneTel" class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl text-center space-y-2 transition-all hover:-translate-y-1">
-            <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 mx-auto flex items-center justify-center text-xl">📞</div>
-            <div class="font-bold text-sm">Phone Support</div>
-            <div class="text-xs font-mono text-slate-500">{{ phone }}</div>
-          </a>
-
-          <a [href]="emailMailto" class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl text-center space-y-2 transition-all hover:-translate-y-1">
-            <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 mx-auto flex items-center justify-center text-xl">✉️</div>
-            <div class="font-bold text-sm">Email Inquiry</div>
-            <div class="text-xs text-slate-500">{{ email }}</div>
-          </a>
-
-          <a [href]="mapsUrl" target="_blank" rel="noopener noreferrer" class="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl text-center space-y-2 transition-all hover:-translate-y-1">
-            <div class="w-12 h-12 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 mx-auto flex items-center justify-center text-xl">🏢</div>
-            <div class="font-bold text-sm">Manufacturing Plant</div>
-            <div class="text-xs text-slate-500">Vegdi GIDC, Dhoraji, Gujarat</div>
-          </a>
-        </div>
-      </section>
-    </div>
-  \`
-})
-export class UserHomeComponent implements OnInit {
-  private prodService = inject(ProductService);
-  private compService = inject(CompanyService);
-
-  featuredProducts = signal<Product[]>([]);
-  company = signal<CompanySettings | null>(null);
-
-  phone = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;
-  phoneTel = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;
-  email = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;
-  emailMailto = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;
-  mapsUrl = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;
-
-  ngOnInit(): void {
-    this.prodService.getFeaturedProducts().subscribe({
-      next: res => {
-        if (res.success && res.data) this.featuredProducts.set(res.data);
-      }
-    });
-
-    this.compService.getCompanySettings().subscribe({
-      next: res => {
-        if (res.success && res.data) {
-          this.company.set(res.data);
-          if (res.data.phoneContact) {
-            this.phone = res.data.phoneContact;
-            this.phoneTel = \`tel:\${res.data.phoneContact.replace(/\\s+/g, '')}\`;
-          }
-          if (res.data.emailContact) {
-            this.email = res.data.emailContact;
-            this.emailMailto = \`mailto:\${res.data.emailContact}\`;
-          }
-        }
-      }
-    });
-  }
-}
-`
+    "name": "blog.service.ts",
+    "path": "src/app/core/services/blog.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/blog.service.ts",
+    "content": "import { Injectable, inject } from '@angular/core';\nimport { HttpClient, HttpParams } from '@angular/common/http';\nimport { Observable } from 'rxjs';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\nimport { ApiResponse, PagedResponse } from '../models/api-response.model';\nimport { BlogPost, BlogCategory, CreateBlogRequest } from '../models/blog.model';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class BlogService {\n  private http = inject(HttpClient);\n\n  getPublishedBlogs(page = 1, pageSize = 10, categoryId?: number, search?: string): Observable<ApiResponse<PagedResponse<BlogPost>>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.PUBLIC_LIST}`;\n    let params = new HttpParams()\n      .set('page', page.toString())\n      .set('pageSize', pageSize.toString());\n\n    if (categoryId) params = params.set('categoryId', categoryId.toString());\n    if (search?.trim()) params = params.set('search', search.trim());\n\n    return this.http.get<ApiResponse<PagedResponse<BlogPost>>>(url, { params });\n  }\n\n  getAdminBlogs(page = 1, pageSize = 20, categoryId?: number, search?: string): Observable<ApiResponse<PagedResponse<BlogPost>>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.ADMIN_LIST}`;\n    let params = new HttpParams()\n      .set('page', page.toString())\n      .set('pageSize', pageSize.toString());\n\n    if (categoryId) params = params.set('categoryId', categoryId.toString());\n    if (search?.trim()) params = params.set('search', search.trim());\n\n    return this.http.get<ApiResponse<PagedResponse<BlogPost>>>(url, { params });\n  }\n\n  getBlogBySlug(slug: string): Observable<ApiResponse<BlogPost>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.BY_SLUG(slug)}`;\n    return this.http.get<ApiResponse<BlogPost>>(url);\n  }\n\n  getCategories(): Observable<ApiResponse<BlogCategory[]>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.CATEGORIES}`;\n    return this.http.get<ApiResponse<BlogCategory[]>>(url);\n  }\n\n  createBlog(data: CreateBlogRequest): Observable<ApiResponse<BlogPost>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.CREATE}`;\n    return this.http.post<ApiResponse<BlogPost>>(url, data);\n  }\n\n  updateBlog(id: number, data: CreateBlogRequest): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.UPDATE(id)}`;\n    return this.http.put<ApiResponse<boolean>>(url, data);\n  }\n\n  publishBlog(id: number): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.PUBLISH(id)}`;\n    return this.http.patch<ApiResponse<boolean>>(url, {});\n  }\n\n  unpublishBlog(id: number): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.UNPUBLISH(id)}`;\n    return this.http.patch<ApiResponse<boolean>>(url, {});\n  }\n\n  deleteBlog(id: number): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.BLOGS.DELETE(id)}`;\n    return this.http.delete<ApiResponse<boolean>>(url);\n  }\n}\n"
   },
   {
-    path: 'src/app/features/user/catalog/product-catalog.component.ts',
-    name: 'product-catalog.component.ts',
-    category: 'User Portal',
-    language: 'typescript',
-    description: 'Products catalog component with category filtering and keyword search',
-    content: `import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { ProductService } from '../../../core/services/product.service';
-import { Product, ProductCategory } from '../../../core/models/product.model';
-
-@Component({
-  selector: 'app-product-catalog',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
-  template: \`
-    <div class="py-10 px-6 max-w-7xl mx-auto space-y-8">
-      <div>
-        <h1 class="text-3xl font-extrabold tracking-tight">Industrial Products Catalog</h1>
-        <p class="text-xs text-slate-500 mt-1">Explore our ISO-certified polyethylene piping systems and compounds</p>
-      </div>
-
-      <!-- Search & Category Filters -->
-      <div class="flex flex-col md:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex flex-wrap gap-2">
-          <button 
-            (click)="selectCategory(undefined)"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-            [ngClass]="selectedCategoryId() === undefined ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
-          >
-            All Products
-          </button>
-          <button 
-            *ngFor="let cat of categories()"
-            (click)="selectCategory(cat.categoryId)"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-            [ngClass]="selectedCategoryId() === cat.categoryId ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
-          >
-            {{ cat.categoryName }}
-          </button>
-        </div>
-
-        <input 
-          type="text" 
-          [(ngModel)]="searchQuery" 
-          (ngModelChange)="loadProducts()"
-          placeholder="Search by name, spec, or standard..." 
-          class="w-full md:w-72 px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950"
-        />
-      </div>
-
-      <!-- Products Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div *ngFor="let p of products()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
-          <div class="p-5 space-y-3">
-            <span class="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-              {{ p.category?.categoryName }}
-            </span>
-            <h3 class="font-bold text-base leading-tight">{{ p.productName }}</h3>
-            <p class="text-xs text-slate-500 line-clamp-3 leading-relaxed">{{ p.shortDescription }}</p>
-            <div class="text-[11px] font-mono bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400">
-              {{ p.specifications }}
-            </div>
-          </div>
-          <div class="p-5 pt-0 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 mt-4">
-            <a [routerLink]="['/products', p.slug]" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-              Technical Details →
-            </a>
-            <a routerLink="/quote" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">
-              RFQ
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  \`
-})
-export class ProductCatalogComponent implements OnInit {
-  private prodService = inject(ProductService);
-
-  products = signal<Product[]>([]);
-  categories = signal<ProductCategory[]>([]);
-  selectedCategoryId = signal<number | undefined>(undefined);
-  searchQuery = '';
-
-  ngOnInit(): void {
-    this.prodService.getCategories().subscribe(res => {
-      if (res.success && res.data) this.categories.set(res.data);
-    });
-    this.loadProducts();
-  }
-
-  selectCategory(id?: number): void {
-    this.selectedCategoryId.set(id);
-    this.loadProducts();
-  }
-
-  loadProducts(): void {
-    this.prodService.getProducts(1, 50, this.selectedCategoryId(), this.searchQuery).subscribe(res => {
-      if (res.success && res.data) this.products.set(res.data.items);
-    });
-  }
-}
-`
+    "name": "company.service.ts",
+    "path": "src/app/core/services/company.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/company.service.ts",
+    "content": "import { Injectable, inject } from '@angular/core';\nimport { HttpClient, HttpParams } from '@angular/common/http';\nimport { Observable } from 'rxjs';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\nimport { ApiResponse } from '../models/api-response.model';\nimport { CompanySettings, WhatsAppUrlResponse } from '../models/company.model';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class CompanyService {\n  private http = inject(HttpClient);\n\n  getCompanySettings(): Observable<ApiResponse<CompanySettings>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.COMPANY.GET_INFO}`;\n    return this.http.get<ApiResponse<CompanySettings>>(url);\n  }\n\n  getWhatsAppUrl(productSlug?: string, customMessage?: string): Observable<WhatsAppUrlResponse> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.COMPANY.GET_WHATSAPP_URL}`;\n    let params = new HttpParams();\n    if (productSlug) params = params.set('productSlug', productSlug);\n    if (customMessage) params = params.set('message', customMessage);\n\n    return this.http.get<WhatsAppUrlResponse>(url, { params });\n  }\n\n  updateCompanySettings(settings: Partial<CompanySettings>): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.COMPANY.UPDATE}`;\n    return this.http.put<ApiResponse<boolean>>(url, settings);\n  }\n}\n"
   },
   {
-    path: 'src/app/features/user/product-detail/product-detail.component.ts',
-    name: 'product-detail.component.ts',
-    category: 'User Portal',
-    language: 'typescript',
-    description: 'Product detail view showing comprehensive technical specifications and direct RFQ link',
-    content: `import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { ProductService } from '../../../core/services/product.service';
-import { Product } from '../../../core/models/product.model';
-
-@Component({
-  selector: 'app-product-detail',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: \`
-    <div class="py-10 px-6 max-w-5xl mx-auto space-y-8" *ngIf="product(); else loadingTpl">
-      <div>
-        <a routerLink="/products" class="text-xs text-blue-600 hover:underline">← Back to Catalog</a>
-        <h1 class="text-3xl font-extrabold tracking-tight mt-2">{{ product()?.productName }}</h1>
-        <div class="text-xs text-slate-500 mt-1">Category: {{ product()?.category?.categoryName }}</div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="md:col-span-2 space-y-6">
-          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <h2 class="text-base font-bold">Engineering Overview</h2>
-            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{{ product()?.fullDescription }}</p>
-          </div>
-
-          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <h2 class="text-base font-bold">Technical Specifications</h2>
-            <div class="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl font-mono text-xs text-slate-700 dark:text-slate-300">
-              {{ product()?.specifications }}
-            </div>
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <div class="bg-blue-50 dark:bg-slate-900 p-6 rounded-2xl border border-blue-200 dark:border-slate-800 space-y-4">
-            <h3 class="font-bold text-sm">Need Quotation for this Product?</h3>
-            <p class="text-xs text-slate-500">Contact our engineering desk for custom diameters, SDR rating and pricing.</p>
-            <a routerLink="/quote" class="block text-center py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-md transition-colors">
-              Request Specific Quote
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <ng-template #loadingTpl>
-      <div class="py-20 text-center text-xs text-slate-500">Loading product specifications...</div>
-    </ng-template>
-  \`
-})
-export class ProductDetailComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private prodService = inject(ProductService);
-
-  product = signal<Product | null>(null);
-
-  ngOnInit(): void {
-    const slug = this.route.snapshot.paramMap.get('slug');
-    if (slug) {
-      this.prodService.getProductBySlug(slug).subscribe(res => {
-        if (res.success && res.data) this.product.set(res.data);
-      });
-    }
-  }
-}
-`
+    "name": "log.service.ts",
+    "path": "src/app/core/services/log.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/log.service.ts",
+    "content": "import { Injectable, inject } from '@angular/core';\nimport { HttpClient, HttpParams } from '@angular/common/http';\nimport { Observable } from 'rxjs';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\nimport { ApiResponse } from '../models/api-response.model';\nimport { LogsResponse } from '../models/log.model';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class LogService {\n  private http = inject(HttpClient);\n\n  getLogs(severity?: string, file?: string, search?: string): Observable<ApiResponse<LogsResponse>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.LOGS.LIST}`;\n    let params = new HttpParams();\n\n    if (severity && severity !== 'ALL') params = params.set('severity', severity);\n    if (file && file !== 'ALL') params = params.set('file', file);\n    if (search?.trim()) params = params.set('search', search.trim());\n\n    return this.http.get<ApiResponse<LogsResponse>>(url, { params });\n  }\n\n  getLogFiles(): Observable<ApiResponse<string[]>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.LOGS.FILES}`;\n    return this.http.get<ApiResponse<string[]>>(url);\n  }\n\n  clearLogs(fileName?: string): Observable<ApiResponse<{ cleared: boolean }>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.LOGS.CLEAR}`;\n    return this.http.post<ApiResponse<{ cleared: boolean }>>(url, { fileName });\n  }\n}\n"
   },
   {
-    path: 'src/app/features/user/rfq/user-rfq.component.ts',
-    name: 'user-rfq.component.ts',
-    category: 'User Portal',
-    language: 'typescript',
-    description: 'Technical quotation and client requirement reactive form',
-    content: `import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RequirementService } from '../../../core/services/requirement.service';
-import { ToastService } from '../../../core/services/toast.service';
-
-@Component({
-  selector: 'app-user-rfq',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  template: \`
-    <div class="py-12 px-6 max-w-3xl mx-auto">
-      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-10 shadow-xl space-y-6">
-        <div>
-          <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-            Direct Engineering Inquiry
-          </span>
-          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-2">Technical Quotation & RFQ Form</h1>
-          <p class="text-xs text-slate-500 mt-1">Submit your engineering specs for HDPE pipes, SDR ratings, and compounding requirements.</p>
-        </div>
-
-        <form [formGroup]="rfqForm" (ngSubmit)="onSubmit()" class="space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold mb-1">Full Name *</label>
-              <input formControlName="fullName" type="text" placeholder="e.g. Ramesh Patel" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1">Company / Organization</label>
-              <input formControlName="companyName" type="text" placeholder="e.g. Gujarat Polymer Infra Ltd" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950" />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold mb-1">Email Address *</label>
-              <input formControlName="email" type="email" placeholder="contact@example.com" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1">Phone Number *</label>
-              <input formControlName="phoneNumber" type="tel" placeholder="+91 98765 43210" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950" />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold mb-1">Product of Interest</label>
-              <input formControlName="productOfInterest" type="text" placeholder="e.g. HDPE PN16 Pipes" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1">Estimated Quantity</label>
-              <input formControlName="quantity" type="text" placeholder="e.g. 5,000 meters" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold mb-1">Technical Requirement Details *</label>
-            <textarea formControlName="requirementDescription" rows="4" placeholder="Detail diameter requirements, SDR ratings, operating temperatures, or custom extrusion requests..." class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950"></textarea>
-          </div>
-
-          <button 
-            type="submit" 
-            [disabled]="loading()"
-            class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-md transition-colors disabled:opacity-50"
-          >
-            {{ loading() ? 'Submitting to Engineering Team...' : 'Transmit Technical Specification' }}
-          </button>
-        </form>
-      </div>
-    </div>
-  \`
-})
-export class UserRfqComponent {
-  private fb = inject(FormBuilder);
-  private reqService = inject(RequirementService);
-  private toast = inject(ToastService);
-
-  loading = signal(false);
-
-  rfqForm: FormGroup = this.fb.group({
-    fullName: ['', [Validators.required, Validators.maxLength(150)]],
-    companyName: [''],
-    email: ['', [Validators.required, Validators.email]],
-    phoneNumber: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(20)]],
-    productOfInterest: ['HDPE PN16 Pipes'],
-    quantity: [''],
-    requirementDescription: ['', [Validators.required, Validators.minLength(5)]]
-  });
-
-  onSubmit(): void {
-    if (this.rfqForm.invalid) {
-      this.rfqForm.markAllAsTouched();
-      this.toast.error('Please complete all required fields correctly.');
-      return;
-    }
-
-    this.loading.set(true);
-    this.reqService.submitRequirement(this.rfqForm.value).subscribe({
-      next: res => {
-        this.loading.set(false);
-        this.toast.success(res.message);
-        this.rfqForm.reset({ productOfInterest: 'HDPE PN16 Pipes' });
-      },
-      error: () => this.loading.set(false)
-    });
-  }
-}
-`
+    "name": "product.service.ts",
+    "path": "src/app/core/services/product.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/product.service.ts",
+    "content": "import { Injectable, inject } from '@angular/core';\nimport { HttpClient, HttpParams } from '@angular/common/http';\nimport { Observable } from 'rxjs';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\nimport { ApiResponse, PagedResponse } from '../models/api-response.model';\nimport { Product, ProductCategory, CreateProductRequest } from '../models/product.model';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class ProductService {\n  private http = inject(HttpClient);\n\n  getProducts(page = 1, pageSize = 10, categoryId?: number, search?: string): Observable<ApiResponse<PagedResponse<Product>>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.PRODUCTS.LIST}`;\n    let params = new HttpParams()\n      .set('page', page.toString())\n      .set('pageSize', pageSize.toString());\n\n    if (categoryId) params = params.set('categoryId', categoryId.toString());\n    if (search?.trim()) params = params.set('search', search.trim());\n\n    return this.http.get<ApiResponse<PagedResponse<Product>>>(url, { params });\n  }\n\n  getFeaturedProducts(): Observable<ApiResponse<Product[]>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.PRODUCTS.FEATURED}`;\n    return this.http.get<ApiResponse<Product[]>>(url);\n  }\n\n  getCategories(): Observable<ApiResponse<ProductCategory[]>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.PRODUCTS.CATEGORIES}`;\n    return this.http.get<ApiResponse<ProductCategory[]>>(url);\n  }\n\n  getProductBySlug(slug: string): Observable<ApiResponse<Product>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.PRODUCTS.BY_SLUG(slug)}`;\n    return this.http.get<ApiResponse<Product>>(url);\n  }\n\n  createProduct(data: CreateProductRequest): Observable<ApiResponse<Product>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.PRODUCTS.CREATE}`;\n    return this.http.post<ApiResponse<Product>>(url, data);\n  }\n\n  updateProduct(id: number, data: Partial<CreateProductRequest>): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.PRODUCTS.UPDATE(id)}`;\n    return this.http.put<ApiResponse<boolean>>(url, data);\n  }\n\n  toggleProductStatus(id: number): Observable<ApiResponse<{ isActive: boolean }>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.PRODUCTS.TOGGLE_STATUS(id)}`;\n    return this.http.patch<ApiResponse<{ isActive: boolean }>>(url, {});\n  }\n\n  deleteProduct(id: number): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.PRODUCTS.DELETE(id)}`;\n    return this.http.delete<ApiResponse<boolean>>(url);\n  }\n}\n"
   },
   {
-    path: 'src/app/features/user/maintenance-ref/maintenance-ref.component.ts',
-    name: 'maintenance-ref.component.ts',
-    category: 'User Portal',
-    language: 'typescript',
-    description: 'Faithful responsive recreation of the user reference maintenance webpage',
-    content: `import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { APP_CONSTANTS } from '../../../core/constants/app.constant';
-import { ThemeService } from '../../../core/services/theme.service';
-
-@Component({
-  selector: 'app-maintenance-ref',
-  standalone: true,
-  imports: [CommonModule],
-  template: \`
-    <div class="relative min-h-[600px] flex items-center justify-center p-6 sm:p-12 overflow-hidden text-center">
-      
-      <!-- Ambient Circles -->
-      <div class="absolute rounded-full pointer-events-none w-[350px] h-[350px] bg-blue-100 dark:bg-blue-900/10 -top-[120px] -left-[100px] animate-pulse"></div>
-      <div class="absolute rounded-full pointer-events-none w-[280px] h-[280px] bg-indigo-100 dark:bg-indigo-900/10 -bottom-[100px] -right-[80px] animate-pulse"></div>
-
-      <div class="max-w-2xl relative z-10 flex flex-col items-center">
-        
-        <!-- Illustration -->
-        <div class="w-[280px] h-[200px] mx-auto mb-4 relative">
-          <div class="absolute w-[190px] h-[125px] bg-[#172554] rounded-xl left-[45px] top-[25px] p-2.5 shadow-2xl">
-            <div class="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 rounded-md flex flex-col items-center justify-center gap-2">
-              <div class="text-4xl anim-gear">⚙️</div>
-              <div class="w-20 h-1.5 bg-blue-200 rounded-full overflow-hidden anim-loading-bar"></div>
-            </div>
-          </div>
-          <div class="absolute w-[220px] h-[10px] bg-slate-500 rounded-b-[18px] bottom-[48px] left-[30px]"></div>
-
-          <div class="absolute right-[5px] bottom-[40px]">
-            <div class="w-9 h-9 rounded-full bg-[#f8c9a0] mx-auto relative">
-              <div class="absolute w-[46px] h-[18px] bg-[#fbbf24] rounded-t-[24px] rounded-b-[4px] -top-[6px] -left-[5px] shadow-sm"></div>
-            </div>
-            <div class="w-12 h-14 bg-blue-600 rounded-t-xl rounded-b-md mt-1 mx-auto"></div>
-            <div class="absolute text-3xl -right-[30px] top-[45px] -rotate-[30deg]">🔧</div>
-          </div>
-        </div>
-
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold mb-4 bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-          MAINTENANCE REFERENCE VIEW
-        </div>
-
-        <h1 class="text-4xl font-extrabold tracking-tight mb-3">
-          Site <span class="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">Under Maintenance</span>
-        </h1>
-
-        <p class="text-xs sm:text-sm text-slate-500 max-w-lg mb-8 leading-relaxed">
-          We're currently working behind the scenes to improve our website and provide you with a better experience. We'll be back online shortly.
-        </p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
-          <a [href]="phoneTel" class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-xl transition-all flex flex-col items-center">
-            <span class="text-2xl mb-1">📞</span>
-            <strong class="text-xs">Phone Support</strong>
-            <span class="text-[11px] font-mono text-slate-500">{{ phone }}</span>
-          </a>
-          <a [href]="emailMailto" class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-xl transition-all flex flex-col items-center">
-            <span class="text-2xl mb-1">✉️</span>
-            <strong class="text-xs">Email Us</strong>
-            <span class="text-[11px] text-slate-500">{{ email }}</span>
-          </a>
-          <a [href]="mapsUrl" target="_blank" rel="noopener noreferrer" class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-xl transition-all flex flex-col items-center">
-            <span class="text-2xl mb-1">🏢</span>
-            <strong class="text-xs">Head Office</strong>
-            <span class="text-[10px] text-slate-500">Vegdi GIDC, Dhoraji</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  \`
-})
-export class MaintenanceRefComponent {
-  theme = inject(ThemeService);
-  phone = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;
-  phoneTel = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;
-  email = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;
-  emailMailto = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;
-  mapsUrl = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;
-}
-`
-  },
-
-  // ==========================================
-  // 8. ADMIN FEATURES
-  // ==========================================
-  {
-    path: 'src/app/features/admin/dashboard/admin-dashboard.component.ts',
-    name: 'admin-dashboard.component.ts',
-    category: 'Admin Panel',
-    language: 'typescript',
-    description: 'Admin dashboard with summary metrics, CRM recent leads, and quick actions',
-    content: `import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { RequirementService } from '../../../core/services/requirement.service';
-import { ProductService } from '../../../core/services/product.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { ClientRequirement } from '../../../core/models/requirement.model';
-
-@Component({
-  selector: 'app-admin-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: \`
-    <div class="space-y-8">
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight">System Overview Dashboard</h1>
-        <p class="text-xs text-slate-400 mt-1">OM Polymer administrative metrics and operational controls</p>
-      </div>
-
-      <!-- KPI Summary Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div class="text-xs font-semibold text-slate-400">Total Leads & RFQs</div>
-          <div class="text-3xl font-extrabold text-blue-400">{{ totalInquiries() }}</div>
-          <div class="text-[11px] text-slate-500">Recorded through POST /api/requirements</div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div class="text-xs font-semibold text-slate-400">New Pending Leads</div>
-          <div class="text-3xl font-extrabold text-amber-400">{{ newInquiriesCount() }}</div>
-          <div class="text-[11px] text-slate-500">Awaiting engineering response</div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div class="text-xs font-semibold text-slate-400">Catalog Products</div>
-          <div class="text-3xl font-extrabold text-emerald-400">{{ totalProducts() }}</div>
-          <div class="text-[11px] text-slate-500">Active HDPE & polymer lines</div>
-        </div>
-
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
-          <div class="text-xs font-semibold text-slate-400">Current Role Claim</div>
-          <div class="text-xl font-extrabold text-purple-400">{{ auth.role() }}</div>
-          <div class="text-[11px] text-slate-500">{{ auth.adminName() }}</div>
-        </div>
-      </div>
-
-      <!-- Recent Inquiries Table -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden space-y-4 p-5">
-        <div class="flex items-center justify-between">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200">Recent Customer Inquiries</h2>
-          <a routerLink="/admin/inquiries" class="text-xs text-blue-400 hover:underline">View All CRM Leads →</a>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
-              <tr>
-                <th class="p-3">Client</th>
-                <th class="p-3">Contact</th>
-                <th class="p-3">Product</th>
-                <th class="p-3">Status</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-800">
-              <tr *ngFor="let item of recentInquiries()">
-                <td class="p-3">
-                  <div class="font-semibold text-white">{{ item.fullName }}</div>
-                  <div class="text-[11px] text-slate-400">{{ item.companyName || 'Independent' }}</div>
-                </td>
-                <td class="p-3">
-                  <div>{{ item.email }}</div>
-                  <div class="font-mono text-slate-400">{{ item.phoneNumber }}</div>
-                </td>
-                <td class="p-3">{{ item.productOfInterest }}</td>
-                <td class="p-3">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold"
-                    [ngClass]="{
-                      'bg-emerald-950 text-emerald-400 border border-emerald-800': item.status === 'Completed',
-                      'bg-blue-950 text-blue-400 border border-blue-800': item.status === 'New',
-                      'bg-amber-950 text-amber-400 border border-amber-800': item.status === 'Contacted' || item.status === 'In Progress'
-                    }">
-                    {{ item.status }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  \`
-})
-export class AdminDashboardComponent implements OnInit {
-  auth = inject(AuthService);
-  private reqService = inject(RequirementService);
-  private prodService = inject(ProductService);
-
-  totalInquiries = signal(0);
-  newInquiriesCount = signal(0);
-  totalProducts = signal(0);
-  recentInquiries = signal<ClientRequirement[]>([]);
-
-  ngOnInit(): void {
-    this.reqService.getAdminRequirements(1, 5).subscribe(res => {
-      if (res.success && res.data) {
-        this.totalInquiries.set(res.data.totalCount);
-        this.recentInquiries.set(res.data.items);
-        this.newInquiriesCount.set(res.data.items.filter(i => i.status === 'New').length);
-      }
-    });
-
-    this.prodService.getProducts(1, 1).subscribe(res => {
-      if (res.success && res.data) {
-        this.totalProducts.set(res.data.totalCount);
-      }
-    });
-  }
-}
-`
+    "name": "requirement.service.spec.ts",
+    "path": "src/app/core/services/requirement.service.spec.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/requirement.service.spec.ts",
+    "content": "import { TestBed } from '@angular/core/testing';\nimport { provideHttpClient } from '@angular/common/http';\nimport { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';\nimport { RequirementService } from './requirement.service';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\n\ndescribe('RequirementService', () => {\n  let service: RequirementService;\n  let httpTesting: HttpTestingController;\n\n  beforeEach(() => {\n    TestBed.configureTestingModule({\n      providers: [\n        RequirementService,\n        provideHttpClient(),\n        provideHttpClientTesting()\n      ]\n    });\n    service = TestBed.inject(RequirementService);\n    httpTesting = TestBed.inject(HttpTestingController);\n  });\n\n  afterEach(() => {\n    httpTesting.verify();\n  });\n\n  it('should submit client requirement to /api/requirements', () => {\n    const payload = {\n      fullName: 'Ramesh Patel',\n      email: 'ramesh@patelpoly.com',\n      phoneNumber: '+919876543210',\n      requirementDescription: 'Need quotation for 2,000 meters HDPE pipes PN16'\n    };\n\n    const mockResponse = {\n      success: true,\n      message: 'Your technical requirement and quotation request has been recorded.',\n      data: true,\n      errors: null\n    };\n\n    service.submitRequirement(payload).subscribe(res => {\n      expect(res.success).toBeTrue();\n      expect(res.data).toBeTrue();\n    });\n\n    const req = httpTesting.expectOne(`${environment.apiUrl}${API_ENDPOINTS.REQUIREMENTS.SUBMIT}`);\n    expect(req.request.method).toBe('POST');\n    expect(req.request.body).toEqual(payload);\n    req.flush(mockResponse);\n  });\n});\n"
   },
   {
-    path: 'src/app/features/admin/inquiries/admin-inquiries.component.ts',
-    name: 'admin-inquiries.component.ts',
-    category: 'Admin Panel',
-    language: 'typescript',
-    description: 'Inquiries CRM management with filtering, remarks updating, and pagination',
-    content: `import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { RequirementService } from '../../../core/services/requirement.service';
-import { ToastService } from '../../../core/services/toast.service';
-import { ClientRequirement, RequirementStatus } from '../../../core/models/requirement.model';
-
-@Component({
-  selector: 'app-admin-inquiries',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: \`
-    <div class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-2xl font-bold tracking-tight">Client Inquiries & Leads CRM</h1>
-          <p class="text-xs text-slate-400 mt-1">Review quotation requests and update lead progression status</p>
-        </div>
-      </div>
-
-      <!-- Filter Controls -->
-      <div class="flex flex-col sm:flex-row gap-3">
-        <input 
-          type="text" 
-          [(ngModel)]="search" 
-          (ngModelChange)="loadData()" 
-          placeholder="Search by client name, email, phone, product..." 
-          class="flex-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"
-        />
-        <select 
-          [(ngModel)]="statusFilter" 
-          (ngModelChange)="loadData()" 
-          class="px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"
-        >
-          <option value="All">All Statuses</option>
-          <option value="New">New</option>
-          <option value="Contacted">Contacted</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-          <option value="Rejected">Rejected</option>
-        </select>
-      </div>
-
-      <!-- Inquiries Table -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
-            <tr>
-              <th class="p-3">Client</th>
-              <th class="p-3">Contact Details</th>
-              <th class="p-3">Product / Qty</th>
-              <th class="p-3">Requirement Description</th>
-              <th class="p-3">Status</th>
-              <th class="p-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800">
-            <tr *ngFor="let item of items()">
-              <td class="p-3">
-                <div class="font-bold text-white">{{ item.fullName }}</div>
-                <div class="text-[11px] text-slate-400">{{ item.companyName || 'Independent' }}</div>
-              </td>
-              <td class="p-3">
-                <div>{{ item.email }}</div>
-                <div class="font-mono text-slate-400">{{ item.phoneNumber }}</div>
-              </td>
-              <td class="p-3">
-                <div class="font-semibold">{{ item.productOfInterest }}</div>
-                <div class="text-slate-400">{{ item.quantity }}</div>
-              </td>
-              <td class="p-3 max-w-xs truncate">{{ item.requirementDescription }}</td>
-              <td class="p-3">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold"
-                  [ngClass]="{
-                    'bg-emerald-950 text-emerald-400 border border-emerald-800': item.status === 'Completed',
-                    'bg-blue-950 text-blue-400 border border-blue-800': item.status === 'New',
-                    'bg-amber-950 text-amber-400 border border-amber-800': item.status === 'Contacted' || item.status === 'In Progress',
-                    'bg-rose-950 text-rose-400 border border-rose-800': item.status === 'Rejected'
-                  }">
-                  {{ item.status }}
-                </span>
-              </td>
-              <td class="p-3 text-right">
-                <button (click)="openStatusModal(item)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors">
-                  Update
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Status Updater Modal -->
-      <div *ngIf="selectedItem()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
-          <button (click)="selectedItem.set(null)" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-          <h3 class="text-base font-bold text-white">Update Lead Status</h3>
-
-          <div class="space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Status</label>
-              <select [(ngModel)]="newStatus" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-                <option value="New">New</option>
-                <option value="Contacted">Contacted</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Admin Remarks</label>
-              <textarea [(ngModel)]="adminRemarks" rows="3" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" placeholder="Add engineering quotation notes..."></textarea>
-            </div>
-          </div>
-
-          <div class="flex justify-end gap-2 pt-2">
-            <button (click)="selectedItem.set(null)" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
-            <button (click)="saveStatus()" class="px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg">Save Status</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  \`
-})
-export class AdminInquiriesComponent implements OnInit {
-  private reqService = inject(RequirementService);
-  private toast = inject(ToastService);
-
-  items = signal<ClientRequirement[]>([]);
-  search = '';
-  statusFilter = 'All';
-
-  selectedItem = signal<ClientRequirement | null>(null);
-  newStatus: RequirementStatus = 'Contacted';
-  adminRemarks = '';
-
-  ngOnInit(): void {
-    this.loadData();
-  }
-
-  loadData(): void {
-    this.reqService.getAdminRequirements(1, 50, this.statusFilter, this.search).subscribe(res => {
-      if (res.success && res.data) this.items.set(res.data.items);
-    });
-  }
-
-  openStatusModal(item: ClientRequirement): void {
-    this.selectedItem.set(item);
-    this.newStatus = item.status;
-    this.adminRemarks = item.adminRemarks || '';
-  }
-
-  saveStatus(): void {
-    const item = this.selectedItem();
-    if (!item) return;
-
-    this.reqService.updateStatus(item.requirementId, { status: this.newStatus, adminRemarks: this.adminRemarks }).subscribe({
-      next: res => {
-        this.toast.success('Lead status updated.');
-        this.selectedItem.set(null);
-        this.loadData();
-      }
-    });
-  }
-}
-`
+    "name": "requirement.service.ts",
+    "path": "src/app/core/services/requirement.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/requirement.service.ts",
+    "content": "import { Injectable, inject } from '@angular/core';\nimport { HttpClient, HttpParams } from '@angular/common/http';\nimport { Observable } from 'rxjs';\nimport { environment } from '@env/environment';\nimport { API_ENDPOINTS } from '../constants/api-endpoints.constant';\nimport { ApiResponse, PagedResponse } from '../models/api-response.model';\nimport { \n  RequirementCreateRequest, \n  ClientRequirement, \n  UpdateRequirementStatusRequest \n} from '../models/requirement.model';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class RequirementService {\n  private http = inject(HttpClient);\n\n  // Public client submission (Rate limited to 2 req/min)\n  submitRequirement(req: RequirementCreateRequest): Observable<ApiResponse<boolean>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.REQUIREMENTS.SUBMIT}`;\n    return this.http.post<ApiResponse<boolean>>(url, req);\n  }\n\n  // Admin inquiries CRM\n  getAdminRequirements(page = 1, pageSize = 10, status = 'All', search = ''): Observable<ApiResponse<PagedResponse<ClientRequirement>>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.REQUIREMENTS.GET_ALL}`;\n    let params = new HttpParams()\n      .set('page', page.toString())\n      .set('pageSize', pageSize.toString());\n\n    if (status && status !== 'All') params = params.set('status', status);\n    if (search.trim()) params = params.set('search', search.trim());\n\n    return this.http.get<ApiResponse<PagedResponse<ClientRequirement>>>(url, { params });\n  }\n\n  updateStatus(id: number, payload: UpdateRequirementStatusRequest): Observable<ApiResponse<ClientRequirement>> {\n    const url = `${environment.apiUrl}${API_ENDPOINTS.REQUIREMENTS.UPDATE_STATUS(id)}`;\n    return this.http.patch<ApiResponse<ClientRequirement>>(url, payload);\n  }\n}\n"
   },
   {
-    path: 'src/app/features/admin/products/admin-products.component.ts',
-    name: 'admin-products.component.ts',
-    category: 'Admin Panel',
-    language: 'typescript',
-    description: 'Product management with status toggling and creation',
-    content: `import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ProductService } from '../../../core/services/product.service';
-import { ToastService } from '../../../core/services/toast.service';
-import { Product } from '../../../core/models/product.model';
-
-@Component({
-  selector: 'app-admin-products',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: \`
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold tracking-tight">Product Catalog Management</h1>
-          <p class="text-xs text-slate-400 mt-1">Manage industrial polymer lines and active statuses</p>
-        </div>
-      </div>
-
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
-            <tr>
-              <th class="p-3">Product Name</th>
-              <th class="p-3">Category</th>
-              <th class="p-3">Specifications</th>
-              <th class="p-3">Status</th>
-              <th class="p-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800">
-            <tr *ngFor="let p of products()">
-              <td class="p-3 font-semibold text-white">{{ p.productName }}</td>
-              <td class="p-3 text-slate-400">{{ p.category?.categoryName }}</td>
-              <td class="p-3 max-w-xs truncate text-slate-400">{{ p.specifications }}</td>
-              <td class="p-3">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold"
-                  [ngClass]="p.isActive ? 'bg-emerald-950 text-emerald-400' : 'bg-slate-800 text-slate-400'">
-                  {{ p.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td class="p-3 text-right space-x-2">
-                <button (click)="toggleStatus(p.productId)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300">
-                  Toggle
-                </button>
-                <button (click)="deleteProduct(p.productId)" class="px-2.5 py-1 bg-rose-950 hover:bg-rose-900 text-rose-300 rounded">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  \`
-})
-export class AdminProductsComponent implements OnInit {
-  private prodService = inject(ProductService);
-  private toast = inject(ToastService);
-
-  products = signal<Product[]>([]);
-
-  ngOnInit(): void {
-    this.loadProducts();
-  }
-
-  loadProducts(): void {
-    this.prodService.getProducts(1, 50).subscribe(res => {
-      if (res.success && res.data) this.products.set(res.data.items);
-    });
-  }
-
-  toggleStatus(id: number): void {
-    this.prodService.toggleProductStatus(id).subscribe(res => {
-      this.toast.success('Product status toggled.');
-      this.loadProducts();
-    });
-  }
-
-  deleteProduct(id: number): void {
-    if (!confirm('Are you sure you want to delete this product?')) return;
-    this.prodService.deleteProduct(id).subscribe(res => {
-      this.toast.success('Product removed.');
-      this.loadProducts();
-    });
-  }
-}
-`
+    "name": "theme.service.ts",
+    "path": "src/app/core/services/theme.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/theme.service.ts",
+    "content": "import { Injectable, signal, effect } from '@angular/core';\nimport { APP_CONSTANTS } from '../constants/app.constant';\n\nexport type ThemeMode = 'light' | 'dark';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class ThemeService {\n  theme = signal<ThemeMode>(this.getInitialTheme());\n\n  constructor() {\n    effect(() => {\n      const current = this.theme();\n      if (typeof document !== 'undefined') {\n        const root = document.documentElement;\n        if (current === 'dark') {\n          root.classList.add('dark');\n          document.body.classList.add('dark');\n        } else {\n          root.classList.remove('dark');\n          document.body.classList.remove('dark');\n        }\n        localStorage.setItem(APP_CONSTANTS.STORAGE_KEYS.THEME, current);\n      }\n    });\n  }\n\n  toggleTheme(): void {\n    this.theme.update(current => (current === 'light' ? 'dark' : 'light'));\n  }\n\n  isDark(): boolean {\n    return this.theme() === 'dark';\n  }\n\n  private getInitialTheme(): ThemeMode {\n    if (typeof localStorage !== 'undefined') {\n      const saved = localStorage.getItem(APP_CONSTANTS.STORAGE_KEYS.THEME) as ThemeMode;\n      if (saved === 'dark' || saved === 'light') return saved;\n      if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {\n        return 'dark';\n      }\n    }\n    return 'light';\n  }\n}\n"
   },
   {
-    path: 'src/app/features/admin/users/admin-users.component.ts',
-    name: 'admin-users.component.ts',
-    category: 'Admin Panel',
-    language: 'typescript',
-    description: 'SuperAdmin user CRUD management with status toggle and role guards',
-    content: `import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { AdminUserService } from '../../../core/services/admin-user.service';
-import { ToastService } from '../../../core/services/toast.service';
-import { AdminUser, CreateAdminRequest } from '../../../core/models/auth.model';
-
-@Component({
-  selector: 'app-admin-users',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: \`
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold tracking-tight">System Administrators Management</h1>
-          <p class="text-xs text-slate-400 mt-1">SuperAdmin exclusive panel: Add, deactivate, and manage roles</p>
-        </div>
-        <button (click)="showCreateModal.set(true)" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg text-xs">
-          + Add Administrator
-        </button>
-      </div>
-
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
-            <tr>
-              <th class="p-3">Administrator</th>
-              <th class="p-3">Email</th>
-              <th class="p-3">Role</th>
-              <th class="p-3">Status</th>
-              <th class="p-3 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800">
-            <tr *ngFor="let u of users()">
-              <td class="p-3 font-semibold text-white">{{ u.fullName }}</td>
-              <td class="p-3 text-slate-400 font-mono">{{ u.email }}</td>
-              <td class="p-3">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold"
-                  [ngClass]="u.role === 'SuperAdmin' ? 'bg-amber-950 text-amber-400 border border-amber-800' : 'bg-blue-950 text-blue-400 border border-blue-800'">
-                  {{ u.role }}
-                </span>
-              </td>
-              <td class="p-3">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold"
-                  [ngClass]="u.isActive ? 'bg-emerald-950 text-emerald-400' : 'bg-slate-800 text-slate-400'">
-                  {{ u.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td class="p-3 text-right space-x-2">
-                <button (click)="toggleStatus(u.adminId)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300">
-                  Toggle Status
-                </button>
-                <button (click)="deleteUser(u.adminId)" class="px-2.5 py-1 bg-rose-950 hover:bg-rose-900 text-rose-300 rounded">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Add Administrator Modal -->
-      <div *ngIf="showCreateModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
-          <button (click)="showCreateModal.set(false)" class="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
-          <h3 class="text-base font-bold text-white">Create New Administrator</h3>
-
-          <div class="space-y-3">
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label>
-              <input type="text" [(ngModel)]="newFullName" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Email</label>
-              <input type="email" [(ngModel)]="newEmail" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Password</label>
-              <input type="password" [(ngModel)]="newPassword" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Role</label>
-              <select [(ngModel)]="newRole" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-                <option value="Admin">Admin</option>
-                <option value="SuperAdmin">SuperAdmin</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="flex justify-end gap-2 pt-2">
-            <button (click)="showCreateModal.set(false)" class="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
-            <button (click)="createAdmin()" class="px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg">Create</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  \`
-})
-export class AdminUsersComponent implements OnInit {
-  private userService = inject(AdminUserService);
-  private toast = inject(ToastService);
-
-  users = signal<AdminUser[]>([]);
-  showCreateModal = signal(false);
-
-  newFullName = '';
-  newEmail = '';
-  newPassword = '';
-  newRole: 'SuperAdmin' | 'Admin' = 'Admin';
-
-  ngOnInit(): void {
-    this.loadUsers();
-  }
-
-  loadUsers(): void {
-    this.userService.getUsers(1, 50).subscribe(res => {
-      if (res.success && res.data) this.users.set(res.data.items);
-    });
-  }
-
-  toggleStatus(id: number): void {
-    this.userService.toggleUserStatus(id).subscribe({
-      next: () => {
-        this.toast.success('Admin status toggled.');
-        this.loadUsers();
-      }
-    });
-  }
-
-  deleteUser(id: number): void {
-    if (!confirm('Are you sure you want to delete this administrator?')) return;
-    this.userService.deleteUser(id).subscribe({
-      next: () => {
-        this.toast.success('Administrator deleted.');
-        this.loadUsers();
-      }
-    });
-  }
-
-  createAdmin(): void {
-    if (!this.newFullName || !this.newEmail || !this.newPassword) {
-      this.toast.error('All fields are mandatory.');
-      return;
-    }
-
-    this.userService.createUser({
-      fullName: this.newFullName,
-      email: this.newEmail,
-      password: this.newPassword,
-      role: this.newRole
-    }).subscribe({
-      next: () => {
-        this.toast.success('Administrator created.');
-        this.showCreateModal.set(false);
-        this.newFullName = '';
-        this.newEmail = '';
-        this.newPassword = '';
-        this.loadUsers();
-      }
-    });
-  }
-}
-`
+    "name": "toast.service.ts",
+    "path": "src/app/core/services/toast.service.ts",
+    "category": "Core & Services",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/toast.service.ts",
+    "content": "import { Injectable, signal } from '@angular/core';\n\nexport interface ToastMessage {\n  id: string;\n  type: 'success' | 'error' | 'info' | 'warning';\n  title?: string;\n  message: string;\n  duration?: number;\n}\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class ToastService {\n  messages = signal<ToastMessage[]>([]);\n\n  show(toast: Omit<ToastMessage, 'id'>): void {\n    const id = Math.random().toString(36).substring(2, 9);\n    const newToast: ToastMessage = {\n      ...toast,\n      id,\n      duration: toast.duration ?? 4500\n    };\n\n    this.messages.update(list => [...list, newToast]);\n\n    if (newToast.duration && newToast.duration > 0) {\n      setTimeout(() => this.remove(id), newToast.duration);\n    }\n  }\n\n  success(message: string, title = 'Success'): void {\n    this.show({ type: 'success', title, message });\n  }\n\n  error(message: string, title = 'Error'): void {\n    this.show({ type: 'error', title, message, duration: 6000 });\n  }\n\n  info(message: string, title = 'Notice'): void {\n    this.show({ type: 'info', title, message });\n  }\n\n  remove(id: string): void {\n    this.messages.update(list => list.filter(m => m.id !== id));\n  }\n}\n"
   },
   {
-    path: 'src/app/features/admin/company/admin-company.component.ts',
-    name: 'admin-company.component.ts',
-    category: 'Admin Panel',
-    language: 'typescript',
-    description: 'Company settings editor managing phone, address, and WhatsApp parameters',
-    content: `import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { CompanyService } from '../../../core/services/company.service';
-import { ToastService } from '../../../core/services/toast.service';
-import { CompanySettings } from '../../../core/models/company.model';
-
-@Component({
-  selector: 'app-admin-company',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: \`
-    <div class="space-y-6 max-w-3xl">
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight">Company Profile & WhatsApp Settings</h1>
-        <p class="text-xs text-slate-400 mt-1">Configure company metadata and direct WhatsApp inquiry number</p>
-      </div>
-
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4" *ngIf="settings()">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Company Name</label>
-            <input type="text" [(ngModel)]="companyName" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">WhatsApp Phone Number</label>
-            <input type="text" [(ngModel)]="whatsAppNumber" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Phone Contact</label>
-            <input type="text" [(ngModel)]="phoneContact" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">Email Contact</label>
-            <input type="email" [(ngModel)]="emailContact" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" />
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-400 mb-1">Factory Address</label>
-          <input type="text" [(ngModel)]="address" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white" />
-        </div>
-
-        <button (click)="saveSettings()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg text-xs transition-colors">
-          Save Settings
-        </button>
-      </div>
-    </div>
-  \`
-})
-export class AdminCompanyComponent implements OnInit {
-  private compService = inject(CompanyService);
-  private toast = inject(ToastService);
-
-  settings = signal<CompanySettings | null>(null);
-
-  companyName = '';
-  whatsAppNumber = '';
-  phoneContact = '';
-  emailContact = '';
-  address = '';
-
-  ngOnInit(): void {
-    this.compService.getCompanySettings().subscribe(res => {
-      if (res.success && res.data) {
-        this.settings.set(res.data);
-        this.companyName = res.data.companyName;
-        this.whatsAppNumber = res.data.whatsAppNumber;
-        this.phoneContact = res.data.phoneContact;
-        this.emailContact = res.data.emailContact;
-        this.address = res.data.address;
-      }
-    });
-  }
-
-  saveSettings(): void {
-    this.compService.updateCompanySettings({
-      companyName: this.companyName,
-      whatsAppNumber: this.whatsAppNumber,
-      phoneContact: this.phoneContact,
-      emailContact: this.emailContact,
-      address: this.address
-    }).subscribe({
-      next: () => this.toast.success('Company settings updated.')
-    });
-  }
-}
-`
-  },
-
-  // ==========================================
-  // 9. AUTH FEATURES
-  // ==========================================
-  {
-    path: 'src/app/features/auth/login/login.component.ts',
-    name: 'login.component.ts',
-    category: 'Auth',
-    language: 'typescript',
-    description: 'Reactive login form handling Bearer JWT authentication and rate limiting',
-    content: `import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
-import { ToastService } from '../../../core/services/toast.service';
-
-@Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
-  template: \`
-    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-      <div class="text-center">
-        <div class="w-12 h-12 rounded-2xl bg-blue-600 mx-auto flex items-center justify-center text-xl font-bold mb-3 shadow-lg">
-          OM
-        </div>
-        <h1 class="text-xl font-bold text-white">Administrator Sign In</h1>
-        <p class="text-xs text-slate-400 mt-1">OM Polymer Management Portal</p>
-      </div>
-
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
-          <input formControlName="email" type="email" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white" />
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-          <input formControlName="password" type="password" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white" />
-        </div>
-
-        <div class="p-3 bg-slate-950/70 rounded-xl border border-slate-800 text-[11px] text-slate-400 space-y-0.5">
-          <div class="font-semibold text-slate-300">Seed Administrative Credentials:</div>
-          <div>Email: <span class="text-blue-400 font-mono">admin@ompolymer.com</span></div>
-          <div>Password: <span class="text-blue-400 font-mono">Admin@123</span></div>
-        </div>
-
-        <button 
-          type="submit" 
-          [disabled]="loading()"
-          class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-md transition-colors disabled:opacity-50"
-        >
-          {{ loading() ? 'Authenticating & Issuing Token...' : 'Authenticate & Enter' }}
-        </button>
-      </form>
-    </div>
-  \`
-})
-export class LoginComponent {
-  private fb = inject(FormBuilder);
-  private auth = inject(AuthService);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private toast = inject(ToastService);
-
-  loading = signal(false);
-
-  loginForm: FormGroup = this.fb.group({
-    email: ['admin@ompolymer.com', [Validators.required, Validators.email]],
-    password: ['Admin@123', Validators.required]
-  });
-
-  onSubmit(): void {
-    if (this.loginForm.invalid) return;
-
-    this.loading.set(true);
-    this.auth.login(this.loginForm.value).subscribe({
-      next: res => {
-        this.loading.set(false);
-        this.toast.success(\`Welcome back, \${res.data.fullName}!\`);
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/dashboard';
-        this.router.navigateByUrl(returnUrl);
-      },
-      error: () => this.loading.set(false)
-    });
-  }
-}
-`
+    "name": "admin-blogs.component.ts",
+    "path": "src/app/features/admin/blogs/admin-blogs.component.ts",
+    "category": "Admin Panel",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/admin/blogs/admin-blogs.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\nimport { BlogService } from '../../../core/services/blog.service';\nimport { ToastService } from '../../../core/services/toast.service';\nimport { BlogPost, BlogCategory, CreateBlogRequest } from '../../../core/models/blog.model';\n\n@Component({\n  selector: 'app-admin-blogs',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  template: `\n    <div class=\"space-y-6\">\n      <!-- Header -->\n      <div class=\"flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4\">\n        <div>\n          <h1 class=\"text-2xl font-bold tracking-tight\">Engineering Articles & Blogs</h1>\n          <p class=\"text-xs text-slate-400 mt-1\">Create, edit, publish, and manage technical whitepapers and industry insights</p>\n        </div>\n        <button \n          (click)=\"openCreateModal()\" \n          class=\"px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl shadow-md transition-all flex items-center gap-2\"\n        >\n          <span>＋</span> Write New Article\n        </button>\n      </div>\n\n      <!-- Filters & Search -->\n      <div class=\"flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-900 p-3.5 rounded-2xl border border-slate-800\">\n        <div class=\"flex items-center gap-2 w-full sm:w-auto\">\n          <input \n            type=\"text\" \n            [(ngModel)]=\"searchQuery\" \n            (ngModelChange)=\"loadBlogs()\" \n            placeholder=\"Search by title...\" \n            class=\"w-full sm:w-64 px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500\"\n          />\n        </div>\n        <div class=\"text-xs text-slate-400\">\n          Total: <span class=\"font-bold text-white\">{{ blogs().length }}</span> articles\n        </div>\n      </div>\n\n      <!-- Blogs Table -->\n      <div class=\"bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto shadow-sm\">\n        <table class=\"w-full text-left text-xs\">\n          <thead class=\"bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]\">\n            <tr>\n              <th class=\"p-3.5\">Title & Slug</th>\n              <th class=\"p-3.5\">Category</th>\n              <th class=\"p-3.5\">Author</th>\n              <th class=\"p-3.5\">Status</th>\n              <th class=\"p-3.5\">Published Date</th>\n              <th class=\"p-3.5 text-right\">Actions</th>\n            </tr>\n          </thead>\n          <tbody class=\"divide-y divide-slate-800/80 text-slate-300\">\n            <tr *ngFor=\"let b of blogs()\" class=\"hover:bg-slate-800/30 transition-colors\">\n              <td class=\"p-3.5\">\n                <div class=\"font-semibold text-white max-w-sm truncate\">{{ b.title }}</div>\n                <div class=\"text-[11px] font-mono text-slate-500 truncate max-w-xs\">/blogs/{{ b.slug }}</div>\n              </td>\n              <td class=\"p-3.5\">\n                <span class=\"px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700\">\n                  {{ b.category?.categoryName || 'Technical' }}\n                </span>\n              </td>\n              <td class=\"p-3.5 text-slate-400\">{{ b.author || 'OM Polymer Lab' }}</td>\n              <td class=\"p-3.5\">\n                <span class=\"px-2 py-0.5 rounded text-[10px] font-bold\"\n                  [ngClass]=\"b.isPublished ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-amber-950 text-amber-400 border border-amber-800/50'\">\n                  {{ b.isPublished ? 'Published' : 'Draft' }}\n                </span>\n              </td>\n              <td class=\"p-3.5 text-slate-400\">\n                {{ b.publishedAt ? (b.publishedAt | date:'mediumDate') : '—' }}\n              </td>\n              <td class=\"p-3.5 text-right space-x-1.5 whitespace-nowrap\">\n                <button (click)=\"openViewModal(b)\" class=\"px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 transition-colors\">\n                  View\n                </button>\n                <button (click)=\"togglePublish(b)\" class=\"px-2.5 py-1 rounded transition-colors\"\n                  [ngClass]=\"b.isPublished ? 'bg-amber-950 hover:bg-amber-900 text-amber-300' : 'bg-emerald-950 hover:bg-emerald-900 text-emerald-300'\">\n                  {{ b.isPublished ? 'Unpublish' : 'Publish' }}\n                </button>\n                <button (click)=\"openEditModal(b)\" class=\"px-2.5 py-1 bg-blue-950 hover:bg-blue-900 text-blue-300 rounded transition-colors\">\n                  Edit\n                </button>\n                <button (click)=\"confirmDelete(b)\" class=\"px-2.5 py-1 bg-rose-950 hover:bg-rose-900 text-rose-300 rounded transition-colors\">\n                  Delete\n                </button>\n              </td>\n            </tr>\n            <tr *ngIf=\"blogs().length === 0\">\n              <td colspan=\"6\" class=\"p-8 text-center text-slate-500\">\n                No blog articles found.\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n\n      <!-- Add/Edit Modal -->\n      <div *ngIf=\"showFormModal\" class=\"fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl\">\n          <div class=\"flex items-center justify-between border-b border-slate-800 pb-3\">\n            <h3 class=\"text-base font-bold text-white\">\n              {{ editingBlogId ? 'Edit Engineering Article' : 'Compose New Article' }}\n            </h3>\n            <button (click)=\"showFormModal = false\" class=\"text-slate-400 hover:text-white text-lg\">✕</button>\n          </div>\n\n          <form (ngSubmit)=\"saveBlog()\" class=\"space-y-4 text-xs\">\n            <div>\n              <label class=\"block text-slate-300 font-semibold mb-1\">Article Title *</label>\n              <input \n                type=\"text\" \n                [(ngModel)]=\"formData.title\" \n                name=\"title\" \n                (ngModelChange)=\"onTitleChange($event)\"\n                required \n                placeholder=\"e.g. Advances in PE100-RC Resins for Trenchless Installations\"\n                class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n              />\n            </div>\n\n            <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-3\">\n              <div>\n                <label class=\"block text-slate-300 font-semibold mb-1\">URL Slug *</label>\n                <input \n                  type=\"text\" \n                  [(ngModel)]=\"formData.slug\" \n                  name=\"slug\" \n                  required \n                  placeholder=\"e.g. advances-in-pe100-rc-resins\"\n                  class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n                />\n              </div>\n\n              <div>\n                <label class=\"block text-slate-300 font-semibold mb-1\">Category</label>\n                <select \n                  [(ngModel)]=\"formData.blogCategoryId\" \n                  name=\"categoryId\" \n                  class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n                >\n                  <option [ngValue]=\"null\">Select Category</option>\n                  <option *ngFor=\"let c of categories()\" [ngValue]=\"c.blogCategoryId\">\n                    {{ c.categoryName }}\n                  </option>\n                </select>\n              </div>\n            </div>\n\n            <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-3\">\n              <div>\n                <label class=\"block text-slate-300 font-semibold mb-1\">Author Name</label>\n                <input \n                  type=\"text\" \n                  [(ngModel)]=\"formData.author\" \n                  name=\"author\" \n                  placeholder=\"e.g. Dr. Ramesh Patel, Chief Polymer Technologist\"\n                  class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n                />\n              </div>\n\n              <div class=\"flex items-center gap-3 pt-6\">\n                <label class=\"flex items-center gap-2 cursor-pointer text-slate-300\">\n                  <input \n                    type=\"checkbox\" \n                    [(ngModel)]=\"formData.isPublished\" \n                    name=\"isPublished\"\n                    class=\"w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-700\"\n                  />\n                  <span>Publish Immediately (Publicly Visible)</span>\n                </label>\n              </div>\n            </div>\n\n            <div>\n              <label class=\"block text-slate-300 font-semibold mb-1\">Short Description / Excerpt</label>\n              <textarea \n                [(ngModel)]=\"formData.shortDescription\" \n                name=\"shortDescription\" \n                rows=\"2\"\n                placeholder=\"Brief summary for listings and preview cards...\"\n                class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n              ></textarea>\n            </div>\n\n            <div>\n              <label class=\"block text-slate-300 font-semibold mb-1\">Full Article Content (Markdown / Plain Text) *</label>\n              <textarea \n                [(ngModel)]=\"formData.content\" \n                name=\"content\" \n                rows=\"8\"\n                required\n                placeholder=\"Comprehensive technical writeup, specifications, standards, and references...\"\n                class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white font-mono focus:outline-none focus:ring-1 focus:ring-blue-500\"\n              ></textarea>\n            </div>\n\n            <div *ngIf=\"formError\" class=\"p-3 bg-rose-950/60 border border-rose-800 rounded-xl text-rose-300\">\n              {{ formError }}\n            </div>\n\n            <div class=\"flex items-center justify-end gap-3 pt-3 border-t border-slate-800\">\n              <button \n                type=\"button\" \n                (click)=\"showFormModal = false\" \n                class=\"px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors\"\n              >\n                Cancel\n              </button>\n              <button \n                type=\"submit\" \n                [disabled]=\"saving\"\n                class=\"px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md transition-colors disabled:opacity-50\"\n              >\n                {{ saving ? 'Saving...' : (editingBlogId ? 'Update Article' : 'Publish Article') }}\n              </button>\n            </div>\n          </form>\n        </div>\n      </div>\n\n      <!-- View Modal -->\n      <div *ngIf=\"selectedBlog\" class=\"fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-4 shadow-2xl\">\n          <div class=\"flex items-center justify-between border-b border-slate-800 pb-3\">\n            <div>\n              <span class=\"px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950 text-blue-400\">\n                {{ selectedBlog.category?.categoryName || 'Technical' }}\n              </span>\n              <h3 class=\"text-base font-bold text-white mt-1\">{{ selectedBlog.title }}</h3>\n            </div>\n            <button (click)=\"selectedBlog = null\" class=\"text-slate-400 hover:text-white text-lg\">✕</button>\n          </div>\n\n          <div class=\"text-xs text-slate-400 space-y-1\">\n            <div><strong>Slug:</strong> /blogs/{{ selectedBlog.slug }}</div>\n            <div><strong>Author:</strong> {{ selectedBlog.author || 'OM Polymer Lab' }}</div>\n            <div><strong>Status:</strong> {{ selectedBlog.isPublished ? 'Published' : 'Draft' }}</div>\n            <div *ngIf=\"selectedBlog.publishedAt\"><strong>Published At:</strong> {{ selectedBlog.publishedAt | date:'medium' }}</div>\n          </div>\n\n          <div *ngIf=\"selectedBlog.shortDescription\" class=\"p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 font-medium\">\n            {{ selectedBlog.shortDescription }}\n          </div>\n\n          <div class=\"p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 font-mono whitespace-pre-line leading-relaxed max-h-60 overflow-y-auto\">\n            {{ selectedBlog.content }}\n          </div>\n\n          <div class=\"flex justify-end pt-3\">\n            <button (click)=\"selectedBlog = null\" class=\"px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs\">\n              Close\n            </button>\n          </div>\n        </div>\n      </div>\n\n      <!-- Delete Confirmation Modal -->\n      <div *ngIf=\"blogToDelete\" class=\"fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl\">\n          <h3 class=\"text-base font-bold text-rose-400 flex items-center gap-2\">\n            <span>⚠️</span> Delete Article\n          </h3>\n          <p class=\"text-xs text-slate-300\">\n            Are you sure you want to permanently delete <strong class=\"text-white\">\"{{ blogToDelete.title }}\"</strong>? This action cannot be undone.\n          </p>\n          <div class=\"flex justify-end gap-3 pt-3\">\n            <button (click)=\"blogToDelete = null\" class=\"px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs\">\n              Cancel\n            </button>\n            <button (click)=\"deleteConfirmed()\" class=\"px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs shadow-md\">\n              Confirm Delete\n            </button>\n          </div>\n        </div>\n      </div>\n\n    </div>\n  `\n})\nexport class AdminBlogsComponent implements OnInit {\n  private blogService = inject(BlogService);\n  private toast = inject(ToastService);\n\n  blogs = signal<BlogPost[]>([]);\n  categories = signal<BlogCategory[]>([]);\n  searchQuery = '';\n\n  showFormModal = false;\n  editingBlogId: number | null = null;\n  selectedBlog: BlogPost | null = null;\n  blogToDelete: BlogPost | null = null;\n  saving = false;\n  formError: string | null = null;\n\n  formData: CreateBlogRequest = {\n    title: '',\n    slug: '',\n    blogCategoryId: null,\n    shortDescription: '',\n    content: '',\n    author: 'OM Polymer Technical Team',\n    isPublished: true\n  };\n\n  ngOnInit(): void {\n    this.loadCategories();\n    this.loadBlogs();\n  }\n\n  loadCategories(): void {\n    this.blogService.getCategories().subscribe({\n      next: res => {\n        if (res.success && res.data) this.categories.set(res.data);\n      }\n    });\n  }\n\n  loadBlogs(): void {\n    this.blogService.getAdminBlogs(1, 100, undefined, this.searchQuery).subscribe({\n      next: res => {\n        if (res.success && res.data?.items) {\n          this.blogs.set(res.data.items);\n        } else {\n          this.blogs.set([]);\n        }\n      },\n      error: () => this.blogs.set([])\n    });\n  }\n\n  onTitleChange(val: string): void {\n    if (!this.editingBlogId) {\n      this.formData.slug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');\n    }\n  }\n\n  openCreateModal(): void {\n    this.editingBlogId = null;\n    this.formData = {\n      title: '',\n      slug: '',\n      blogCategoryId: this.categories()[0]?.blogCategoryId || null,\n      shortDescription: '',\n      content: '',\n      author: 'OM Polymer Technical Team',\n      isPublished: true\n    };\n    this.formError = null;\n    this.showFormModal = true;\n  }\n\n  openEditModal(b: BlogPost): void {\n    this.editingBlogId = b.blogId;\n    this.formData = {\n      title: b.title,\n      slug: b.slug,\n      blogCategoryId: b.category?.blogCategoryId || null,\n      shortDescription: b.shortDescription || '',\n      content: b.content,\n      author: b.author || '',\n      isPublished: b.isPublished\n    };\n    this.formError = null;\n    this.showFormModal = true;\n  }\n\n  openViewModal(b: BlogPost): void {\n    this.selectedBlog = b;\n  }\n\n  confirmDelete(b: BlogPost): void {\n    this.blogToDelete = b;\n  }\n\n  saveBlog(): void {\n    if (!this.formData.title.trim()) {\n      this.formError = 'Please provide an article title.';\n      return;\n    }\n    if (!this.formData.slug.trim()) {\n      this.formError = 'Please provide a valid slug.';\n      return;\n    }\n    if (!this.formData.content.trim()) {\n      this.formError = 'Please enter article content.';\n      return;\n    }\n\n    this.saving = true;\n    this.formError = null;\n\n    if (this.editingBlogId) {\n      this.blogService.updateBlog(this.editingBlogId, this.formData).subscribe({\n        next: res => {\n          this.saving = false;\n          if (res.success) {\n            this.toast.success('Article updated successfully.');\n            this.showFormModal = false;\n            this.loadBlogs();\n          } else {\n            this.formError = res.message || 'Failed to update article.';\n          }\n        },\n        error: err => {\n          this.saving = false;\n          this.formError = err.error?.message || 'Error communicating with server.';\n        }\n      });\n    } else {\n      this.blogService.createBlog(this.formData).subscribe({\n        next: res => {\n          this.saving = false;\n          if (res.success) {\n            this.toast.success('Article created and published successfully.');\n            this.showFormModal = false;\n            this.loadBlogs();\n          } else {\n            this.formError = res.message || 'Failed to create article.';\n          }\n        },\n        error: err => {\n          this.saving = false;\n          this.formError = err.error?.message || 'Error communicating with server.';\n        }\n      });\n    }\n  }\n\n  togglePublish(b: BlogPost): void {\n    const action$ = b.isPublished \n      ? this.blogService.unpublishBlog(b.blogId) \n      : this.blogService.publishBlog(b.blogId);\n\n    action$.subscribe({\n      next: res => {\n        if (res.success) {\n          this.toast.success(`Article ${b.isPublished ? 'moved to drafts' : 'published successfully'}.`);\n          this.loadBlogs();\n        } else {\n          this.toast.error(res.message || 'Action failed.');\n        }\n      },\n      error: () => this.toast.error('Network error updating status.')\n    });\n  }\n\n  deleteConfirmed(): void {\n    if (!this.blogToDelete) return;\n    this.blogService.deleteBlog(this.blogToDelete.blogId).subscribe({\n      next: res => {\n        if (res.success) {\n          this.toast.success('Article removed permanently.');\n          this.blogToDelete = null;\n          this.loadBlogs();\n        } else {\n          this.toast.error(res.message || 'Failed to delete article.');\n        }\n      },\n      error: () => this.toast.error('Server error deleting article.')\n    });\n  }\n}\n"
   },
   {
-    path: 'src/app/features/auth/forgot-password/forgot-password.component.ts',
-    name: 'forgot-password.component.ts',
-    category: 'Auth',
-    language: 'typescript',
-    description: 'Forgot password component respecting backend rate limits',
-    content: `import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '@env/environment';
-import { ToastService } from '../../../core/services/toast.service';
-
-@Component({
-  selector: 'app-forgot-password',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  template: \`
-    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
-      <div class="text-center">
-        <h1 class="text-xl font-bold text-white">Reset Administrative Password</h1>
-        <p class="text-xs text-slate-400 mt-1">Dispatches a 1-hour secure password reset token</p>
-      </div>
-
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1">Registered Administrator Email</label>
-          <input formControlName="email" type="email" class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white" />
-        </div>
-
-        <button type="submit" [disabled]="loading()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition-colors disabled:opacity-50">
-          {{ loading() ? 'Sending...' : 'Dispatch Reset Token' }}
-        </button>
-      </form>
-    </div>
-  \`
-})
-export class ForgotPasswordComponent {
-  private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
-  private toast = inject(ToastService);
-
-  loading = signal(false);
-
-  form: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]]
-  });
-
-  onSubmit(): void {
-    if (this.form.invalid) return;
-
-    this.loading.set(true);
-    this.http.post<any>(\`\${environment.apiUrl}/admin/auth/forgot-password\`, this.form.value).subscribe({
-      next: res => {
-        this.loading.set(false);
-        this.toast.success(res.message);
-      },
-      error: () => this.loading.set(false)
-    });
-  }
-}
-`
-  },
-
-  // ==========================================
-  // 10. SHARED & SHELL
-  // ==========================================
-  {
-    path: 'src/app/shared/components/toast.component.ts',
-    name: 'toast.component.ts',
-    category: 'Shared & Shell',
-    language: 'typescript',
-    description: 'Global standalone toast notification banner component',
-    content: `import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ToastService } from '../../core/services/toast.service';
-
-@Component({
-  selector: 'app-toast',
-  standalone: true,
-  imports: [CommonModule],
-  template: \`
-    <div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
-      <div 
-        *ngFor="let toast of toastService.messages()" 
-        class="pointer-events-auto p-3.5 rounded-xl shadow-xl border text-xs flex items-start gap-3 transition-all"
-        [ngClass]="{
-          'bg-emerald-950/95 border-emerald-700 text-emerald-200': toast.type === 'success',
-          'bg-rose-950/95 border-rose-700 text-rose-200': toast.type === 'error',
-          'bg-blue-950/95 border-blue-700 text-blue-200': toast.type === 'info',
-          'bg-amber-950/95 border-amber-700 text-amber-200': toast.type === 'warning'
-        }"
-      >
-        <div class="text-base shrink-0">
-          <span *ngIf="toast.type === 'success'">✅</span>
-          <span *ngIf="toast.type === 'error'">⚠️</span>
-          <span *ngIf="toast.type === 'info'">ℹ️</span>
-          <span *ngIf="toast.type === 'warning'">⚡</span>
-        </div>
-        <div class="flex-1">
-          <div *ngIf="toast.title" class="font-bold text-white mb-0.5">{{ toast.title }}</div>
-          <div>{{ toast.message }}</div>
-        </div>
-        <button 
-          (click)="toastService.remove(toast.id)"
-          class="text-white/60 hover:text-white font-bold p-0.5 ml-1"
-        >
-          ✕
-        </button>
-      </div>
-    </div>
-  \`
-})
-export class ToastComponent {
-  toastService = inject(ToastService);
-}
-`
+    "name": "admin-company.component.ts",
+    "path": "src/app/features/admin/company/admin-company.component.ts",
+    "category": "Admin Panel",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/admin/company/admin-company.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\nimport { CompanyService } from '../../../core/services/company.service';\nimport { ToastService } from '../../../core/services/toast.service';\nimport { CompanySettings } from '../../../core/models/company.model';\n\n@Component({\n  selector: 'app-admin-company',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  template: `\n    <div class=\"space-y-6 max-w-3xl\">\n      <div>\n        <h1 class=\"text-2xl font-bold tracking-tight\">Company Profile & WhatsApp Settings</h1>\n        <p class=\"text-xs text-slate-400 mt-1\">Configure company metadata and direct WhatsApp inquiry number</p>\n      </div>\n\n      <div class=\"bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4\" *ngIf=\"settings()\">\n        <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-4\">\n          <div>\n            <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Company Name</label>\n            <input type=\"text\" [(ngModel)]=\"companyName\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" />\n          </div>\n          <div>\n            <label class=\"block text-xs font-semibold text-slate-400 mb-1\">WhatsApp Phone Number</label>\n            <input type=\"text\" [(ngModel)]=\"whatsAppNumber\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" />\n          </div>\n        </div>\n\n        <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-4\">\n          <div>\n            <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Phone Contact</label>\n            <input type=\"text\" [(ngModel)]=\"phoneContact\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" />\n          </div>\n          <div>\n            <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Email Contact</label>\n            <input type=\"email\" [(ngModel)]=\"emailContact\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" />\n          </div>\n        </div>\n\n        <div>\n          <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Factory Address</label>\n          <input type=\"text\" [(ngModel)]=\"address\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" />\n        </div>\n\n        <button (click)=\"saveSettings()\" class=\"px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg text-xs transition-colors\">\n          Save Settings\n        </button>\n      </div>\n    </div>\n  `\n})\nexport class AdminCompanyComponent implements OnInit {\n  private compService = inject(CompanyService);\n  private toast = inject(ToastService);\n\n  settings = signal<CompanySettings | null>(null);\n\n  companyName = '';\n  whatsAppNumber = '';\n  phoneContact = '';\n  emailContact = '';\n  address = '';\n\n  ngOnInit(): void {\n    this.compService.getCompanySettings().subscribe(res => {\n      if (res.success && res.data) {\n        this.settings.set(res.data);\n        this.companyName = res.data.companyName;\n        this.whatsAppNumber = res.data.whatsAppNumber;\n        this.phoneContact = res.data.phoneContact;\n        this.emailContact = res.data.emailContact;\n        this.address = res.data.address;\n      }\n    });\n  }\n\n  saveSettings(): void {\n    this.compService.updateCompanySettings({\n      companyName: this.companyName,\n      whatsAppNumber: this.whatsAppNumber,\n      phoneContact: this.phoneContact,\n      emailContact: this.emailContact,\n      address: this.address\n    }).subscribe({\n      next: () => this.toast.success('Company settings updated.')\n    });\n  }\n}\n"
   },
   {
-    path: 'src/app/app.routes.ts',
-    name: 'app.routes.ts',
-    category: 'Shared & Shell',
-    language: 'typescript',
-    description: 'Centralized role-based routing structure connecting User, Public and Admin layouts',
-    content: `import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
-import { superAdminGuard } from './core/guards/role.guard';
-import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
-import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
-import { PublicLayoutComponent } from './layouts/public-layout/public-layout.component';
-
-export const routes: Routes = [
-  // 1. USER INTERFACE (Public Client Portal)
-  {
-    path: '',
-    component: UserLayoutComponent,
-    children: [
-      {
-        path: '',
-        title: 'OM POLYMER | Industrial Extrusion & Polymer Engineering',
-        loadComponent: () => import('./features/user/home/user-home.component')
-          .then(m => m.UserHomeComponent)
-      },
-      {
-        path: 'products',
-        title: 'OM POLYMER | Products Catalog',
-        loadComponent: () => import('./features/user/catalog/product-catalog.component')
-          .then(m => m.ProductCatalogComponent)
-      },
-      {
-        path: 'products/:slug',
-        title: 'OM POLYMER | Technical Specifications',
-        loadComponent: () => import('./features/user/product-detail/product-detail.component')
-          .then(m => m.ProductDetailComponent)
-      },
-      {
-        path: 'quote',
-        title: 'OM POLYMER | Technical Quotation Request (RFQ)',
-        loadComponent: () => import('./features/user/rfq/user-rfq.component')
-          .then(m => m.UserRfqComponent)
-      },
-      {
-        path: 'maintenance',
-        title: 'OM POLYMER | Maintenance Reference',
-        loadComponent: () => import('./features/user/maintenance-ref/maintenance-ref.component')
-          .then(m => m.MaintenanceRefComponent)
-      }
-    ]
-  },
-
-  // 2. AUTHENTICATION (Public Layout)
-  {
-    path: 'auth',
-    component: PublicLayoutComponent,
-    children: [
-      {
-        path: 'login',
-        title: 'OM POLYMER | Administrator Sign In',
-        loadComponent: () => import('./features/auth/login/login.component')
-          .then(m => m.LoginComponent)
-      },
-      {
-        path: 'forgot-password',
-        title: 'OM POLYMER | Password Recovery',
-        loadComponent: () => import('./features/auth/forgot-password/forgot-password.component')
-          .then(m => m.ForgotPasswordComponent)
-      }
-    ]
-  },
-
-  // 3. ADMIN PANEL (Protected Role-Based Layout)
-  {
-    path: 'admin',
-    component: AdminLayoutComponent,
-    canActivate: [authGuard],
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      {
-        path: 'dashboard',
-        title: 'Admin Console | Dashboard',
-        loadComponent: () => import('./features/admin/dashboard/admin-dashboard.component')
-          .then(m => m.AdminDashboardComponent)
-      },
-      {
-        path: 'inquiries',
-        title: 'Admin Console | Inquiries CRM',
-        loadComponent: () => import('./features/admin/inquiries/admin-inquiries.component')
-          .then(m => m.AdminInquiriesComponent)
-      },
-      {
-        path: 'products',
-        title: 'Admin Console | Product Management',
-        loadComponent: () => import('./features/admin/products/admin-products.component')
-          .then(m => m.AdminProductsComponent)
-      },
-      {
-        path: 'company',
-        title: 'Admin Console | Company Settings',
-        loadComponent: () => import('./features/admin/company/admin-company.component')
-          .then(m => m.AdminCompanyComponent)
-      },
-      // SuperAdmin Exclusive Route
-      {
-        path: 'users',
-        title: 'Admin Console | System Administrators',
-        canActivate: [superAdminGuard],
-        loadComponent: () => import('./features/admin/users/admin-users.component')
-          .then(m => m.AdminUsersComponent)
-      }
-    ]
-  },
-
-  { path: '**', redirectTo: '' }
-];
-`
+    "name": "admin-dashboard.component.ts",
+    "path": "src/app/features/admin/dashboard/admin-dashboard.component.ts",
+    "category": "Admin Panel",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/admin/dashboard/admin-dashboard.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { RouterModule } from '@angular/router';\nimport { RequirementService } from '../../../core/services/requirement.service';\nimport { ProductService } from '../../../core/services/product.service';\nimport { BlogService } from '../../../core/services/blog.service';\nimport { AuthService } from '../../../core/services/auth.service';\nimport { ClientRequirement } from '../../../core/models/requirement.model';\n\n@Component({\n  selector: 'app-admin-dashboard',\n  standalone: true,\n  imports: [CommonModule, RouterModule],\n  template: `\n    <div class=\"space-y-8\">\n      <div>\n        <h1 class=\"text-2xl font-bold tracking-tight\">System Overview Dashboard</h1>\n        <p class=\"text-xs text-slate-400 mt-1\">OM Polymer administrative metrics, dynamic articles, and operational controls</p>\n      </div>\n\n      <!-- KPI Summary Cards -->\n      <div class=\"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2\">\n          <div class=\"text-xs font-semibold text-slate-400\">Total Leads & RFQs</div>\n          <div class=\"text-3xl font-extrabold text-blue-400\">{{ totalInquiries() }}</div>\n          <div class=\"text-[11px] text-slate-500\">Customer requests in database</div>\n        </div>\n\n        <div class=\"bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2\">\n          <div class=\"text-xs font-semibold text-slate-400\">Catalog Products</div>\n          <div class=\"text-3xl font-extrabold text-emerald-400\">{{ totalProducts() }}</div>\n          <div class=\"text-[11px] text-slate-500\">Active HDPE lines & compounds</div>\n        </div>\n\n        <div class=\"bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2\">\n          <div class=\"text-xs font-semibold text-slate-400\">Technical Articles</div>\n          <div class=\"text-3xl font-extrabold text-indigo-400\">{{ totalBlogs() }}</div>\n          <div class=\"text-[11px] text-slate-500\">Published engineering papers</div>\n        </div>\n\n        <div class=\"bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2\">\n          <div class=\"text-xs font-semibold text-slate-400\">Current Role Claim</div>\n          <div class=\"text-xl font-extrabold text-purple-400\">{{ auth.role() }}</div>\n          <div class=\"text-[11px] text-slate-500 truncate\">{{ auth.adminName() }}</div>\n        </div>\n      </div>\n\n      <!-- Fast Action Jump Links -->\n      <div class=\"grid grid-cols-1 sm:grid-cols-3 gap-4\">\n        <a routerLink=\"/admin/products\" class=\"p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500 transition-colors flex items-center gap-3\">\n          <div class=\"w-10 h-10 rounded-lg bg-blue-950 text-blue-400 flex items-center justify-center text-lg\">📦</div>\n          <div>\n            <div class=\"text-xs font-bold text-white\">Manage Products</div>\n            <div class=\"text-[11px] text-slate-400\">Add, edit or toggle specs</div>\n          </div>\n        </a>\n\n        <a routerLink=\"/admin/blogs\" class=\"p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500 transition-colors flex items-center gap-3\">\n          <div class=\"w-10 h-10 rounded-lg bg-indigo-950 text-indigo-400 flex items-center justify-center text-lg\">📝</div>\n          <div>\n            <div class=\"text-xs font-bold text-white\">Publish Articles</div>\n            <div class=\"text-[11px] text-slate-400\">Draft, edit, or publish blogs</div>\n          </div>\n        </a>\n\n        <a routerLink=\"/admin/logs\" class=\"p-4 rounded-xl bg-slate-900 border border-slate-800 hover:border-blue-500 transition-colors flex items-center gap-3\">\n          <div class=\"w-10 h-10 rounded-lg bg-emerald-950 text-emerald-400 flex items-center justify-center text-lg\">📜</div>\n          <div>\n            <div class=\"text-xs font-bold text-white\">System Logs</div>\n            <div class=\"text-[11px] text-slate-400\">Dynamic file-stream logs</div>\n          </div>\n        </a>\n      </div>\n\n      <!-- Recent Inquiries Table -->\n      <div class=\"bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden space-y-4 p-5\">\n        <div class=\"flex items-center justify-between\">\n          <h2 class=\"text-sm font-bold uppercase tracking-wider text-slate-200\">Recent Customer Inquiries</h2>\n          <a routerLink=\"/admin/inquiries\" class=\"text-xs text-blue-400 hover:underline\">View All CRM Leads →</a>\n        </div>\n\n        <div class=\"overflow-x-auto\">\n          <table class=\"w-full text-left text-xs\">\n            <thead class=\"bg-slate-950 text-slate-400 border-b border-slate-800\">\n              <tr>\n                <th class=\"p-3\">Client</th>\n                <th class=\"p-3\">Contact</th>\n                <th class=\"p-3\">Product</th>\n                <th class=\"p-3\">Status</th>\n              </tr>\n            </thead>\n            <tbody class=\"divide-y divide-slate-800\">\n              <tr *ngFor=\"let item of recentInquiries()\">\n                <td class=\"p-3\">\n                  <div class=\"font-semibold text-white\">{{ item.fullName }}</div>\n                  <div class=\"text-[11px] text-slate-400\">{{ item.companyName || 'Independent' }}</div>\n                </td>\n                <td class=\"p-3\">\n                  <div>{{ item.email }}</div>\n                  <div class=\"font-mono text-slate-400\">{{ item.phoneNumber }}</div>\n                </td>\n                <td class=\"p-3\">{{ item.productOfInterest }}</td>\n                <td class=\"p-3\">\n                  <span class=\"px-2 py-0.5 rounded text-[10px] font-bold\"\n                    [ngClass]=\"{\n                      'bg-emerald-950 text-emerald-400 border border-emerald-800': item.status === 'Completed',\n                      'bg-blue-950 text-blue-400 border border-blue-800': item.status === 'New',\n                      'bg-amber-950 text-amber-400 border border-amber-800': item.status === 'Contacted' || item.status === 'In Progress'\n                    }\">\n                    {{ item.status }}\n                  </span>\n                </td>\n              </tr>\n              <tr *ngIf=\"recentInquiries().length === 0\">\n                <td colspan=\"4\" class=\"p-6 text-center text-slate-500\">\n                  No inquiries recorded yet.\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  `\n})\nexport class AdminDashboardComponent implements OnInit {\n  auth = inject(AuthService);\n  private reqService = inject(RequirementService);\n  private prodService = inject(ProductService);\n  private blogService = inject(BlogService);\n\n  totalInquiries = signal(0);\n  totalProducts = signal(0);\n  totalBlogs = signal(0);\n  recentInquiries = signal<ClientRequirement[]>([]);\n\n  ngOnInit(): void {\n    this.reqService.getAdminRequirements(1, 5).subscribe(res => {\n      if (res.success && res.data) {\n        this.totalInquiries.set(res.data.totalCount);\n        this.recentInquiries.set(res.data.items);\n      }\n    });\n\n    this.prodService.getProducts(1, 1).subscribe(res => {\n      if (res.success && res.data) {\n        this.totalProducts.set(res.data.totalCount);\n      }\n    });\n\n    this.blogService.getPublishedBlogs(1, 1).subscribe(res => {\n      if (res.success && res.data) {\n        this.totalBlogs.set(res.data.totalCount);\n      }\n    });\n  }\n}\n"
   },
   {
-    path: 'src/app/app.config.ts',
-    name: 'app.config.ts',
-    category: 'Shared & Shell',
-    language: 'typescript',
-    description: 'Angular providers, Router and functional HTTP interceptors',
-    content: `import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { routes } from './app.routes';
-import { authInterceptor } from './core/interceptors/auth.interceptor';
-import { errorInterceptor } from './core/interceptors/error.interceptor';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withComponentInputBinding(), withViewTransitions()),
-    provideHttpClient(
-      withFetch(),
-      withInterceptors([authInterceptor, errorInterceptor])
-    )
-  ]
-};
-`
+    "name": "admin-inquiries.component.ts",
+    "path": "src/app/features/admin/inquiries/admin-inquiries.component.ts",
+    "category": "Admin Panel",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/admin/inquiries/admin-inquiries.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\nimport { RequirementService } from '../../../core/services/requirement.service';\nimport { ToastService } from '../../../core/services/toast.service';\nimport { ClientRequirement, RequirementStatus } from '../../../core/models/requirement.model';\n\n@Component({\n  selector: 'app-admin-inquiries',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  template: `\n    <div class=\"space-y-6\">\n      <div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-4\">\n        <div>\n          <h1 class=\"text-2xl font-bold tracking-tight\">Client Inquiries & Leads CRM</h1>\n          <p class=\"text-xs text-slate-400 mt-1\">Review quotation requests and update lead progression status</p>\n        </div>\n      </div>\n\n      <!-- Filter Controls -->\n      <div class=\"flex flex-col sm:flex-row gap-3\">\n        <input \n          type=\"text\" \n          [(ngModel)]=\"search\" \n          (ngModelChange)=\"loadData()\" \n          placeholder=\"Search by client name, email, phone, product...\" \n          class=\"flex-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white\"\n        />\n        <select \n          [(ngModel)]=\"statusFilter\" \n          (ngModelChange)=\"loadData()\" \n          class=\"px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white\"\n        >\n          <option value=\"All\">All Statuses</option>\n          <option value=\"New\">New</option>\n          <option value=\"Contacted\">Contacted</option>\n          <option value=\"In Progress\">In Progress</option>\n          <option value=\"Completed\">Completed</option>\n          <option value=\"Rejected\">Rejected</option>\n        </select>\n      </div>\n\n      <!-- Inquiries Table -->\n      <div class=\"bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto\">\n        <table class=\"w-full text-left text-xs\">\n          <thead class=\"bg-slate-950 text-slate-400 border-b border-slate-800\">\n            <tr>\n              <th class=\"p-3\">Client</th>\n              <th class=\"p-3\">Contact Details</th>\n              <th class=\"p-3\">Product / Qty</th>\n              <th class=\"p-3\">Requirement Description</th>\n              <th class=\"p-3\">Status</th>\n              <th class=\"p-3 text-right\">Actions</th>\n            </tr>\n          </thead>\n          <tbody class=\"divide-y divide-slate-800\">\n            <tr *ngFor=\"let item of items()\">\n              <td class=\"p-3\">\n                <div class=\"font-bold text-white\">{{ item.fullName }}</div>\n                <div class=\"text-[11px] text-slate-400\">{{ item.companyName || 'Independent' }}</div>\n              </td>\n              <td class=\"p-3\">\n                <div>{{ item.email }}</div>\n                <div class=\"font-mono text-slate-400\">{{ item.phoneNumber }}</div>\n              </td>\n              <td class=\"p-3\">\n                <div class=\"font-semibold\">{{ item.productOfInterest }}</div>\n                <div class=\"text-slate-400\">{{ item.quantity }}</div>\n              </td>\n              <td class=\"p-3 max-w-xs truncate\">{{ item.requirementDescription }}</td>\n              <td class=\"p-3\">\n                <span class=\"px-2 py-0.5 rounded text-[10px] font-bold\"\n                  [ngClass]=\"{\n                    'bg-emerald-950 text-emerald-400 border border-emerald-800': item.status === 'Completed',\n                    'bg-blue-950 text-blue-400 border border-blue-800': item.status === 'New',\n                    'bg-amber-950 text-amber-400 border border-amber-800': item.status === 'Contacted' || item.status === 'In Progress',\n                    'bg-rose-950 text-rose-400 border border-rose-800': item.status === 'Rejected'\n                  }\">\n                  {{ item.status }}\n                </span>\n              </td>\n              <td class=\"p-3 text-right\">\n                <button (click)=\"openStatusModal(item)\" class=\"px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors\">\n                  Update\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n\n      <!-- Status Updater Modal -->\n      <div *ngIf=\"selectedItem()\" class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4\">\n          <button (click)=\"selectedItem.set(null)\" class=\"absolute top-4 right-4 text-slate-400 hover:text-white\">✕</button>\n          <h3 class=\"text-base font-bold text-white\">Update Lead Status</h3>\n\n          <div class=\"space-y-3\">\n            <div>\n              <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Status</label>\n              <select [(ngModel)]=\"newStatus\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\">\n                <option value=\"New\">New</option>\n                <option value=\"Contacted\">Contacted</option>\n                <option value=\"In Progress\">In Progress</option>\n                <option value=\"Completed\">Completed</option>\n                <option value=\"Rejected\">Rejected</option>\n              </select>\n            </div>\n\n            <div>\n              <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Admin Remarks</label>\n              <textarea [(ngModel)]=\"adminRemarks\" rows=\"3\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" placeholder=\"Add engineering quotation notes...\"></textarea>\n            </div>\n          </div>\n\n          <div class=\"flex justify-end gap-2 pt-2\">\n            <button (click)=\"selectedItem.set(null)\" class=\"px-3 py-1.5 text-xs text-slate-400\">Cancel</button>\n            <button (click)=\"saveStatus()\" class=\"px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg\">Save Status</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  `\n})\nexport class AdminInquiriesComponent implements OnInit {\n  private reqService = inject(RequirementService);\n  private toast = inject(ToastService);\n\n  items = signal<ClientRequirement[]>([]);\n  search = '';\n  statusFilter = 'All';\n\n  selectedItem = signal<ClientRequirement | null>(null);\n  newStatus: RequirementStatus = 'Contacted';\n  adminRemarks = '';\n\n  ngOnInit(): void {\n    this.loadData();\n  }\n\n  loadData(): void {\n    this.reqService.getAdminRequirements(1, 50, this.statusFilter, this.search).subscribe(res => {\n      if (res.success && res.data) this.items.set(res.data.items);\n    });\n  }\n\n  openStatusModal(item: ClientRequirement): void {\n    this.selectedItem.set(item);\n    this.newStatus = item.status;\n    this.adminRemarks = item.adminRemarks || '';\n  }\n\n  saveStatus(): void {\n    const item = this.selectedItem();\n    if (!item) return;\n\n    this.reqService.updateStatus(item.requirementId, { status: this.newStatus, adminRemarks: this.adminRemarks }).subscribe({\n      next: res => {\n        this.toast.success('Lead status updated.');\n        this.selectedItem.set(null);\n        this.loadData();\n      }\n    });\n  }\n}\n"
   },
   {
-    path: 'src/app/app.component.ts',
-    name: 'app.component.ts',
-    category: 'Shared & Shell',
-    language: 'typescript',
-    description: 'Root Angular component hosting RouterOutlet and ToastNotifications',
-    content: `import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ToastComponent } from './shared/components/toast.component';
-import { ThemeService } from './core/services/theme.service';
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, ToastComponent],
-  template: \`
-    <div class="min-h-screen">
-      <router-outlet></router-outlet>
-      <app-toast></app-toast>
-    </div>
-  \`
-})
-export class AppComponent {
-  private themeService = inject(ThemeService);
-}
-`
-  },
-
-  // ==========================================
-  // 11. UNIT TESTS
-  // ==========================================
-  {
-    path: 'src/app/core/services/auth.service.spec.ts',
-    name: 'auth.service.spec.ts',
-    category: 'Unit Tests',
-    language: 'typescript',
-    description: 'Unit test suite verifying AuthService login, token persistence and logout',
-    content: `import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { AuthService } from './auth.service';
-import { environment } from '@env/environment';
-import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
-
-describe('AuthService', () => {
-  let service: AuthService;
-  let httpTesting: HttpTestingController;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        AuthService,
-        provideHttpClient(),
-        provideHttpClientTesting()
-      ]
-    });
-    service = TestBed.inject(AuthService);
-    httpTesting = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpTesting.verify();
-    localStorage.clear();
-  });
-
-  it('should initialize with unauthenticated state when storage is empty', () => {
-    expect(service.token()).toBeNull();
-    expect(service.isAuthenticated()).toBeFalse();
-  });
-
-  it('should authenticate user and store token upon successful login', () => {
-    const mockCredentials = { email: 'admin@ompolymer.com', password: 'Admin@123' };
-    const mockResponse = {
-      success: true,
-      message: 'Login successful',
-      data: {
-        token: 'mock-jwt-token-xyz',
-        fullName: 'System Administrator',
-        email: 'admin@ompolymer.com',
-        role: 'SuperAdmin' as const,
-        expiry: '2026-10-11T20:00:00Z'
-      },
-      errors: null
-    };
-
-    service.login(mockCredentials).subscribe(res => {
-      expect(res.success).toBeTrue();
-      expect(service.token()).toBe('mock-jwt-token-xyz');
-      expect(service.isAuthenticated()).toBeTrue();
-      expect(service.role()).toBe('SuperAdmin');
-    });
-
-    const req = httpTesting.expectOne(\`\${environment.apiUrl}\${API_ENDPOINTS.AUTH.LOGIN}\`);
-    expect(req.request.method).toBe('POST');
-    req.flush(mockResponse);
-  });
-
-  it('should clear token and signals on logout', () => {
-    service.token.set('existing-token');
-    service.adminName.set('Admin');
-    service.role.set('Admin');
-    service.logout();
-
-    expect(service.token()).toBeNull();
-    expect(service.isAuthenticated()).toBeFalse();
-  });
-});
-`
+    "name": "inquiries-list.component.ts",
+    "path": "src/app/features/admin/inquiries-list.component.ts",
+    "category": "Admin Panel",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/admin/inquiries-list.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { RouterModule } from '@angular/router';\nimport { FormsModule } from '@angular/forms';\nimport { RequirementService } from '../../core/services/requirement.service';\nimport { AuthService } from '../../core/services/auth.service';\nimport { ToastService } from '../../core/services/toast.service';\nimport { ClientRequirement, RequirementStatus } from '../../core/models/requirement.model';\n\n@Component({\n  selector: 'app-inquiries-list',\n  standalone: true,\n  imports: [CommonModule, RouterModule, FormsModule],\n  template: `\n    <div class=\"min-h-screen bg-slate-950 text-slate-100 p-6 md:p-8\">\n      <div class=\"max-w-7xl mx-auto\">\n        <header class=\"flex justify-between items-center mb-6 pb-4 border-b border-slate-800\">\n          <div>\n            <h1 class=\"text-xl font-bold\">Admin Inquiries CRM</h1>\n            <p class=\"text-xs text-slate-400\">Manage client leads and technical quotation requests</p>\n          </div>\n          <div class=\"flex items-center gap-3\">\n            <span class=\"text-xs text-slate-400\">Logged in as {{ auth.adminName() }}</span>\n            <button (click)=\"logout()\" class=\"px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 rounded-md\">Logout</button>\n            <a routerLink=\"/\" class=\"px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-500 rounded-md\">View Site</a>\n          </div>\n        </header>\n\n        <!-- Filter bar -->\n        <div class=\"flex gap-4 mb-4\">\n          <input [(ngModel)]=\"search\" (ngModelChange)=\"loadData()\" placeholder=\"Search client name, email, phone...\" class=\"px-3 py-2 bg-slate-900 border border-slate-800 rounded text-xs flex-1\" />\n          <select [(ngModel)]=\"statusFilter\" (ngModelChange)=\"loadData()\" class=\"px-3 py-2 bg-slate-900 border border-slate-800 rounded text-xs\">\n            <option value=\"All\">All Statuses</option>\n            <option value=\"New\">New</option>\n            <option value=\"Contacted\">Contacted</option>\n            <option value=\"In Progress\">In Progress</option>\n            <option value=\"Completed\">Completed</option>\n          </select>\n        </div>\n\n        <!-- Table -->\n        <div class=\"bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto\">\n          <table class=\"w-full text-left text-xs\">\n            <thead class=\"bg-slate-950 text-slate-400 border-b border-slate-800\">\n              <tr>\n                <th class=\"p-3\">Client</th>\n                <th class=\"p-3\">Contact</th>\n                <th class=\"p-3\">Product & Quantity</th>\n                <th class=\"p-3\">Description</th>\n                <th class=\"p-3\">Status</th>\n              </tr>\n            </thead>\n            <tbody class=\"divide-y divide-slate-800\">\n              <tr *ngFor=\"let item of items()\">\n                <td class=\"p-3\">\n                  <div class=\"font-semibold text-slate-200\">{{ item.fullName }}</div>\n                  <div class=\"text-[11px] text-slate-400\">{{ item.companyName || 'Independent' }}</div>\n                </td>\n                <td class=\"p-3\">\n                  <div>{{ item.email }}</div>\n                  <div class=\"font-mono text-slate-400\">{{ item.phoneNumber }}</div>\n                </td>\n                <td class=\"p-3\">\n                  <div>{{ item.productOfInterest }}</div>\n                  <div class=\"text-slate-400\">{{ item.quantity }}</div>\n                </td>\n                <td class=\"p-3 max-w-xs truncate\">{{ item.requirementDescription }}</td>\n                <td class=\"p-3\">\n                  <span class=\"px-2 py-1 rounded text-[10px] font-semibold\"\n                    [ngClass]=\"{\n                      'bg-emerald-950 text-emerald-400 border border-emerald-800': item.status === 'Completed',\n                      'bg-blue-950 text-blue-400 border border-blue-800': item.status === 'New',\n                      'bg-amber-950 text-amber-400 border border-amber-800': item.status === 'Contacted' || item.status === 'In Progress'\n                    }\">\n                    {{ item.status }}\n                  </span>\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  `\n})\nexport class InquiriesListComponent implements OnInit {\n  auth = inject(AuthService);\n  private reqService = inject(RequirementService);\n  private toast = inject(ToastService);\n\n  items = signal<ClientRequirement[]>([]);\n  search = '';\n  statusFilter = 'All';\n\n  ngOnInit(): void {\n    this.loadData();\n  }\n\n  loadData(): void {\n    this.reqService.getAdminRequirements(1, 50, this.statusFilter, this.search).subscribe({\n      next: (res) => {\n        if (res.success && res.data) {\n          this.items.set(res.data.items);\n        }\n      }\n    });\n  }\n\n  logout(): void {\n    this.auth.logout();\n  }\n}\n"
   },
   {
-    path: 'src/app/core/guards/auth.guard.spec.ts',
-    name: 'auth.guard.spec.ts',
-    category: 'Unit Tests',
-    language: 'typescript',
-    description: 'Unit test suite for route protection and login redirection',
-    content: `import { TestBed } from '@angular/core/testing';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { authGuard } from './auth.guard';
-import { AuthService } from '../services/auth.service';
-
-describe('authGuard', () => {
-  let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let routerSpy: jasmine.SpyObj<Router>;
-
-  beforeEach(() => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated']);
-    routerSpy = jasmine.createSpyObj('Router', ['createUrlTree']);
-
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: AuthService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy }
-      ]
-    });
-  });
-
-  it('should allow access when authenticated', () => {
-    authServiceSpy.isAuthenticated.and.returnValue(true);
-    const result = TestBed.runInInjectionContext(() =>
-      authGuard({} as ActivatedRouteSnapshot, { url: '/admin/dashboard' } as RouterStateSnapshot)
-    );
-    expect(result).toBeTrue();
-  });
-});
-`
+    "name": "admin-logs.component.ts",
+    "path": "src/app/features/admin/logs/admin-logs.component.ts",
+    "category": "Admin Panel",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/admin/logs/admin-logs.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\nimport { LogService } from '../../../core/services/log.service';\nimport { ToastService } from '../../../core/services/toast.service';\nimport { LogEntry } from '../../../core/models/log.model';\n\n@Component({\n  selector: 'app-admin-logs',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  template: `\n    <div class=\"space-y-6\">\n      <!-- Header -->\n      <div class=\"flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4\">\n        <div>\n          <h1 class=\"text-2xl font-bold tracking-tight\">System & Application Logs</h1>\n          <p class=\"text-xs text-slate-400 mt-1\">Live structured log stream loaded dynamically from the host /logs filesystem</p>\n        </div>\n        <div class=\"flex items-center gap-2\">\n          <button \n            (click)=\"loadLogs()\" \n            class=\"px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition-colors flex items-center gap-1.5\"\n          >\n            <span>🔄</span> Refresh Stream\n          </button>\n          <button \n            (click)=\"confirmClearLogs()\" \n            class=\"px-3.5 py-2 bg-rose-950 hover:bg-rose-900 text-rose-300 text-xs font-semibold rounded-xl border border-rose-800 transition-colors flex items-center gap-1.5\"\n          >\n            <span>🗑️</span> Rotate / Clear\n          </button>\n        </div>\n      </div>\n\n      <!-- Filters Bar -->\n      <div class=\"flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-900 p-3.5 rounded-2xl border border-slate-800\">\n        <div class=\"flex flex-wrap items-center gap-2.5 w-full sm:w-auto\">\n          <!-- Severity Filter -->\n          <select \n            [(ngModel)]=\"selectedSeverity\" \n            (ngModelChange)=\"loadLogs()\"\n            class=\"px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n          >\n            <option value=\"ALL\">All Severities</option>\n            <option value=\"INFO\">INFO Only</option>\n            <option value=\"WARN\">WARN Only</option>\n            <option value=\"ERROR\">ERROR Only</option>\n            <option value=\"DEBUG\">DEBUG Only</option>\n          </select>\n\n          <!-- File Filter -->\n          <select \n            [(ngModel)]=\"selectedFile\" \n            (ngModelChange)=\"loadLogs()\"\n            class=\"px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono\"\n          >\n            <option value=\"ALL\">All Log Files</option>\n            <option *ngFor=\"let f of logFiles()\" [value]=\"f\">{{ f }}</option>\n          </select>\n\n          <!-- Keyword Search -->\n          <input \n            type=\"text\" \n            [(ngModel)]=\"searchQuery\" \n            (ngModelChange)=\"loadLogs()\" \n            placeholder=\"Search log messages, paths, errors...\" \n            class=\"w-full sm:w-64 px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500\"\n          />\n        </div>\n\n        <div class=\"text-xs text-slate-400\">\n          Showing <span class=\"font-bold text-white\">{{ logs().length }}</span> events\n        </div>\n      </div>\n\n      <!-- Logs Terminal View -->\n      <div class=\"bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl font-mono text-xs\">\n        <div class=\"bg-slate-900/80 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between text-[11px] text-slate-400\">\n          <div class=\"flex items-center gap-2\">\n            <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse\"></span>\n            <span>Disk-backed Logs Stream</span>\n          </div>\n          <span>Active Files: {{ logFiles().length }}</span>\n        </div>\n\n        <div *ngIf=\"loading()\" class=\"p-16 text-center text-slate-500\">\n          Streaming logs from filesystem...\n        </div>\n\n        <div *ngIf=\"!loading() && logs().length === 0\" class=\"p-16 text-center text-slate-500\">\n          No logs found matching filter criteria.\n        </div>\n\n        <div *ngIf=\"!loading() && logs().length > 0\" class=\"divide-y divide-slate-900 max-h-[600px] overflow-y-auto p-2\">\n          <div *ngFor=\"let log of logs()\" class=\"p-3 hover:bg-slate-900/40 transition-colors rounded-lg flex flex-col gap-1.5\">\n            <div class=\"flex flex-wrap items-center justify-between gap-2 text-[11px]\">\n              <div class=\"flex items-center gap-2\">\n                <!-- Severity badge -->\n                <span class=\"px-2 py-0.5 rounded text-[10px] font-bold\"\n                  [ngClass]=\"{\n                    'bg-emerald-950 text-emerald-400 border border-emerald-800/60': log.level === 'INFO',\n                    'bg-amber-950 text-amber-400 border border-amber-800/60': log.level === 'WARN',\n                    'bg-rose-950 text-rose-400 border border-rose-800/60': log.level === 'ERROR',\n                    'bg-slate-800 text-slate-400 border border-slate-700': log.level === 'DEBUG'\n                  }\">\n                  {{ log.level }}\n                </span>\n\n                <span class=\"text-slate-400\">[{{ log.category || 'SYSTEM' }}]</span>\n                <span *ngIf=\"log.sourceFile\" class=\"text-slate-600 truncate max-w-xs\">{{ log.sourceFile }}</span>\n              </div>\n              <span class=\"text-slate-500\">{{ log.timestamp }}</span>\n            </div>\n\n            <!-- Message -->\n            <div class=\"text-slate-200 whitespace-pre-wrap leading-relaxed text-xs\">\n              {{ log.message }}\n            </div>\n\n            <!-- Details JSON if any -->\n            <div *ngIf=\"log.details\" class=\"mt-1 p-2 bg-slate-900/80 rounded border border-slate-800/60 text-[11px] text-slate-400 whitespace-pre-wrap overflow-x-auto\">\n              {{ log.details | json }}\n            </div>\n          </div>\n        </div>\n      </div>\n\n      <!-- Clear Confirmation Modal -->\n      <div *ngIf=\"showClearModal\" class=\"fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl\">\n          <h3 class=\"text-base font-bold text-rose-400 flex items-center gap-2\">\n            <span>⚠️</span> Rotate / Clear Log Files\n          </h3>\n          <p class=\"text-xs text-slate-300\">\n            Are you sure you want to clear current logs? A fresh log rotation cycle will be initialized on disk.\n          </p>\n          <div class=\"flex justify-end gap-3 pt-3\">\n            <button (click)=\"showClearModal = false\" class=\"px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs\">\n              Cancel\n            </button>\n            <button (click)=\"executeClear()\" class=\"px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs shadow-md\">\n              Confirm Rotate\n            </button>\n          </div>\n        </div>\n      </div>\n\n    </div>\n  `\n})\nexport class AdminLogsComponent implements OnInit {\n  private logService = inject(LogService);\n  private toast = inject(ToastService);\n\n  logs = signal<LogEntry[]>([]);\n  logFiles = signal<string[]>([]);\n  loading = signal(true);\n\n  selectedSeverity = 'ALL';\n  selectedFile = 'ALL';\n  searchQuery = '';\n  showClearModal = false;\n\n  ngOnInit(): void {\n    this.loadFiles();\n    this.loadLogs();\n  }\n\n  loadFiles(): void {\n    this.logService.getLogFiles().subscribe({\n      next: res => {\n        if (res.success && res.data) {\n          this.logFiles.set(res.data);\n        }\n      }\n    });\n  }\n\n  loadLogs(): void {\n    this.loading.set(true);\n    this.logService.getLogs(this.selectedSeverity, this.selectedFile, this.searchQuery).subscribe({\n      next: res => {\n        if (res.success && res.data?.logs) {\n          this.logs.set(res.data.logs);\n        } else {\n          this.logs.set([]);\n        }\n        this.loading.set(false);\n      },\n      error: () => {\n        this.logs.set([]);\n        this.loading.set(false);\n      }\n    });\n  }\n\n  confirmClearLogs(): void {\n    this.showClearModal = true;\n  }\n\n  executeClear(): void {\n    const fileToClear = this.selectedFile !== 'ALL' ? this.selectedFile : undefined;\n    this.logService.clearLogs(fileToClear).subscribe({\n      next: res => {\n        if (res.success) {\n          this.toast.success('Logs rotated/cleared successfully.');\n          this.showClearModal = false;\n          this.loadLogs();\n        } else {\n          this.toast.error('Failed to clear logs.');\n        }\n      },\n      error: () => this.toast.error('Server error clearing logs.')\n    });\n  }\n}\n"
   },
   {
-    path: 'src/app/core/interceptors/auth.interceptor.spec.ts',
-    name: 'auth.interceptor.spec.ts',
-    category: 'Unit Tests',
-    language: 'typescript',
-    description: 'Unit test suite verifying selective Authorization Bearer injection',
-    content: `import { TestBed } from '@angular/core/testing';
-import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
-import { authInterceptor } from './auth.interceptor';
-import { AuthService } from '../services/auth.service';
-
-describe('authInterceptor', () => {
-  let http: HttpClient;
-  let httpTesting: HttpTestingController;
-  let authService: AuthService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        AuthService,
-        provideHttpClient(withInterceptors([authInterceptor])),
-        provideHttpClientTesting()
-      ]
-    });
-
-    http = TestBed.inject(HttpClient);
-    httpTesting = TestBed.inject(HttpTestingController);
-    authService = TestBed.inject(AuthService);
-  });
-
-  afterEach(() => {
-    httpTesting.verify();
-  });
-
-  it('should attach Bearer header to /api/admin requests', () => {
-    authService.token.set('valid-test-jwt');
-
-    http.get('/api/admin/requirements').subscribe();
-
-    const req = httpTesting.expectOne('/api/admin/requirements');
-    expect(req.request.headers.has('Authorization')).toBeTrue();
-    expect(req.request.headers.get('Authorization')).toBe('Bearer valid-test-jwt');
-    req.flush({ success: true, data: [] });
-  });
-
-  it('should not attach Authorization header for public customer endpoints', () => {
-    authService.token.set('valid-test-jwt');
-
-    http.get('/api/products').subscribe();
-
-    const req = httpTesting.expectOne('/api/products');
-    expect(req.request.headers.has('Authorization')).toBeFalse();
-    req.flush({ success: true, data: [] });
-  });
-});
-`
+    "name": "admin-products.component.ts",
+    "path": "src/app/features/admin/products/admin-products.component.ts",
+    "category": "Admin Panel",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/admin/products/admin-products.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\nimport { ProductService } from '../../../core/services/product.service';\nimport { ToastService } from '../../../core/services/toast.service';\nimport { Product, ProductCategory, CreateProductRequest } from '../../../core/models/product.model';\n\n@Component({\n  selector: 'app-admin-products',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  template: `\n    <div class=\"space-y-6\">\n      <!-- Header -->\n      <div class=\"flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4\">\n        <div>\n          <h1 class=\"text-2xl font-bold tracking-tight\">Product Catalog Management</h1>\n          <p class=\"text-xs text-slate-400 mt-1\">Add, update, inspect, and toggle active status for industrial polymer lines</p>\n        </div>\n        <button \n          (click)=\"openCreateModal()\" \n          class=\"px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl shadow-md transition-all flex items-center gap-2\"\n        >\n          <span>＋</span> Add New Product\n        </button>\n      </div>\n\n      <!-- Filters & Search -->\n      <div class=\"flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-900 p-3.5 rounded-2xl border border-slate-800\">\n        <div class=\"flex flex-wrap items-center gap-2.5 w-full sm:w-auto\">\n          <input \n            type=\"text\" \n            [(ngModel)]=\"searchQuery\" \n            (ngModelChange)=\"loadProducts()\" \n            placeholder=\"Search by name, spec...\" \n            class=\"w-full sm:w-64 px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500\"\n          />\n          <select \n            [(ngModel)]=\"selectedCategory\" \n            (ngModelChange)=\"loadProducts()\"\n            class=\"px-3 py-1.5 text-xs bg-slate-950 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n          >\n            <option [ngValue]=\"undefined\">All Categories</option>\n            <option *ngFor=\"let c of categories()\" [ngValue]=\"c.categoryId\">\n              {{ c.categoryName }}\n            </option>\n          </select>\n        </div>\n        <div class=\"text-xs text-slate-400\">\n          Showing <span class=\"font-bold text-white\">{{ products().length }}</span> products\n        </div>\n      </div>\n\n      <!-- Products Table -->\n      <div class=\"bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto shadow-sm\">\n        <table class=\"w-full text-left text-xs\">\n          <thead class=\"bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]\">\n            <tr>\n              <th class=\"p-3.5\">Product Name & Slug</th>\n              <th class=\"p-3.5\">Category</th>\n              <th class=\"p-3.5\">Specifications</th>\n              <th class=\"p-3.5\">Featured</th>\n              <th class=\"p-3.5\">Status</th>\n              <th class=\"p-3.5 text-right\">Actions</th>\n            </tr>\n          </thead>\n          <tbody class=\"divide-y divide-slate-800/80 text-slate-300\">\n            <tr *ngFor=\"let p of products()\" class=\"hover:bg-slate-800/30 transition-colors\">\n              <td class=\"p-3.5\">\n                <div class=\"font-semibold text-white\">{{ p.productName }}</div>\n                <div class=\"text-[11px] font-mono text-slate-500\">/products/{{ p.slug }}</div>\n              </td>\n              <td class=\"p-3.5\">\n                <span class=\"px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700\">\n                  {{ p.category?.categoryName || 'General' }}\n                </span>\n              </td>\n              <td class=\"p-3.5 max-w-xs truncate text-slate-400\">{{ p.specifications || 'Standard specifications' }}</td>\n              <td class=\"p-3.5\">\n                <span *ngIf=\"p.isFeatured\" class=\"px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-800/40\">\n                  ★ Featured\n                </span>\n                <span *ngIf=\"!p.isFeatured\" class=\"text-slate-600 text-[10px]\">Standard</span>\n              </td>\n              <td class=\"p-3.5\">\n                <span class=\"px-2 py-0.5 rounded text-[10px] font-bold\"\n                  [ngClass]=\"p.isActive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-slate-800 text-slate-400 border border-slate-700'\">\n                  {{ p.isActive ? 'Active' : 'Inactive' }}\n                </span>\n              </td>\n              <td class=\"p-3.5 text-right space-x-1.5 whitespace-nowrap\">\n                <button (click)=\"openViewModal(p)\" class=\"px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 transition-colors\">\n                  View\n                </button>\n                <button (click)=\"toggleStatus(p.productId)\" class=\"px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 transition-colors\">\n                  {{ p.isActive ? 'Deactivate' : 'Activate' }}\n                </button>\n                <button (click)=\"openEditModal(p)\" class=\"px-2.5 py-1 bg-blue-950 hover:bg-blue-900 text-blue-300 rounded transition-colors\">\n                  Edit\n                </button>\n                <button (click)=\"confirmDelete(p)\" class=\"px-2.5 py-1 bg-rose-950 hover:bg-rose-900 text-rose-300 rounded transition-colors\">\n                  Delete\n                </button>\n              </td>\n            </tr>\n            <tr *ngIf=\"products().length === 0\">\n              <td colspan=\"6\" class=\"p-8 text-center text-slate-500\">\n                No products found matching criteria.\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n\n      <!-- Add/Edit Product Modal -->\n      <div *ngIf=\"showFormModal\" class=\"fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl\">\n          <div class=\"flex items-center justify-between border-b border-slate-800 pb-3\">\n            <h3 class=\"text-base font-bold text-white\">\n              {{ editingProductId ? 'Edit Product Specification' : 'Add New Industrial Product' }}\n            </h3>\n            <button (click)=\"showFormModal = false\" class=\"text-slate-400 hover:text-white text-lg\">✕</button>\n          </div>\n\n          <form (ngSubmit)=\"saveProduct()\" class=\"space-y-4 text-xs\">\n            <div>\n              <label class=\"block text-slate-300 font-semibold mb-1\">Product Name *</label>\n              <input \n                type=\"text\" \n                [(ngModel)]=\"formData.productName\" \n                name=\"productName\" \n                (ngModelChange)=\"onNameChange($event)\"\n                required \n                placeholder=\"e.g. PE100 HDPE High-Pressure Piping\"\n                class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n              />\n            </div>\n\n            <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-3\">\n              <div>\n                <label class=\"block text-slate-300 font-semibold mb-1\">URL Slug *</label>\n                <input \n                  type=\"text\" \n                  [(ngModel)]=\"formData.slug\" \n                  name=\"slug\" \n                  required \n                  placeholder=\"e.g. pe100-hdpe-high-pressure-piping\"\n                  class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n                />\n              </div>\n\n              <div>\n                <label class=\"block text-slate-300 font-semibold mb-1\">Product Category *</label>\n                <select \n                  [(ngModel)]=\"formData.categoryId\" \n                  name=\"categoryId\" \n                  required\n                  class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n                >\n                  <option *ngFor=\"let c of categories()\" [ngValue]=\"c.categoryId\">\n                    {{ c.categoryName }}\n                  </option>\n                </select>\n              </div>\n            </div>\n\n            <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-3\">\n              <div>\n                <label class=\"block text-slate-300 font-semibold mb-1\">Main Image URL / Asset</label>\n                <input \n                  type=\"text\" \n                  [(ngModel)]=\"formData.mainImageUrl\" \n                  name=\"mainImageUrl\" \n                  placeholder=\"https://... or /assets/products/...\"\n                  class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n                />\n              </div>\n\n              <div class=\"flex items-center gap-3 pt-6\">\n                <label class=\"flex items-center gap-2 cursor-pointer text-slate-300\">\n                  <input \n                    type=\"checkbox\" \n                    [(ngModel)]=\"formData.isFeatured\" \n                    name=\"isFeatured\"\n                    class=\"w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-700\"\n                  />\n                  <span>Featured on Homepage</span>\n                </label>\n              </div>\n            </div>\n\n            <div>\n              <label class=\"block text-slate-300 font-semibold mb-1\">Short Description</label>\n              <textarea \n                [(ngModel)]=\"formData.shortDescription\" \n                name=\"shortDescription\" \n                rows=\"2\"\n                placeholder=\"Summary for catalog cards and quick overviews...\"\n                class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n              ></textarea>\n            </div>\n\n            <div>\n              <label class=\"block text-slate-300 font-semibold mb-1\">Technical Specifications (Standards, SDR, Pressure PN)</label>\n              <input \n                type=\"text\" \n                [(ngModel)]=\"formData.specifications\" \n                name=\"specifications\" \n                placeholder=\"e.g. ISO 4427 / IS 4984 · PN 6 to PN 25 · SDR 7.4 - SDR 26 · 20mm to 630mm\"\n                class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n              />\n            </div>\n\n            <div>\n              <label class=\"block text-slate-300 font-semibold mb-1\">Comprehensive Description & Application Guide</label>\n              <textarea \n                [(ngModel)]=\"formData.fullDescription\" \n                name=\"fullDescription\" \n                rows=\"5\"\n                placeholder=\"Detailed polymer resin compounding properties, hydrostatic ratings, chemical resistance...\"\n                class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500\"\n              ></textarea>\n            </div>\n\n            <div *ngIf=\"formError\" class=\"p-3 bg-rose-950/60 border border-rose-800 rounded-xl text-rose-300\">\n              {{ formError }}\n            </div>\n\n            <div class=\"flex items-center justify-end gap-3 pt-3 border-t border-slate-800\">\n              <button \n                type=\"button\" \n                (click)=\"showFormModal = false\" \n                class=\"px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors\"\n              >\n                Cancel\n              </button>\n              <button \n                type=\"submit\" \n                [disabled]=\"saving\"\n                class=\"px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md transition-colors disabled:opacity-50\"\n              >\n                {{ saving ? 'Saving...' : (editingProductId ? 'Update Product' : 'Create Product') }}\n              </button>\n            </div>\n          </form>\n        </div>\n      </div>\n\n      <!-- View Product Modal -->\n      <div *ngIf=\"selectedProduct\" class=\"fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-4 shadow-2xl\">\n          <div class=\"flex items-center justify-between border-b border-slate-800 pb-3\">\n            <div>\n              <span class=\"px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950 text-blue-400\">\n                {{ selectedProduct.category?.categoryName }}\n              </span>\n              <h3 class=\"text-base font-bold text-white mt-1\">{{ selectedProduct.productName }}</h3>\n            </div>\n            <button (click)=\"selectedProduct = null\" class=\"text-slate-400 hover:text-white text-lg\">✕</button>\n          </div>\n\n          <div class=\"text-xs text-slate-400 space-y-1\">\n            <div><strong>Slug:</strong> /products/{{ selectedProduct.slug }}</div>\n            <div><strong>Status:</strong> {{ selectedProduct.isActive ? 'Active' : 'Inactive' }}</div>\n            <div><strong>Featured:</strong> {{ selectedProduct.isFeatured ? 'Yes' : 'No' }}</div>\n          </div>\n\n          <div *ngIf=\"selectedProduct.specifications\" class=\"p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-emerald-400\">\n            {{ selectedProduct.specifications }}\n          </div>\n\n          <div class=\"p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 whitespace-pre-line leading-relaxed max-h-60 overflow-y-auto\">\n            {{ selectedProduct.fullDescription || selectedProduct.shortDescription || 'No description provided.' }}\n          </div>\n\n          <div class=\"flex justify-end pt-3\">\n            <button (click)=\"selectedProduct = null\" class=\"px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs\">\n              Close\n            </button>\n          </div>\n        </div>\n      </div>\n\n      <!-- Delete Confirmation Modal -->\n      <div *ngIf=\"productToDelete\" class=\"fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl\">\n          <h3 class=\"text-base font-bold text-rose-400 flex items-center gap-2\">\n            <span>⚠️</span> Delete Product\n          </h3>\n          <p class=\"text-xs text-slate-300\">\n            Are you sure you want to delete <strong class=\"text-white\">\"{{ productToDelete.productName }}\"</strong>?\n          </p>\n          <div class=\"flex justify-end gap-3 pt-3\">\n            <button (click)=\"productToDelete = null\" class=\"px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs\">\n              Cancel\n            </button>\n            <button (click)=\"deleteConfirmed()\" class=\"px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs shadow-md\">\n              Confirm Delete\n            </button>\n          </div>\n        </div>\n      </div>\n\n    </div>\n  `\n})\nexport class AdminProductsComponent implements OnInit {\n  private prodService = inject(ProductService);\n  private toast = inject(ToastService);\n\n  products = signal<Product[]>([]);\n  categories = signal<ProductCategory[]>([]);\n  selectedCategory: number | undefined = undefined;\n  searchQuery = '';\n\n  showFormModal = false;\n  editingProductId: number | null = null;\n  selectedProduct: Product | null = null;\n  productToDelete: Product | null = null;\n  saving = false;\n  formError: string | null = null;\n\n  formData: CreateProductRequest = {\n    productName: '',\n    slug: '',\n    categoryId: 1,\n    shortDescription: '',\n    fullDescription: '',\n    specifications: '',\n    mainImageUrl: '',\n    isFeatured: false\n  };\n\n  ngOnInit(): void {\n    this.loadCategories();\n    this.loadProducts();\n  }\n\n  loadCategories(): void {\n    this.prodService.getCategories().subscribe(res => {\n      if (res.success && res.data) {\n        this.categories.set(res.data);\n        if (res.data.length > 0 && !this.formData.categoryId) {\n          this.formData.categoryId = res.data[0].categoryId;\n        }\n      }\n    });\n  }\n\n  loadProducts(): void {\n    this.prodService.getProducts(1, 100, this.selectedCategory, this.searchQuery).subscribe(res => {\n      if (res.success && res.data) {\n        this.products.set(res.data.items);\n      }\n    });\n  }\n\n  onNameChange(val: string): void {\n    if (!this.editingProductId) {\n      this.formData.slug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');\n    }\n  }\n\n  openCreateModal(): void {\n    this.editingProductId = null;\n    this.formData = {\n      productName: '',\n      slug: '',\n      categoryId: this.categories()[0]?.categoryId || 1,\n      shortDescription: '',\n      fullDescription: '',\n      specifications: '',\n      mainImageUrl: '',\n      isFeatured: false\n    };\n    this.formError = null;\n    this.showFormModal = true;\n  }\n\n  openEditModal(p: Product): void {\n    this.editingProductId = p.productId;\n    this.formData = {\n      productName: p.productName,\n      slug: p.slug,\n      categoryId: p.category?.categoryId || 1,\n      shortDescription: p.shortDescription || '',\n      fullDescription: p.fullDescription || '',\n      specifications: p.specifications || '',\n      mainImageUrl: p.mainImageUrl || '',\n      isFeatured: p.isFeatured\n    };\n    this.formError = null;\n    this.showFormModal = true;\n  }\n\n  openViewModal(p: Product): void {\n    this.selectedProduct = p;\n  }\n\n  confirmDelete(p: Product): void {\n    this.productToDelete = p;\n  }\n\n  saveProduct(): void {\n    if (!this.formData.productName.trim()) {\n      this.formError = 'Product name is required.';\n      return;\n    }\n    if (!this.formData.slug.trim()) {\n      this.formError = 'Valid product slug is required.';\n      return;\n    }\n    if (!this.formData.categoryId) {\n      this.formError = 'Please select a product category.';\n      return;\n    }\n\n    this.saving = true;\n    this.formError = null;\n\n    if (this.editingProductId) {\n      this.prodService.updateProduct(this.editingProductId, this.formData).subscribe({\n        next: res => {\n          this.saving = false;\n          if (res.success) {\n            this.toast.success('Product updated successfully.');\n            this.showFormModal = false;\n            this.loadProducts();\n          } else {\n            this.formError = res.message || 'Failed to update product.';\n          }\n        },\n        error: err => {\n          this.saving = false;\n          this.formError = err.error?.message || 'Server error updating product.';\n        }\n      });\n    } else {\n      this.prodService.createProduct(this.formData).subscribe({\n        next: res => {\n          this.saving = false;\n          if (res.success) {\n            this.toast.success('New product created successfully.');\n            this.showFormModal = false;\n            this.loadProducts();\n          } else {\n            this.formError = res.message || 'Failed to create product.';\n          }\n        },\n        error: err => {\n          this.saving = false;\n          this.formError = err.error?.message || 'Server error creating product.';\n        }\n      });\n    }\n  }\n\n  toggleStatus(id: number): void {\n    this.prodService.toggleProductStatus(id).subscribe({\n      next: res => {\n        if (res.success) {\n          this.toast.success('Product status updated.');\n          this.loadProducts();\n        }\n      },\n      error: () => this.toast.error('Failed to change product status.')\n    });\n  }\n\n  deleteConfirmed(): void {\n    if (!this.productToDelete) return;\n    this.prodService.deleteProduct(this.productToDelete.productId).subscribe({\n      next: res => {\n        if (res.success) {\n          this.toast.success('Product deleted.');\n          this.productToDelete = null;\n          this.loadProducts();\n        } else {\n          this.toast.error(res.message || 'Failed to delete product.');\n        }\n      },\n      error: () => this.toast.error('Server error deleting product.')\n    });\n  }\n}\n"
   },
-
-  // ==========================================
-  // 12. DOCUMENTATION
-  // ==========================================
   {
-    path: 'README.md',
-    name: 'README.md',
-    category: 'Documentation',
-    language: 'markdown',
-    description: 'Installation, CLI execution, role hierarchy and architecture guide',
-    content: `# OM Polymer — Angular 19 Production Frontend Application
-
-## Single Application with Two Role-Based Experiences
-1. **User Client Portal (\`/\`)**:
-   - Modern corporate landing page with engineering capabilities & stats.
-   - Products catalog with category filtering and keyword search.
-   - Product detail specification sheets with ISO standard tags.
-   - Client technical requirement (RFQ) submission form with backend validation and rate limit protection.
-   - Maintenance reference page with animated laptop, floating technician, and interactive contact cards.
-   - Dynamic Light / Dark mode toggling.
-
-2. **Admin Panel (\`/admin\`)**:
-   - Protected layout with sidebar navigation, role indicator, and logout.
-   - Admin KPI Dashboard with lead counters and recent inquiries.
-   - Client Inquiries & Leads CRM with search, status filtering, and remarks update.
-   - Product Catalog CRUD & active status toggling.
-   - Company Settings and WhatsApp phone configuration.
-   - **SuperAdmin Exclusive Area (\`/admin/users\`)**: Administrator management and role assignments.
-
----
-
-## Prerequisites
-- **Node.js**: v18.19.0 or v20.x+ LTS
-- **Angular CLI**: v19.x (\`npm install -g @angular/cli\`)
-
----
-
-## Quick Start
-\`\`\`bash
-cd om-polymer-angular
-npm install
-npm start
-\`\`\`
-The application will launch on \`http://localhost:4200/\` and proxy all \`/api/*\` calls to your ASP.NET Core API server on \`http://localhost:5000\`.
-
----
-
-## Run Unit Tests
-\`\`\`bash
-npm test
-\`\`\`
-
----
-
-## Production Build
-\`\`\`bash
-npm run build
-\`\`\`
-Output directory: \`dist/om-polymer-angular/browser\`
-`
+    "name": "admin-users.component.ts",
+    "path": "src/app/features/admin/users/admin-users.component.ts",
+    "category": "Admin Panel",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/admin/users/admin-users.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule } from '@angular/forms';\nimport { AdminUserService } from '../../../core/services/admin-user.service';\nimport { ToastService } from '../../../core/services/toast.service';\nimport { AdminUser, CreateAdminRequest } from '../../../core/models/auth.model';\n\n@Component({\n  selector: 'app-admin-users',\n  standalone: true,\n  imports: [CommonModule, FormsModule],\n  template: `\n    <div class=\"space-y-6\">\n      <div class=\"flex items-center justify-between\">\n        <div>\n          <h1 class=\"text-2xl font-bold tracking-tight\">System Administrators Management</h1>\n          <p class=\"text-xs text-slate-400 mt-1\">SuperAdmin exclusive panel: Add, deactivate, and manage roles</p>\n        </div>\n        <button (click)=\"showCreateModal.set(true)\" class=\"px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg text-xs\">\n          + Add Administrator\n        </button>\n      </div>\n\n      <div class=\"bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto\">\n        <table class=\"w-full text-left text-xs\">\n          <thead class=\"bg-slate-950 text-slate-400 border-b border-slate-800\">\n            <tr>\n              <th class=\"p-3\">Administrator</th>\n              <th class=\"p-3\">Email</th>\n              <th class=\"p-3\">Role</th>\n              <th class=\"p-3\">Status</th>\n              <th class=\"p-3 text-right\">Actions</th>\n            </tr>\n          </thead>\n          <tbody class=\"divide-y divide-slate-800\">\n            <tr *ngFor=\"let u of users()\">\n              <td class=\"p-3 font-semibold text-white\">{{ u.fullName }}</td>\n              <td class=\"p-3 text-slate-400 font-mono\">{{ u.email }}</td>\n              <td class=\"p-3\">\n                <span class=\"px-2 py-0.5 rounded text-[10px] font-bold\"\n                  [ngClass]=\"u.role === 'SuperAdmin' ? 'bg-amber-950 text-amber-400 border border-amber-800' : 'bg-blue-950 text-blue-400 border border-blue-800'\">\n                  {{ u.role }}\n                </span>\n              </td>\n              <td class=\"p-3\">\n                <span class=\"px-2 py-0.5 rounded text-[10px] font-bold\"\n                  [ngClass]=\"u.isActive ? 'bg-emerald-950 text-emerald-400' : 'bg-slate-800 text-slate-400'\">\n                  {{ u.isActive ? 'Active' : 'Inactive' }}\n                </span>\n              </td>\n              <td class=\"p-3 text-right space-x-2\">\n                <button (click)=\"toggleStatus(u.adminId)\" class=\"px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300\">\n                  Toggle Status\n                </button>\n                <button (click)=\"deleteUser(u.adminId)\" class=\"px-2.5 py-1 bg-rose-950 hover:bg-rose-900 text-rose-300 rounded\">\n                  Delete\n                </button>\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n\n      <!-- Add Administrator Modal -->\n      <div *ngIf=\"showCreateModal()\" class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4\">\n        <div class=\"bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4\">\n          <button (click)=\"showCreateModal.set(false)\" class=\"absolute top-4 right-4 text-slate-400 hover:text-white\">✕</button>\n          <h3 class=\"text-base font-bold text-white\">Create New Administrator</h3>\n\n          <div class=\"space-y-3\">\n            <div>\n              <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Full Name</label>\n              <input type=\"text\" [(ngModel)]=\"newFullName\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" />\n            </div>\n            <div>\n              <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Email</label>\n              <input type=\"email\" [(ngModel)]=\"newEmail\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" />\n            </div>\n            <div>\n              <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Password</label>\n              <input type=\"password\" [(ngModel)]=\"newPassword\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\" />\n            </div>\n            <div>\n              <label class=\"block text-xs font-semibold text-slate-400 mb-1\">Role</label>\n              <select [(ngModel)]=\"newRole\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white\">\n                <option value=\"Admin\">Admin</option>\n                <option value=\"SuperAdmin\">SuperAdmin</option>\n              </select>\n            </div>\n          </div>\n\n          <div class=\"flex justify-end gap-2 pt-2\">\n            <button (click)=\"showCreateModal.set(false)\" class=\"px-3 py-1.5 text-xs text-slate-400\">Cancel</button>\n            <button (click)=\"createAdmin()\" class=\"px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg\">Create</button>\n          </div>\n        </div>\n      </div>\n    </div>\n  `\n})\nexport class AdminUsersComponent implements OnInit {\n  private userService = inject(AdminUserService);\n  private toast = inject(ToastService);\n\n  users = signal<AdminUser[]>([]);\n  showCreateModal = signal(false);\n\n  newFullName = '';\n  newEmail = '';\n  newPassword = '';\n  newRole: 'SuperAdmin' | 'Admin' = 'Admin';\n\n  ngOnInit(): void {\n    this.loadUsers();\n  }\n\n  loadUsers(): void {\n    this.userService.getUsers(1, 50).subscribe(res => {\n      if (res.success && res.data) this.users.set(res.data.items);\n    });\n  }\n\n  toggleStatus(id: number): void {\n    this.userService.toggleUserStatus(id).subscribe({\n      next: () => {\n        this.toast.success('Admin status toggled.');\n        this.loadUsers();\n      }\n    });\n  }\n\n  deleteUser(id: number): void {\n    if (!confirm('Are you sure you want to delete this administrator?')) return;\n    this.userService.deleteUser(id).subscribe({\n      next: () => {\n        this.toast.success('Administrator deleted.');\n        this.loadUsers();\n      }\n    });\n  }\n\n  createAdmin(): void {\n    if (!this.newFullName || !this.newEmail || !this.newPassword) {\n      this.toast.error('All fields are mandatory.');\n      return;\n    }\n\n    this.userService.createUser({\n      fullName: this.newFullName,\n      email: this.newEmail,\n      password: this.newPassword,\n      role: this.newRole\n    }).subscribe({\n      next: () => {\n        this.toast.success('Administrator created.');\n        this.showCreateModal.set(false);\n        this.newFullName = '';\n        this.newEmail = '';\n        this.newPassword = '';\n        this.loadUsers();\n      }\n    });\n  }\n}\n"
+  },
+  {
+    "name": "forgot-password.component.ts",
+    "path": "src/app/features/auth/forgot-password/forgot-password.component.ts",
+    "category": "Auth",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/auth/forgot-password/forgot-password.component.ts",
+    "content": "import { Component, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { HttpClient } from '@angular/common/http';\nimport { environment } from '@env/environment';\nimport { ToastService } from '../../../core/services/toast.service';\n\n@Component({\n  selector: 'app-forgot-password',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  template: `\n    <div class=\"max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6\">\n      <div class=\"text-center\">\n        <h1 class=\"text-xl font-bold text-white\">Reset Administrative Password</h1>\n        <p class=\"text-xs text-slate-400 mt-1\">Dispatches a 1-hour secure password reset token</p>\n      </div>\n\n      <form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\" class=\"space-y-4\">\n        <div>\n          <label class=\"block text-xs font-semibold text-slate-300 mb-1\">Registered Administrator Email</label>\n          <input formControlName=\"email\" type=\"email\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white\" />\n        </div>\n\n        <button type=\"submit\" [disabled]=\"loading()\" class=\"w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition-colors disabled:opacity-50\">\n          {{ loading() ? 'Sending...' : 'Dispatch Reset Token' }}\n        </button>\n      </form>\n    </div>\n  `\n})\nexport class ForgotPasswordComponent {\n  private fb = inject(FormBuilder);\n  private http = inject(HttpClient);\n  private toast = inject(ToastService);\n\n  loading = signal(false);\n\n  form: FormGroup = this.fb.group({\n    email: ['', [Validators.required, Validators.email]]\n  });\n\n  onSubmit(): void {\n    if (this.form.invalid) return;\n\n    this.loading.set(true);\n    this.http.post<any>(`${environment.apiUrl}/admin/auth/forgot-password`, this.form.value).subscribe({\n      next: res => {\n        this.loading.set(false);\n        this.toast.success(res.message);\n      },\n      error: () => this.loading.set(false)\n    });\n  }\n}\n"
+  },
+  {
+    "name": "login.component.ts",
+    "path": "src/app/features/auth/login/login.component.ts",
+    "category": "Auth",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/auth/login/login.component.ts",
+    "content": "import { Component, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { Router, ActivatedRoute, RouterModule } from '@angular/router';\nimport { AuthService } from '../../../core/services/auth.service';\nimport { ToastService } from '../../../core/services/toast.service';\n\n@Component({\n  selector: 'app-login',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule, RouterModule],\n  template: `\n    <div class=\"max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6\">\n      <div class=\"text-center\">\n        <div class=\"w-12 h-12 rounded-2xl bg-blue-600 mx-auto flex items-center justify-center text-xl font-bold mb-3 shadow-lg\">\n          OM\n        </div>\n        <h1 class=\"text-xl font-bold text-white\">Administrator Sign In</h1>\n        <p class=\"text-xs text-slate-400 mt-1\">OM Polymer Management Portal</p>\n      </div>\n\n      <form [formGroup]=\"loginForm\" (ngSubmit)=\"onSubmit()\" class=\"space-y-4\">\n        <div>\n          <label class=\"block text-xs font-semibold text-slate-300 mb-1\">Email Address</label>\n          <input formControlName=\"email\" type=\"email\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white\" />\n        </div>\n\n        <div>\n          <label class=\"block text-xs font-semibold text-slate-300 mb-1\">Password</label>\n          <input formControlName=\"password\" type=\"password\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white\" />\n        </div>\n\n        <div class=\"p-3 bg-slate-950/70 rounded-xl border border-slate-800 text-[11px] text-slate-400 space-y-0.5\">\n          <div class=\"font-semibold text-slate-300\">Seed Administrative Credentials:</div>\n          <div>Email: <span class=\"text-blue-400 font-mono\">admin&#64;ompolymer.com</span></div>\n          <div>Password: <span class=\"text-blue-400 font-mono\">Admin&#64;123</span></div>\n        </div>\n\n        <button \n          type=\"submit\" \n          [disabled]=\"loading()\"\n          class=\"w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-md transition-colors disabled:opacity-50\"\n        >\n          {{ loading() ? 'Authenticating & Issuing Token...' : 'Authenticate & Enter' }}\n        </button>\n      </form>\n    </div>\n  `\n})\nexport class LoginComponent {\n  private fb = inject(FormBuilder);\n  private auth = inject(AuthService);\n  private router = inject(Router);\n  private route = inject(ActivatedRoute);\n  private toast = inject(ToastService);\n\n  loading = signal(false);\n\n  loginForm: FormGroup = this.fb.group({\n    email: ['admin@ompolymer.com', [Validators.required, Validators.email]],\n    password: ['Admin@123', Validators.required]\n  });\n\n  onSubmit(): void {\n    if (this.loginForm.invalid) return;\n\n    this.loading.set(true);\n    this.auth.login(this.loginForm.value).subscribe({\n      next: res => {\n        this.loading.set(false);\n        this.toast.success(`Welcome back, ${res.data.fullName}!`);\n        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/dashboard';\n        this.router.navigateByUrl(returnUrl);\n      },\n      error: () => this.loading.set(false)\n    });\n  }\n}\n"
+  },
+  {
+    "name": "login.component.ts",
+    "path": "src/app/features/auth/login.component.ts",
+    "category": "Auth",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/auth/login.component.ts",
+    "content": "import { Component, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { Router, RouterModule } from '@angular/router';\nimport { AuthService } from '../../core/services/auth.service';\nimport { ToastService } from '../../core/services/toast.service';\n\n@Component({\n  selector: 'app-login',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule, RouterModule],\n  template: `\n    <div class=\"min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4\">\n      <div class=\"max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl\">\n        <div class=\"text-center mb-6\">\n          <div class=\"w-12 h-12 rounded-xl bg-blue-600 mx-auto flex items-center justify-center text-xl font-bold mb-3\">\n            OM\n          </div>\n          <h2 class=\"text-lg font-bold\">Admin Portal Login</h2>\n          <p class=\"text-xs text-slate-400 mt-1\">OM Polymer Management Console</p>\n        </div>\n\n        <form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\" class=\"space-y-4\">\n          <div>\n            <label class=\"block text-xs font-semibold text-slate-300 mb-1\">Email</label>\n            <input formControlName=\"email\" type=\"email\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs\" />\n          </div>\n\n          <div>\n            <label class=\"block text-xs font-semibold text-slate-300 mb-1\">Password</label>\n            <input formControlName=\"password\" type=\"password\" class=\"w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs\" />\n          </div>\n\n          <div class=\"p-3 bg-slate-950/60 rounded border border-slate-800 text-[11px] text-slate-400\">\n            <div>Seed Credentials: <span class=\"text-blue-400 font-mono\">admin&#64;ompolymer.com</span></div>\n            <div>Password: <span class=\"text-blue-400 font-mono\">Admin&#64;123</span></div>\n          </div>\n\n          <button \n            type=\"submit\" \n            [disabled]=\"loading()\"\n            class=\"w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg text-xs transition-colors disabled:opacity-50\"\n          >\n            {{ loading() ? 'Authenticating...' : 'Sign In' }}\n          </button>\n        </form>\n\n        <div class=\"mt-4 text-center\">\n          <a routerLink=\"/\" class=\"text-xs text-slate-500 hover:text-slate-300\">← Back to Maintenance Page</a>\n        </div>\n      </div>\n    </div>\n  `\n})\nexport class LoginComponent {\n  private fb = inject(FormBuilder);\n  private auth = inject(AuthService);\n  private router = inject(Router);\n  private toast = inject(ToastService);\n\n  loading = signal(false);\n\n  form: FormGroup = this.fb.group({\n    email: ['admin@ompolymer.com', [Validators.required, Validators.email]],\n    password: ['Admin@123', Validators.required]\n  });\n\n  onSubmit(): void {\n    if (this.form.invalid) return;\n    this.loading.set(true);\n    this.auth.login(this.form.value).subscribe({\n      next: (res) => {\n        this.loading.set(false);\n        this.toast.success('Authenticated successfully!');\n        this.router.navigate(['/admin/inquiries']);\n      },\n      error: () => this.loading.set(false)\n    });\n  }\n}\n"
+  },
+  {
+    "name": "maintenance.component.css",
+    "path": "src/app/features/maintenance/maintenance.component.css",
+    "category": "Shared & Shell",
+    "language": "css",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/maintenance/maintenance.component.css",
+    "content": "/* Component animations */\n@keyframes floatAnim {\n  0%, 100% { transform: translateY(0); }\n  50% { transform: translateY(-20px); }\n}\n\n.anim-float {\n  animation: floatAnim 7s ease-in-out infinite;\n}\n\n.anim-float-reverse {\n  animation: floatAnim 8s ease-in-out infinite reverse;\n}\n"
+  },
+  {
+    "name": "maintenance.component.html",
+    "path": "src/app/features/maintenance/maintenance.component.html",
+    "category": "Shared & Shell",
+    "language": "html",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/maintenance/maintenance.component.html",
+    "content": "<div class=\"page min-h-screen relative flex items-center justify-center p-5 md:p-10 overflow-hidden bg-[#f5f8ff] text-[#172554] dark:bg-[#0f172a] dark:text-[#e2e8f0] transition-colors duration-400\">\n  \n  <!-- Ambient Floating Background Circles -->\n  <div class=\"background-circle circle-one absolute rounded-full pointer-events-none opacity-55 w-[350px] h-[350px] bg-[#dbeafe] -top-[120px] -left-[100px] anim-float dark:opacity-10\"></div>\n  <div class=\"background-circle circle-two absolute rounded-full pointer-events-none opacity-55 w-[280px] h-[280px] bg-[#e0e7ff] -bottom-[100px] -right-[80px] anim-float-reverse dark:opacity-10\"></div>\n  <div class=\"background-circle circle-three absolute rounded-full pointer-events-none opacity-55 w-[120px] h-[120px] bg-[#fef3c7] top-[15%] right-[10%] anim-float dark:opacity-10\"></div>\n\n  <!-- Top Bar & Brand Logo -->\n  <div class=\"top-bar absolute top-6 left-6 right-6 md:top-7 md:left-8 md:right-8 flex justify-between items-center z-10\">\n    <div class=\"logo flex items-center gap-3\">\n      <div class=\"w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center shadow-md text-white font-extrabold text-xl tracking-wider\">\n        OM\n      </div>\n      <div class=\"flex flex-col\">\n        <span class=\"font-extrabold text-xl tracking-tight leading-none text-[#172554] dark:text-white\">\n          OM POLYMER\n        </span>\n        <span class=\"text-[11px] font-semibold tracking-wider uppercase text-blue-600 dark:text-blue-400 mt-1\">\n          Industrial Compounding & Extrusion\n        </span>\n      </div>\n    </div>\n\n    <div class=\"flex items-center gap-3\">\n      <!-- Quick Quote Action Button -->\n      <button \n        (click)=\"openQuoteModal()\"\n        class=\"hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95\"\n      >\n        <span>📝</span> Request Quotation\n      </button>\n\n      <!-- Theme Switcher Button -->\n      <button \n        (click)=\"toggleTheme()\" \n        class=\"theme-button w-11 h-11 border-0 rounded-full bg-white dark:bg-[#1e293b] text-[#172554] dark:text-[#e2e8f0] shadow-md flex items-center justify-center text-xl cursor-pointer transition-transform hover:scale-110 hover:rotate-12 active:scale-95\"\n        [title]=\"themeService.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'\"\n        aria-label=\"Toggle dark mode theme\"\n      >\n        {{ themeService.isDark() ? '☀️' : '🌙' }}\n      </button>\n    </div>\n  </div>\n\n  <!-- Main Maintenance Card Container -->\n  <main class=\"maintenance-card w-full max-w-[900px] text-center relative z-[2] flex flex-col items-center mt-16 md:mt-10\">\n    \n    <!-- Animated Illustration -->\n    <div class=\"illustration w-[300px] h-[220px] mx-auto mb-2 relative\">\n      <!-- Laptop -->\n      <div class=\"laptop anim-laptop absolute w-[210px] h-[135px] bg-[#172554] rounded-xl left-[45px] top-[30px] p-2.5 shadow-2xl\">\n        <div class=\"screen w-full h-full bg-gradient-to-br from-[#eff6ff] to-[#dbeafe] rounded-md flex flex-col items-center justify-center gap-2.5\">\n          <div class=\"gear text-5xl anim-gear\">⚙️</div>\n          <div class=\"loading-line w-[100px] h-[7px] bg-[#bfdbfe] rounded-full overflow-hidden anim-loading-bar\"></div>\n        </div>\n      </div>\n      <div class=\"laptop-base absolute w-[245px] h-[12px] bg-[#64748b] rounded-b-[20px] bottom-[40px] left-[27px]\"></div>\n\n      <!-- Maintenance Person Worker -->\n      <div class=\"person anim-person absolute right-[5px] bottom-[35px]\">\n        <div class=\"head w-10 h-10 rounded-full bg-[#f8c9a0] mx-auto relative\">\n          <div class=\"helmet absolute w-[52px] h-[20px] bg-[#fbbf24] rounded-t-[30px] rounded-b-[5px] -top-[7px] -left-[6px] shadow-sm\"></div>\n        </div>\n        <div class=\"body w-[55px] h-[65px] bg-[#2563eb] rounded-t-xl rounded-b-md mt-1\"></div>\n        <div class=\"wrench absolute text-4xl -right-[35px] top-[55px] -rotate-[30deg]\">🔧</div>\n      </div>\n    </div>\n\n    <!-- Status Badge -->\n    <div class=\"badge inline-flex items-center gap-2 bg-[#dbeafe] text-[#1d4ed8] dark:bg-blue-950/80 dark:text-blue-300 px-4 py-2 rounded-full text-xs font-bold mb-4 tracking-wide border border-blue-200 dark:border-blue-900 shadow-sm\">\n      <span class=\"status-dot w-2 h-2 rounded-full bg-[#22c55e] animate-ping\"></span>\n      MAINTENANCE IN PROGRESS\n    </div>\n\n    <!-- Main Heading -->\n    <h1 class=\"text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 text-[#172554] dark:text-[#f8fafc] leading-tight\">\n      Site <span class=\"bg-gradient-to-r from-[#2563eb] to-[#7c3aed] bg-clip-text text-transparent\">Under Maintenance</span>\n    </h1>\n\n    <!-- Description -->\n    <p class=\"description max-w-[650px] mx-auto text-[#64748b] dark:text-[#94a3b8] text-base md:text-lg leading-relaxed mb-8\">\n      We're currently working behind the scenes to upgrade our industrial catalog and customer portal. We'll be back online shortly. For immediate requirements or quotations, reach out directly below.\n    </p>\n\n    <!-- Interactive Contact Cards Grid -->\n    <div class=\"contact-grid grid grid-cols-1 sm:grid-cols-3 gap-5 w-full mt-4\">\n      \n      <!-- Phone Support Card -->\n      <a [href]=\"phoneTel\" class=\"contact-card group bg-white dark:bg-[#1e293b] p-6 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-none border border-transparent hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-300 hover:-translate-y-2 flex flex-col items-center text-center gap-3\">\n        <div class=\"icon-wrap w-14 h-14 bg-[#eff6ff] dark:bg-[#0f172a] rounded-full flex items-center justify-center text-2xl group-hover:scale-110 group-hover:rotate-6 group-hover:bg-[#dbeafe] dark:group-hover:bg-[#172554] transition-all\">\n          📞\n        </div>\n        <div class=\"info\">\n          <strong class=\"block text-base font-semibold text-[#1e293b] dark:text-[#f8fafc] mb-1\">Phone Support</strong>\n          <span class=\"text-sm text-[#64748b] dark:text-[#cbd5e1] font-mono\">{{ phone }}</span>\n        </div>\n      </a>\n      \n      <!-- Email Us Card -->\n      <a [href]=\"emailMailto\" class=\"contact-card group bg-white dark:bg-[#1e293b] p-6 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-none border border-transparent hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-300 hover:-translate-y-2 flex flex-col items-center text-center gap-3\">\n        <div class=\"icon-wrap w-14 h-14 bg-[#eff6ff] dark:bg-[#0f172a] rounded-full flex items-center justify-center text-2xl group-hover:scale-110 group-hover:rotate-6 group-hover:bg-[#dbeafe] dark:group-hover:bg-[#172554] transition-all\">\n          ✉️\n        </div>\n        <div class=\"info\">\n          <strong class=\"block text-base font-semibold text-[#1e293b] dark:text-[#f8fafc] mb-1\">Email Us</strong>\n          <span class=\"text-sm text-[#64748b] dark:text-[#cbd5e1]\">{{ email }}</span>\n        </div>\n      </a>\n\n      <!-- Head Office Card (Maps) -->\n      <a [href]=\"mapsUrl\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"contact-card group bg-white dark:bg-[#1e293b] p-6 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-none border border-transparent hover:border-blue-200 dark:hover:border-blue-700 transition-all duration-300 hover:-translate-y-2 flex flex-col items-center text-center gap-3\">\n        <div class=\"icon-wrap w-14 h-14 bg-[#eff6ff] dark:bg-[#0f172a] rounded-full flex items-center justify-center text-2xl group-hover:scale-110 group-hover:rotate-6 group-hover:bg-[#dbeafe] dark:group-hover:bg-[#172554] transition-all\">\n          🏢\n        </div>\n        <div class=\"info\">\n          <strong class=\"block text-base font-semibold text-[#1e293b] dark:text-[#f8fafc] mb-1\">Head Office</strong>\n          <span class=\"text-xs text-[#64748b] dark:text-[#cbd5e1] leading-tight\">\n            Vegdi GIDC, Plot No. 59,<br>Dhoraji, Gujarat, India\n          </span>\n        </div>\n      </a>\n\n    </div>\n\n    <!-- Additional Quick Action Triggers -->\n    <div class=\"mt-8 flex flex-wrap items-center justify-center gap-3\">\n      <button \n        (click)=\"openQuoteModal()\"\n        class=\"inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95\"\n      >\n        <span>💬</span> Submit Urgent Inquiry / RFQ\n      </button>\n\n      <a \n        *ngIf=\"company()?.whatsAppUrl\"\n        [href]=\"company()?.whatsAppUrl\"\n        target=\"_blank\"\n        rel=\"noopener noreferrer\"\n        class=\"inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 hover:bg-emerald-200 border border-emerald-300 dark:border-emerald-800 transition-all\"\n      >\n        <span>🟢</span> WhatsApp Live Chat\n      </a>\n\n      <a \n        routerLink=\"/admin/login\"\n        class=\"inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all\"\n      >\n        <span>🔒</span> Admin Portal\n      </a>\n    </div>\n\n    <!-- Footer -->\n    <footer class=\"mt-12 text-[#94a3b8] dark:text-slate-500 text-xs tracking-wide\">\n      © 2026 OM POLYMER · ISO 9001 Certified · Thanks for your patience ❤️\n    </footer>\n  </main>\n\n  <!-- Interactive Quotation Modal Dialog -->\n  <div *ngIf=\"showQuoteModal()\" class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fadeIn\">\n    <div class=\"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-left\">\n      \n      <button \n        (click)=\"closeQuoteModal()\" \n        class=\"absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold p-1\"\n        aria-label=\"Close quote modal\"\n      >\n        ✕\n      </button>\n\n      <div class=\"mb-4\">\n        <h3 class=\"text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2\">\n          <span>📋</span> Technical Requirement & RFQ\n        </h3>\n        <p class=\"text-xs text-slate-500 dark:text-slate-400 mt-1\">\n          Directly submit your inquiry to our engineering team while the main site is updating.\n        </p>\n      </div>\n\n      <form [formGroup]=\"quoteForm\" (ngSubmit)=\"submitQuote()\" class=\"space-y-3\">\n        <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-3\">\n          <div>\n            <label class=\"block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1\">\n              Full Name <span class=\"text-rose-500\">*</span>\n            </label>\n            <input \n              type=\"text\" \n              formControlName=\"fullName\"\n              placeholder=\"e.g. Ramesh Patel\" \n              class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500\"\n            />\n            <span *ngIf=\"quoteForm.get('fullName')?.touched && quoteForm.get('fullName')?.invalid\" class=\"text-[10px] text-rose-500\">\n              Full name is required.\n            </span>\n          </div>\n\n          <div>\n            <label class=\"block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1\">\n              Company Name\n            </label>\n            <input \n              type=\"text\" \n              formControlName=\"companyName\"\n              placeholder=\"e.g. Gujarat Polymer Ltd\" \n              class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500\"\n            />\n          </div>\n        </div>\n\n        <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-3\">\n          <div>\n            <label class=\"block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1\">\n              Email Address <span class=\"text-rose-500\">*</span>\n            </label>\n            <input \n              type=\"email\" \n              formControlName=\"email\"\n              placeholder=\"contact@company.com\" \n              class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500\"\n            />\n            <span *ngIf=\"quoteForm.get('email')?.touched && quoteForm.get('email')?.invalid\" class=\"text-[10px] text-rose-500\">\n              Valid email is required.\n            </span>\n          </div>\n\n          <div>\n            <label class=\"block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1\">\n              Phone Number <span class=\"text-rose-500\">*</span>\n            </label>\n            <input \n              type=\"tel\" \n              formControlName=\"phoneNumber\"\n              placeholder=\"+91 98765 43210\" \n              class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500\"\n            />\n            <span *ngIf=\"quoteForm.get('phoneNumber')?.touched && quoteForm.get('phoneNumber')?.invalid\" class=\"text-[10px] text-rose-500\">\n              Valid phone number required.\n            </span>\n          </div>\n        </div>\n\n        <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-3\">\n          <div>\n            <label class=\"block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1\">\n              Product of Interest\n            </label>\n            <input \n              type=\"text\" \n              formControlName=\"productOfInterest\"\n              placeholder=\"e.g. HDPE PN16 Pipes\" \n              class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500\"\n            />\n          </div>\n\n          <div>\n            <label class=\"block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1\">\n              Estimated Quantity\n            </label>\n            <input \n              type=\"text\" \n              formControlName=\"quantity\"\n              placeholder=\"e.g. 5,000 meters\" \n              class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500\"\n            />\n          </div>\n        </div>\n\n        <div>\n          <label class=\"block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1\">\n            Requirement & Technical Specifications <span class=\"text-rose-500\">*</span>\n          </label>\n          <textarea \n            rows=\"3\"\n            formControlName=\"requirementDescription\"\n            placeholder=\"Please detail your target pipe diameter, SDR rating, delivery location, or custom compound requirements...\"\n            class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500\"\n          ></textarea>\n          <span *ngIf=\"quoteForm.get('requirementDescription')?.touched && quoteForm.get('requirementDescription')?.invalid\" class=\"text-[10px] text-rose-500\">\n            Description is required (minimum 5 characters).\n          </span>\n        </div>\n\n        <div class=\"pt-2 flex justify-end gap-2\">\n          <button \n            type=\"button\" \n            (click)=\"closeQuoteModal()\" \n            class=\"px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors\"\n          >\n            Cancel\n          </button>\n          <button \n            type=\"submit\" \n            [disabled]=\"isSubmittingQuote()\"\n            class=\"px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-1.5\"\n          >\n            <span>{{ isSubmittingQuote() ? 'Transmitting...' : 'Submit Inquiry' }}</span>\n          </button>\n        </div>\n      </form>\n    </div>\n  </div>\n\n</div>\n"
+  },
+  {
+    "name": "maintenance.component.ts",
+    "path": "src/app/features/maintenance/maintenance.component.ts",
+    "category": "Shared & Shell",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/maintenance/maintenance.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';\nimport { RouterModule } from '@angular/router';\nimport { ThemeService } from '../../core/services/theme.service';\nimport { CompanyService } from '../../core/services/company.service';\nimport { RequirementService } from '../../core/services/requirement.service';\nimport { ToastService } from '../../core/services/toast.service';\nimport { APP_CONSTANTS } from '../../core/constants/app.constant';\nimport { CompanySettings } from '../../core/models/company.model';\n\n@Component({\n  selector: 'app-maintenance',\n  standalone: true,\n  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],\n  templateUrl: './maintenance.component.html',\n  styleUrls: ['./maintenance.component.css']\n})\nexport class MaintenanceComponent implements OnInit {\n  themeService = inject(ThemeService);\n  companyService = inject(CompanyService);\n  requirementService = inject(RequirementService);\n  toastService = inject(ToastService);\n  private fb = inject(FormBuilder);\n\n  // Component Signals\n  company = signal<CompanySettings | null>(null);\n  isLoadingCompany = signal<boolean>(true);\n  showQuoteModal = signal<boolean>(false);\n  isSubmittingQuote = signal<boolean>(false);\n\n  // Fallback defaults from original HTML\n  phone: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;\n  phoneTel: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;\n  email: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;\n  emailMailto: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;\n  address: string = APP_CONSTANTS.DEFAULT_CONTACT.ADDRESS;\n  mapsUrl: string = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;\n\n  // Reactive Quote Form with validations matching backend rules\n  quoteForm: FormGroup = this.fb.group({\n    fullName: ['', [Validators.required, Validators.maxLength(150)]],\n    companyName: [''],\n    email: ['', [Validators.required, Validators.email]],\n    phoneNumber: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(20)]],\n    productOfInterest: ['HDPE Pipes & Extrusion'],\n    quantity: [''],\n    requirementDescription: ['', [Validators.required, Validators.minLength(5)]],\n    city: [''],\n    state: ['']\n  });\n\n  ngOnInit(): void {\n    this.fetchCompanyDetails();\n  }\n\n  fetchCompanyDetails(): void {\n    this.isLoadingCompany.set(true);\n    this.companyService.getCompanySettings().subscribe({\n      next: (res) => {\n        if (res.success && res.data) {\n          this.company.set(res.data);\n          if (res.data.phoneContact) {\n            this.phone = res.data.phoneContact;\n            this.phoneTel = `tel:${res.data.phoneContact.replace(/\\s+/g, '')}`;\n          }\n          if (res.data.emailContact) {\n            this.email = res.data.emailContact;\n            this.emailMailto = `mailto:${res.data.emailContact}`;\n          }\n          if (res.data.address) {\n            this.address = res.data.address;\n          }\n        }\n        this.isLoadingCompany.set(false);\n      },\n      error: () => {\n        // Safe graceful fallback to default contact values\n        this.isLoadingCompany.set(false);\n      }\n    });\n  }\n\n  toggleTheme(): void {\n    this.themeService.toggleTheme();\n  }\n\n  openQuoteModal(): void {\n    this.showQuoteModal.set(true);\n  }\n\n  closeQuoteModal(): void {\n    this.showQuoteModal.set(false);\n  }\n\n  submitQuote(): void {\n    if (this.quoteForm.invalid) {\n      this.quoteForm.markAllAsTouched();\n      this.toastService.error('Please complete all required fields correctly before submitting.', 'Form Validation');\n      return;\n    }\n\n    this.isSubmittingQuote.set(true);\n    this.requirementService.submitRequirement(this.quoteForm.value).subscribe({\n      next: (res) => {\n        this.isSubmittingQuote.set(false);\n        this.toastService.success(res.message || 'Technical inquiry sent! We will contact you shortly.', 'Inquiry Recorded');\n        this.quoteForm.reset({\n          productOfInterest: 'HDPE Pipes & Extrusion'\n        });\n        this.showQuoteModal.set(false);\n      },\n      error: () => {\n        this.isSubmittingQuote.set(false);\n      }\n    });\n  }\n}\n"
+  },
+  {
+    "name": "requirement-form.component.ts",
+    "path": "src/app/features/requirements/requirement-form.component.ts",
+    "category": "Shared & Shell",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/requirements/requirement-form.component.ts",
+    "content": "import { Component, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { RouterModule } from '@angular/router';\nimport { RequirementService } from '../../core/services/requirement.service';\nimport { ToastService } from '../../core/services/toast.service';\n\n@Component({\n  selector: 'app-requirement-form',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule, RouterModule],\n  template: `\n    <div class=\"min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 md:p-12 flex flex-col justify-center items-center\">\n      <div class=\"max-w-2xl w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-xl\">\n        <div class=\"flex items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4\">\n          <div>\n            <h1 class=\"text-2xl font-bold\">Technical Quotation Request</h1>\n            <p class=\"text-xs text-slate-500 mt-1\">OM Polymer Engineering Sales Quotation Engine</p>\n          </div>\n          <a routerLink=\"/\" class=\"text-xs text-blue-600 hover:underline\">← Back to Maintenance</a>\n        </div>\n\n        <form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\" class=\"space-y-4\">\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Full Name *</label>\n              <input formControlName=\"fullName\" type=\"text\" class=\"w-full px-3 py-2 text-xs rounded-lg border dark:bg-slate-950 border-slate-300 dark:border-slate-700\" />\n            </div>\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Company Name</label>\n              <input formControlName=\"companyName\" type=\"text\" class=\"w-full px-3 py-2 text-xs rounded-lg border dark:bg-slate-950 border-slate-300 dark:border-slate-700\" />\n            </div>\n          </div>\n\n          <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Email Address *</label>\n              <input formControlName=\"email\" type=\"email\" class=\"w-full px-3 py-2 text-xs rounded-lg border dark:bg-slate-950 border-slate-300 dark:border-slate-700\" />\n            </div>\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Phone Number *</label>\n              <input formControlName=\"phoneNumber\" type=\"tel\" class=\"w-full px-3 py-2 text-xs rounded-lg border dark:bg-slate-950 border-slate-300 dark:border-slate-700\" />\n            </div>\n          </div>\n\n          <div>\n            <label class=\"block text-xs font-semibold mb-1\">Requirement & Technical Specs *</label>\n            <textarea formControlName=\"requirementDescription\" rows=\"4\" class=\"w-full px-3 py-2 text-xs rounded-lg border dark:bg-slate-950 border-slate-300 dark:border-slate-700\"></textarea>\n          </div>\n\n          <button \n            type=\"submit\" \n            [disabled]=\"loading()\"\n            class=\"w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg text-xs transition-colors disabled:opacity-50\"\n          >\n            {{ loading() ? 'Submitting Requirement...' : 'Send Technical Specification' }}\n          </button>\n        </form>\n      </div>\n    </div>\n  `\n})\nexport class RequirementFormComponent {\n  private fb = inject(FormBuilder);\n  private reqService = inject(RequirementService);\n  private toast = inject(ToastService);\n\n  loading = signal(false);\n\n  form: FormGroup = this.fb.group({\n    fullName: ['', [Validators.required, Validators.maxLength(150)]],\n    companyName: [''],\n    email: ['', [Validators.required, Validators.email]],\n    phoneNumber: ['', [Validators.required, Validators.minLength(7)]],\n    requirementDescription: ['', [Validators.required, Validators.minLength(5)]]\n  });\n\n  onSubmit(): void {\n    if (this.form.invalid) {\n      this.form.markAllAsTouched();\n      this.toast.error('Please fill required fields.');\n      return;\n    }\n    this.loading.set(true);\n    this.reqService.submitRequirement(this.form.value).subscribe({\n      next: (res) => {\n        this.loading.set(false);\n        this.toast.success(res.message);\n        this.form.reset();\n      },\n      error: () => this.loading.set(false)\n    });\n  }\n}\n"
+  },
+  {
+    "name": "blog-detail.component.ts",
+    "path": "src/app/features/user/blogs/blog-detail.component.ts",
+    "category": "User Portal",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/user/blogs/blog-detail.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ActivatedRoute, RouterModule } from '@angular/router';\nimport { BlogService } from '../../../core/services/blog.service';\nimport { CompanyService } from '../../../core/services/company.service';\nimport { BlogPost } from '../../../core/models/blog.model';\n\n@Component({\n  selector: 'app-blog-detail',\n  standalone: true,\n  imports: [CommonModule, RouterModule],\n  template: `\n    <div class=\"py-10 px-6 max-w-4xl mx-auto space-y-8\">\n      \n      <!-- Breadcrumb Navigation -->\n      <nav class=\"flex items-center gap-2 text-xs text-slate-500\">\n        <a routerLink=\"/\" class=\"hover:text-blue-600\">Home</a>\n        <span>/</span>\n        <a routerLink=\"/blogs\" class=\"hover:text-blue-600\">Articles</a>\n        <span>/</span>\n        <span class=\"text-slate-800 dark:text-slate-200 truncate font-medium\">{{ blog()?.title || 'Article' }}</span>\n      </nav>\n\n      <!-- Loading State -->\n      <div *ngIf=\"loading()\" class=\"p-16 text-center text-slate-400 text-xs\">\n        Loading engineering article details...\n      </div>\n\n      <!-- Article View -->\n      <article *ngIf=\"!loading() && blog() as b\" class=\"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8\">\n        \n        <header class=\"space-y-4\">\n          <div class=\"flex flex-wrap items-center gap-3\">\n            <span class=\"px-3 py-1 rounded-full text-xs font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300\">\n              {{ b.category?.categoryName || 'Technical Whitepaper' }}\n            </span>\n            <span class=\"text-xs text-slate-500\">Published: {{ b.publishedAt || b.createdAt | date:'longDate' }}</span>\n            <span class=\"text-xs text-slate-500\">· Author: {{ b.author || 'OM Polymer Engineering Lab' }}</span>\n          </div>\n\n          <h1 class=\"text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight text-slate-900 dark:text-white\">\n            {{ b.title }}\n          </h1>\n\n          <p *ngIf=\"b.shortDescription\" class=\"text-base text-slate-600 dark:text-slate-300 font-medium leading-relaxed border-l-4 border-blue-600 pl-4 py-1\">\n            {{ b.shortDescription }}\n          </p>\n        </header>\n\n        <!-- Article Body -->\n        <div class=\"prose dark:prose-invert max-w-none text-slate-700 dark:text-slate-300 leading-relaxed space-y-4 whitespace-pre-line text-sm sm:text-base border-t border-slate-200 dark:border-slate-800 pt-6\">\n          {{ b.content }}\n        </div>\n\n        <!-- Technical Consultation CTA -->\n        <div class=\"mt-12 p-6 rounded-2xl bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4\">\n          <div class=\"space-y-1\">\n            <h3 class=\"font-bold text-base\">Have technical questions regarding this specification?</h3>\n            <p class=\"text-xs text-slate-300\">Our materials engineering team can assist with pressure rating calculations and resin selection.</p>\n          </div>\n          <div class=\"flex items-center gap-3 shrink-0\">\n            <a routerLink=\"/quote\" class=\"px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md transition-colors\">\n              Request RFQ\n            </a>\n            <button (click)=\"chatOnWhatsApp(b.title)\" class=\"px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition-colors flex items-center gap-1.5\">\n              <span>💬</span> WhatsApp Desk\n            </button>\n          </div>\n        </div>\n      </article>\n\n      <!-- Not Found -->\n      <div *ngIf=\"!loading() && !blog()\" class=\"p-16 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3\">\n        <h2 class=\"text-lg font-bold\">Article Not Found</h2>\n        <p class=\"text-xs text-slate-500\">The requested article is unpublished or does not exist.</p>\n        <a routerLink=\"/blogs\" class=\"inline-block px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold\">\n          Return to All Articles\n        </a>\n      </div>\n\n    </div>\n  `\n})\nexport class BlogDetailComponent implements OnInit {\n  private route = inject(ActivatedRoute);\n  private blogService = inject(BlogService);\n  private compService = inject(CompanyService);\n\n  blog = signal<BlogPost | null>(null);\n  loading = signal(true);\n  whatsappNumber = '919876543210';\n\n  ngOnInit(): void {\n    const slug = this.route.snapshot.paramMap.get('slug');\n    if (slug) {\n      this.blogService.getBlogBySlug(slug).subscribe({\n        next: res => {\n          if (res.success && res.data) {\n            this.blog.set(res.data);\n          }\n          this.loading.set(false);\n        },\n        error: () => this.loading.set(false)\n      });\n    } else {\n      this.loading.set(false);\n    }\n\n    this.compService.getCompanySettings().subscribe({\n      next: res => {\n        if (res.success && res.data?.whatsappContact) {\n          this.whatsappNumber = res.data.whatsappContact.replace(/\\D/g, '');\n        }\n      }\n    });\n  }\n\n  chatOnWhatsApp(title: string): void {\n    const msg = encodeURIComponent(`Hello OM Polymer Engineering, I am inquiring regarding your article: \"${title}\". Can you provide technical guidance?`);\n    window.location.href = `https://wa.me/${this.whatsappNumber}?text=${msg}`;\n  }\n}\n"
+  },
+  {
+    "name": "blog-list.component.ts",
+    "path": "src/app/features/user/blogs/blog-list.component.ts",
+    "category": "User Portal",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/user/blogs/blog-list.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { RouterModule } from '@angular/router';\nimport { FormsModule } from '@angular/forms';\nimport { BlogService } from '../../../core/services/blog.service';\nimport { BlogPost, BlogCategory } from '../../../core/models/blog.model';\n\n@Component({\n  selector: 'app-blog-list',\n  standalone: true,\n  imports: [CommonModule, RouterModule, FormsModule],\n  template: `\n    <div class=\"py-10 px-6 max-w-7xl mx-auto space-y-8\">\n      <div>\n        <h1 class=\"text-3xl font-extrabold tracking-tight\">Engineering Articles & Insights</h1>\n        <p class=\"text-xs text-slate-500 mt-1\">Research papers, hydrostatic testing data, and polymer manufacturing best practices</p>\n      </div>\n\n      <!-- Filters & Search Bar -->\n      <div class=\"flex flex-col md:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm\">\n        <div class=\"flex flex-wrap gap-2\">\n          <button \n            (click)=\"selectCategory(undefined)\"\n            class=\"px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors\"\n            [ngClass]=\"selectedCategoryId() === undefined ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'\"\n          >\n            All Categories\n          </button>\n          <button \n            *ngFor=\"let cat of categories()\"\n            (click)=\"selectCategory(cat.blogCategoryId)\"\n            class=\"px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors\"\n            [ngClass]=\"selectedCategoryId() === cat.blogCategoryId ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'\"\n          >\n            {{ cat.categoryName }}\n          </button>\n        </div>\n\n        <input \n          type=\"text\" \n          [(ngModel)]=\"searchQuery\" \n          (ngModelChange)=\"loadBlogs()\"\n          placeholder=\"Search articles by title or keyword...\" \n          class=\"w-full md:w-80 px-3.5 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-500\"\n        />\n      </div>\n\n      <!-- Loading State -->\n      <div *ngIf=\"loading()\" class=\"p-16 text-center text-slate-400 text-xs\">\n        Loading engineering articles...\n      </div>\n\n      <!-- Empty State -->\n      <div *ngIf=\"!loading() && blogs().length === 0\" class=\"p-16 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl\">\n        <p class=\"text-slate-500 text-sm\">No articles found matching your criteria.</p>\n      </div>\n\n      <!-- Blogs Grid -->\n      <div *ngIf=\"!loading() && blogs().length > 0\" class=\"grid grid-cols-1 md:grid-cols-3 gap-6\">\n        <article *ngFor=\"let blog of blogs()\" class=\"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-xl transition-all\">\n          <div class=\"p-6 space-y-3\">\n            <div class=\"flex items-center justify-between text-[11px] text-slate-400\">\n              <span class=\"px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300\">\n                {{ blog.category?.categoryName || 'Technical' }}\n              </span>\n              <span>{{ blog.createdAt | date:'mediumDate' }}</span>\n            </div>\n            \n            <h2 class=\"font-bold text-lg leading-snug hover:text-blue-600 transition-colors\">\n              <a [routerLink]=\"['/blogs', blog.slug]\">{{ blog.title }}</a>\n            </h2>\n            \n            <p class=\"text-xs text-slate-500 line-clamp-3 leading-relaxed\">\n              {{ blog.shortDescription }}\n            </p>\n          </div>\n\n          <div class=\"p-6 pt-0 border-t border-slate-100 dark:border-slate-800/60 mt-4 flex items-center justify-between\">\n            <span class=\"text-xs text-slate-400\">Author: {{ blog.author || 'OM Polymer Lab' }}</span>\n            <a [routerLink]=\"['/blogs', blog.slug]\" class=\"text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline\">\n              Read Complete Article →\n            </a>\n          </div>\n        </article>\n      </div>\n    </div>\n  `\n})\nexport class BlogListComponent implements OnInit {\n  private blogService = inject(BlogService);\n\n  blogs = signal<BlogPost[]>([]);\n  categories = signal<BlogCategory[]>([]);\n  selectedCategoryId = signal<number | undefined>(undefined);\n  searchQuery = '';\n  loading = signal(true);\n\n  ngOnInit(): void {\n    this.loadCategories();\n    this.loadBlogs();\n  }\n\n  loadCategories(): void {\n    this.blogService.getCategories().subscribe({\n      next: res => {\n        if (res.success && res.data) this.categories.set(res.data);\n      }\n    });\n  }\n\n  selectCategory(id?: number): void {\n    this.selectedCategoryId.set(id);\n    this.loadBlogs();\n  }\n\n  loadBlogs(): void {\n    this.loading.set(true);\n    this.blogService.getPublishedBlogs(1, 50, this.selectedCategoryId(), this.searchQuery).subscribe({\n      next: res => {\n        if (res.success && res.data?.items) {\n          this.blogs.set(res.data.items);\n        } else {\n          this.blogs.set([]);\n        }\n        this.loading.set(false);\n      },\n      error: () => {\n        this.blogs.set([]);\n        this.loading.set(false);\n      }\n    });\n  }\n}\n"
+  },
+  {
+    "name": "product-catalog.component.ts",
+    "path": "src/app/features/user/catalog/product-catalog.component.ts",
+    "category": "User Portal",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/user/catalog/product-catalog.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { RouterModule } from '@angular/router';\nimport { FormsModule } from '@angular/forms';\nimport { ProductService } from '../../../core/services/product.service';\nimport { Product, ProductCategory } from '../../../core/models/product.model';\n\n@Component({\n  selector: 'app-product-catalog',\n  standalone: true,\n  imports: [CommonModule, RouterModule, FormsModule],\n  template: `\n    <div class=\"py-10 px-6 max-w-7xl mx-auto space-y-8\">\n      <div>\n        <h1 class=\"text-3xl font-extrabold tracking-tight\">Industrial Products Catalog</h1>\n        <p class=\"text-xs text-slate-500 mt-1\">Explore our ISO-certified polyethylene piping systems and compounds</p>\n      </div>\n\n      <!-- Search & Category Filters -->\n      <div class=\"flex flex-col md:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm\">\n        <div class=\"flex flex-wrap gap-2\">\n          <button \n            (click)=\"selectCategory(undefined)\"\n            class=\"px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors\"\n            [ngClass]=\"selectedCategoryId() === undefined ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'\"\n          >\n            All Products\n          </button>\n          <button \n            *ngFor=\"let cat of categories()\"\n            (click)=\"selectCategory(cat.categoryId)\"\n            class=\"px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors\"\n            [ngClass]=\"selectedCategoryId() === cat.categoryId ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'\"\n          >\n            {{ cat.categoryName }}\n          </button>\n        </div>\n\n        <input \n          type=\"text\" \n          [(ngModel)]=\"searchQuery\" \n          (ngModelChange)=\"loadProducts()\"\n          placeholder=\"Search by name, spec, or standard...\" \n          class=\"w-full md:w-72 px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950\"\n        />\n      </div>\n\n      <!-- Products Grid -->\n      <div *ngIf=\"loading()\" class=\"p-16 text-center text-slate-400 text-xs\">\n        <div class=\"inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2\"></div>\n        <div>Loading industrial product lines...</div>\n      </div>\n\n      <div *ngIf=\"!loading() && products().length === 0\" class=\"p-16 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl space-y-3\">\n        <div class=\"text-3xl\">📦</div>\n        <div class=\"font-bold text-sm text-slate-800 dark:text-white\">No products match your criteria</div>\n        <p class=\"text-xs text-slate-500\">Try adjusting your keyword or reset category filters.</p>\n        <button (click)=\"resetFilters()\" class=\"px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold\">\n          Reset All Filters\n        </button>\n      </div>\n\n      <div *ngIf=\"!loading() && products().length > 0\" class=\"grid grid-cols-1 md:grid-cols-3 gap-6\">\n        <div *ngFor=\"let p of products()\" class=\"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group\">\n          <div class=\"p-5 space-y-4\">\n            <!-- Product Image -->\n            <div class=\"h-48 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative\">\n              <img \n                [src]=\"p.mainImageUrl || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80'\" \n                [alt]=\"p.productName\" \n                class=\"w-full h-full object-cover group-hover:scale-105 transition-transform duration-500\" \n              />\n              <div *ngIf=\"p.isFeatured\" class=\"absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 shadow-md\">\n                ★ Highlighted\n              </div>\n            </div>\n\n            <div class=\"space-y-2\">\n              <span class=\"inline-block text-[11px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400\">\n                {{ p.category?.categoryName || 'Industrial' }}\n              </span>\n              <h3 class=\"font-extrabold text-base leading-snug group-hover:text-blue-600 transition-colors\">\n                <a [routerLink]=\"['/products', p.slug]\">{{ p.productName }}</a>\n              </h3>\n              <p class=\"text-xs text-slate-500 line-clamp-3 leading-relaxed\">{{ p.shortDescription }}</p>\n              <div *ngIf=\"p.specifications\" class=\"text-[11px] font-mono bg-slate-50 dark:bg-slate-950 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 truncate\">\n                {{ p.specifications }}\n              </div>\n            </div>\n          </div>\n\n          <div class=\"p-5 pt-0 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 mt-3 gap-2\">\n            <a [routerLink]=\"['/products', p.slug]\" class=\"text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline\">\n              Technical Details →\n            </a>\n            <div class=\"flex items-center gap-2\">\n              <button \n                (click)=\"openProductWhatsApp(p)\"\n                class=\"p-2 rounded-xl bg-emerald-600/10 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-500/20 transition-all text-xs font-semibold\"\n                title=\"Inquire about this product on WhatsApp\"\n              >\n                <span>💬</span>\n              </button>\n              <a \n                [routerLink]=\"['/quote']\" \n                [queryParams]=\"{ product: p.productName }\"\n                class=\"px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors\"\n              >\n                RFQ\n              </a>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  `\n})\nexport class ProductCatalogComponent implements OnInit {\n  private prodService = inject(ProductService);\n\n  products = signal<Product[]>([]);\n  categories = signal<ProductCategory[]>([]);\n  selectedCategoryId = signal<number | undefined>(undefined);\n  searchQuery = '';\n  loading = signal(true);\n  whatsappNumber = '919876543210';\n\n  ngOnInit(): void {\n    this.prodService.getCategories().subscribe(res => {\n      if (res.success && res.data) this.categories.set(res.data);\n    });\n    this.loadProducts();\n  }\n\n  selectCategory(id?: number): void {\n    this.selectedCategoryId.set(id);\n    this.loadProducts();\n  }\n\n  resetFilters(): void {\n    this.searchQuery = '';\n    this.selectedCategoryId.set(undefined);\n    this.loadProducts();\n  }\n\n  loadProducts(): void {\n    this.loading.set(true);\n    this.prodService.getProducts(1, 50, this.selectedCategoryId(), this.searchQuery).subscribe({\n      next: res => {\n        if (res.success && res.data) {\n          this.products.set(res.data.items);\n        }\n        this.loading.set(false);\n      },\n      error: () => this.loading.set(false)\n    });\n  }\n\n  openProductWhatsApp(p: Product): void {\n    const text = encodeURIComponent(`Hello OM Polymer Team, I would like to inquire about specifications and pricing for: ${p.productName}`);\n    window.location.href = `https://wa.me/${this.whatsappNumber}?text=${text}`;\n  }\n}\n"
+  },
+  {
+    "name": "user-home.component.ts",
+    "path": "src/app/features/user/home/user-home.component.ts",
+    "category": "User Portal",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/user/home/user-home.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { RouterModule } from '@angular/router';\nimport { ProductService } from '../../../core/services/product.service';\nimport { CompanyService } from '../../../core/services/company.service';\nimport { BlogService } from '../../../core/services/blog.service';\nimport { Product } from '../../../core/models/product.model';\nimport { CompanySettings } from '../../../core/models/company.model';\nimport { BlogPost } from '../../../core/models/blog.model';\nimport { APP_CONSTANTS } from '../../../core/constants/app.constant';\n\n@Component({\n  selector: 'app-user-home',\n  standalone: true,\n  imports: [CommonModule, RouterModule],\n  template: `\n    <div class=\"space-y-16 py-10 px-6 max-w-7xl mx-auto\">\n      \n      <!-- 1. Hero Section -->\n      <section class=\"relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-900 via-slate-900 to-indigo-950 p-8 sm:p-14 text-white shadow-2xl\">\n        <div class=\"max-w-2xl space-y-6 relative z-10\">\n          <div class=\"inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30\">\n            <span class=\"w-2 h-2 rounded-full bg-emerald-400 animate-ping\"></span>\n            ISO 9001:2015 CERTIFIED INDUSTRIAL POLYMER MANUFACTURING\n          </div>\n          <h1 class=\"text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight\">\n            High-Performance Polymer Extrusion & Piping Infrastructure\n          </h1>\n          <p class=\"text-slate-300 text-sm sm:text-base leading-relaxed\">\n            Delivering high-density polyethylene (HDPE PE100/PE80) pipes, custom compounding masterbatches, and specialized engineering resins built for extreme hydrostatic pressure and chemical durability.\n          </p>\n          <div class=\"flex flex-wrap gap-3 pt-2\">\n            <a routerLink=\"/products\" class=\"px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition-transform hover:scale-105 active:scale-95\">\n              Browse Products Catalog →\n            </a>\n            <a routerLink=\"/quote\" class=\"px-5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-white font-bold text-xs transition-colors\">\n              Request Technical Quote (RFQ)\n            </a>\n            <button (click)=\"openWhatsApp()\" class=\"px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors flex items-center gap-2\">\n              <span>💬</span> Chat on WhatsApp\n            </button>\n          </div>\n        </div>\n      </section>\n\n      <!-- 2. Key Engineering Statistics -->\n      <section class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">\n        <div class=\"p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-sm\">\n          <div class=\"text-3xl font-extrabold text-blue-600 dark:text-blue-400\">13+</div>\n          <div class=\"text-xs text-slate-500 mt-1 font-medium\">Years of Manufacturing</div>\n        </div>\n        <div class=\"p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-sm\">\n          <div class=\"text-3xl font-extrabold text-blue-600 dark:text-blue-400\">50,000+</div>\n          <div class=\"text-xs text-slate-500 mt-1 font-medium\">MT Annual Output</div>\n        </div>\n        <div class=\"p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-sm\">\n          <div class=\"text-3xl font-extrabold text-blue-600 dark:text-blue-400\">ISO 9001</div>\n          <div class=\"text-xs text-slate-500 mt-1 font-medium\">Quality Accredited</div>\n        </div>\n        <div class=\"p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center shadow-sm\">\n          <div class=\"text-3xl font-extrabold text-blue-600 dark:text-blue-400\">100%</div>\n          <div class=\"text-xs text-slate-500 mt-1 font-medium\">Virgin Polymer Raw Resins</div>\n        </div>\n      </section>\n\n      <!-- 3. Featured Products Grid -->\n      <section class=\"space-y-6\">\n        <div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-4\">\n          <div>\n            <div class=\"text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono\">Precision Manufacturing Lines</div>\n            <h2 class=\"text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5\">Featured Industrial Products</h2>\n            <p class=\"text-xs text-slate-500 mt-1\">Tested to ISO 4427, ASTM D3035, and IS 4984 standards for high-pressure installations</p>\n          </div>\n          <a routerLink=\"/products\" class=\"inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline\">\n            <span>Explore Full Catalog ({{ featuredProducts().length }}+ lines)</span>\n            <span>→</span>\n          </a>\n        </div>\n\n        <div *ngIf=\"loadingProducts()\" class=\"p-16 text-center text-slate-400 text-xs\">\n          <div class=\"inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2\"></div>\n          <div>Loading featured product specifications...</div>\n        </div>\n\n        <div *ngIf=\"!loadingProducts()\" class=\"grid grid-cols-1 md:grid-cols-3 gap-6\">\n          <div *ngFor=\"let p of featuredProducts()\" class=\"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group\">\n            <div class=\"p-5 space-y-4\">\n              <!-- Product Image Showcase -->\n              <div class=\"h-48 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative\">\n                <img \n                  [src]=\"p.mainImageUrl || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80'\" \n                  [alt]=\"p.productName\" \n                  class=\"w-full h-full object-cover group-hover:scale-105 transition-transform duration-500\" \n                />\n                <div *ngIf=\"p.isFeatured\" class=\"absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 shadow-md\">\n                  ★ Highlighted\n                </div>\n              </div>\n\n              <div class=\"space-y-2\">\n                <div class=\"flex items-center justify-between text-xs text-slate-500\">\n                  <span class=\"font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider text-[11px]\">\n                    {{ p.category?.categoryName || 'Standard' }}\n                  </span>\n                  <span class=\"font-mono text-[11px]\">PN6 — PN16</span>\n                </div>\n\n                <h3 class=\"font-extrabold text-base leading-snug group-hover:text-blue-600 transition-colors\">\n                  <a [routerLink]=\"['/products', p.slug]\">{{ p.productName }}</a>\n                </h3>\n\n                <p class=\"text-xs text-slate-500 line-clamp-2 leading-relaxed\">\n                  {{ p.shortDescription }}\n                </p>\n\n                <div *ngIf=\"p.specifications\" class=\"p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/80 font-mono text-[11px] text-slate-600 dark:text-slate-400 truncate\">\n                  {{ p.specifications }}\n                </div>\n              </div>\n            </div>\n\n            <!-- Card Actions -->\n            <div class=\"p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 mt-2 flex items-center justify-between gap-2\">\n              <a [routerLink]=\"['/products', p.slug]\" class=\"text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline\">\n                View Specifications →\n              </a>\n              <div class=\"flex items-center gap-2\">\n                <button \n                  (click)=\"openProductWhatsApp(p)\"\n                  class=\"p-2 rounded-xl bg-emerald-600/10 hover:bg-emerald-600 text-emerald-600 hover:text-white border border-emerald-500/20 transition-all text-xs font-semibold\"\n                  title=\"Inquire about this product on WhatsApp\"\n                >\n                  <span>💬</span>\n                </button>\n                <a \n                  [routerLink]=\"['/quote']\" \n                  [queryParams]=\"{ product: p.productName }\"\n                  class=\"px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors\"\n                >\n                  RFQ\n                </a>\n              </div>\n            </div>\n          </div>\n        </div>\n      </section>\n\n      <!-- 4. About Us Section -->\n      <section class=\"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8\">\n        <div class=\"grid grid-cols-1 lg:grid-cols-2 gap-8 items-center\">\n          <div class=\"space-y-4\">\n            <div class=\"text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono\">Infrastructure & Legacy</div>\n            <h2 class=\"text-3xl font-extrabold tracking-tight leading-tight\">Precision Polymer Engineering for Heavy Infrastructure</h2>\n            <p class=\"text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed\">\n              {{ company()?.aboutContent || 'Founded with a vision to deliver uncompromising quality in polymer engineering, OM Polymer operates state-of-the-art continuous extrusion and compounding lines at Vegdi GIDC, Dhoraji, Gujarat. We engineer high-performance HDPE pipes, MDPE gas lines, PP-R hot-water conduits, and customized polymer compounds serving municipal water grids, mining slurries, agricultural micro-irrigation, and industrial effluent transport.' }}\n            </p>\n\n            <div class=\"grid grid-cols-2 gap-4 pt-2\">\n              <div class=\"p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800\">\n                <div class=\"text-2xl font-extrabold text-blue-600 dark:text-blue-400\">18,000 MT</div>\n                <div class=\"text-[11px] text-slate-500 font-medium\">Annual Extrusion Capacity</div>\n              </div>\n              <div class=\"p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800\">\n                <div class=\"text-2xl font-extrabold text-emerald-600 dark:text-emerald-400\">50+ Years</div>\n                <div class=\"text-[11px] text-slate-500 font-medium\">Design Pipeline Life</div>\n              </div>\n            </div>\n          </div>\n\n          <div class=\"space-y-4\">\n            <div class=\"rounded-2xl overflow-hidden bg-slate-800 h-56 relative shadow-lg\">\n              <img \n                src=\"https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80\" \n                alt=\"OM Polymer Extrusion Facility\" \n                class=\"w-full h-full object-cover\" \n              />\n              <div class=\"absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent p-5 flex flex-col justify-end\">\n                <div class=\"text-white font-bold text-sm\">Industrial Compounding Line 02</div>\n                <div class=\"text-slate-300 text-xs\">Continuous gravimetric dosing and automated ultrasonic wall-thickness scanning</div>\n              </div>\n            </div>\n\n            <div class=\"grid grid-cols-3 gap-3\">\n              <div class=\"p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-center\">\n                <div class=\"text-lg\">⚙️</div>\n                <div class=\"text-[11px] font-bold text-slate-800 dark:text-white mt-1\">German Lines</div>\n              </div>\n              <div class=\"p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-center\">\n                <div class=\"text-lg\">🔬</div>\n                <div class=\"text-[11px] font-bold text-slate-800 dark:text-white mt-1\">In-House Lab</div>\n              </div>\n              <div class=\"p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 text-center\">\n                <div class=\"text-lg\">🌱</div>\n                <div class=\"text-[11px] font-bold text-slate-800 dark:text-white mt-1\">Zero Defect</div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </section>\n\n      <!-- 5. Latest Engineering Blogs Section -->\n      <section class=\"space-y-6\">\n        <div class=\"flex flex-col sm:flex-row sm:items-center justify-between gap-4\">\n          <div>\n            <div class=\"text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 font-mono\">R&D & Engineering Articles</div>\n            <h2 class=\"text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5\">Engineering Insights & Research</h2>\n            <p class=\"text-xs text-slate-500 mt-1\">Material science analysis, hydrostatic pressure benchmarks, and installation whitepapers</p>\n          </div>\n          <a routerLink=\"/blogs\" class=\"inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline\">\n            <span>Browse All Technical Papers</span>\n            <span>→</span>\n          </a>\n        </div>\n\n        <div *ngIf=\"loadingBlogs()\" class=\"p-16 text-center text-slate-400 text-xs\">\n          <div class=\"inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2\"></div>\n          <div>Loading engineering articles...</div>\n        </div>\n\n        <div *ngIf=\"!loadingBlogs()\" class=\"grid grid-cols-1 md:grid-cols-3 gap-6\">\n          <div *ngFor=\"let blog of latestBlogs()\" class=\"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group\">\n            <div class=\"p-5 space-y-3\">\n              <!-- Blog Image -->\n              <div class=\"h-44 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950\">\n                <img \n                  [src]=\"blog.featuredImageUrl || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'\" \n                  [alt]=\"blog.title\" \n                  class=\"w-full h-full object-cover group-hover:scale-105 transition-transform duration-500\" \n                />\n              </div>\n\n              <div class=\"flex items-center justify-between text-[11px] text-slate-400\">\n                <span class=\"font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider text-[10px]\">\n                  {{ blog.category?.categoryName || 'Technical' }}\n                </span>\n                <span>{{ blog.createdAt | date:'mediumDate' }}</span>\n              </div>\n\n              <h3 class=\"font-extrabold text-base leading-snug group-hover:text-blue-600 transition-colors\">\n                <a [routerLink]=\"['/blogs', blog.slug]\">{{ blog.title }}</a>\n              </h3>\n\n              <p class=\"text-xs text-slate-500 line-clamp-3 leading-relaxed\">\n                {{ blog.shortDescription }}\n              </p>\n            </div>\n\n            <div class=\"p-5 pt-0 border-t border-slate-100 dark:border-slate-800/60 mt-3 flex items-center justify-between\">\n              <span class=\"text-[11px] text-slate-400 font-medium\">By {{ blog.author || 'OM Polymer Lab' }}</span>\n              <a [routerLink]=\"['/blogs', blog.slug]\" class=\"text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1\">\n                <span>Read Article</span>\n                <span>→</span>\n              </a>\n            </div>\n          </div>\n        </div>\n      </section>\n\n      <!-- 6. Direct Engineering Contacts -->\n      <section class=\"space-y-6 pt-6\">\n        <div class=\"text-center max-w-xl mx-auto\">\n          <h2 class=\"text-2xl font-bold\">Direct Engineering Contacts</h2>\n          <p class=\"text-xs text-slate-500 mt-1\">Connect directly with our materials engineering sales desk</p>\n        </div>\n\n        <div class=\"grid grid-cols-1 sm:grid-cols-3 gap-4\">\n          <a [href]=\"phoneTel\" class=\"p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl text-center space-y-2 transition-all hover:-translate-y-1\">\n            <div class=\"w-12 h-12 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 mx-auto flex items-center justify-center text-xl\">📞</div>\n            <div class=\"font-bold text-sm\">Phone Support</div>\n            <div class=\"text-xs font-mono text-slate-500\">{{ phone }}</div>\n          </a>\n\n          <a [href]=\"emailMailto\" class=\"p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl text-center space-y-2 transition-all hover:-translate-y-1\">\n            <div class=\"w-12 h-12 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 mx-auto flex items-center justify-center text-xl\">✉️</div>\n            <div class=\"font-bold text-sm\">Email Inquiry</div>\n            <div class=\"text-xs text-slate-500\">{{ email }}</div>\n          </a>\n\n          <a [href]=\"mapsUrl\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl text-center space-y-2 transition-all hover:-translate-y-1\">\n            <div class=\"w-12 h-12 rounded-full bg-blue-50 dark:bg-slate-800 text-blue-600 mx-auto flex items-center justify-center text-xl\">🏢</div>\n            <div class=\"font-bold text-sm\">Manufacturing Plant</div>\n            <div class=\"text-xs text-slate-500\">Vegdi GIDC, Dhoraji, Gujarat</div>\n          </a>\n        </div>\n      </section>\n\n      <!-- 7. Floating WhatsApp Consultation Action -->\n      <aside aria-label=\"WhatsApp Support\" class=\"fixed bottom-6 right-6 z-50\">\n        <button \n          (click)=\"openWhatsApp()\"\n          class=\"flex items-center gap-2.5 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 group\"\n          title=\"Chat directly on WhatsApp\"\n        >\n          <span class=\"text-xl\">💬</span>\n          <span class=\"text-xs font-bold hidden sm:inline\">WhatsApp Help</span>\n          <span class=\"w-2.5 h-2.5 rounded-full bg-emerald-300 animate-pulse\"></span>\n        </button>\n      </aside>\n\n    </div>\n  `\n})\nexport class UserHomeComponent implements OnInit {\n  private prodService = inject(ProductService);\n  private compService = inject(CompanyService);\n  private blogService = inject(BlogService);\n\n  featuredProducts = signal<Product[]>([]);\n  latestBlogs = signal<BlogPost[]>([]);\n  company = signal<CompanySettings | null>(null);\n\n  loadingProducts = signal(true);\n  loadingBlogs = signal(true);\n\n  phone: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;\n  phoneTel: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;\n  email: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;\n  emailMailto: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;\n  mapsUrl: string = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;\n  whatsappNumber: string = '919876543210';\n\n  ngOnInit(): void {\n    this.loadFeaturedProducts();\n    this.loadLatestBlogs();\n    this.loadCompanySettings();\n  }\n\n  loadFeaturedProducts(): void {\n    this.prodService.getFeaturedProducts().subscribe({\n      next: res => {\n        if (res.success && res.data) {\n          this.featuredProducts.set(res.data);\n        }\n        this.loadingProducts.set(false);\n      },\n      error: () => this.loadingProducts.set(false)\n    });\n  }\n\n  loadLatestBlogs(): void {\n    this.blogService.getPublishedBlogs(1, 3).subscribe({\n      next: res => {\n        if (res.success && res.data?.items) {\n          this.latestBlogs.set(res.data.items);\n        }\n        this.loadingBlogs.set(false);\n      },\n      error: () => this.loadingBlogs.set(false)\n    });\n  }\n\n  loadCompanySettings(): void {\n    this.compService.getCompanySettings().subscribe({\n      next: res => {\n        if (res.success && res.data) {\n          this.company.set(res.data);\n          if (res.data.phoneContact) {\n            this.phone = res.data.phoneContact;\n            this.phoneTel = `tel:${res.data.phoneContact.replace(/\\s+/g, '')}`;\n          }\n          if (res.data.emailContact) {\n            this.email = res.data.emailContact;\n            this.emailMailto = `mailto:${res.data.emailContact}`;\n          }\n          if (res.data.whatsappContact) {\n            this.whatsappNumber = res.data.whatsappContact.replace(/\\D/g, '');\n          }\n        }\n      }\n    });\n  }\n\n  openWhatsApp(): void {\n    const text = encodeURIComponent('Hello OM Polymer Team, I would like to inquire about your HDPE pipe extrusion and polymer compounds.');\n    window.location.href = `https://wa.me/${this.whatsappNumber}?text=${text}`;\n  }\n\n  openProductWhatsApp(p: Product): void {\n    const text = encodeURIComponent(`Hello OM Polymer Team, I would like to inquire about specifications and pricing for: ${p.productName}`);\n    window.location.href = `https://wa.me/${this.whatsappNumber}?text=${text}`;\n  }\n}\n"
+  },
+  {
+    "name": "maintenance-ref.component.ts",
+    "path": "src/app/features/user/maintenance-ref/maintenance-ref.component.ts",
+    "category": "User Portal",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/user/maintenance-ref/maintenance-ref.component.ts",
+    "content": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { APP_CONSTANTS } from '../../../core/constants/app.constant';\nimport { ThemeService } from '../../../core/services/theme.service';\n\n@Component({\n  selector: 'app-maintenance-ref',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <div class=\"relative min-h-[600px] flex items-center justify-center p-6 sm:p-12 overflow-hidden text-center\">\n      \n      <!-- Ambient Circles -->\n      <div class=\"absolute rounded-full pointer-events-none w-[350px] h-[350px] bg-blue-100 dark:bg-blue-900/10 -top-[120px] -left-[100px] animate-pulse\"></div>\n      <div class=\"absolute rounded-full pointer-events-none w-[280px] h-[280px] bg-indigo-100 dark:bg-indigo-900/10 -bottom-[100px] -right-[80px] animate-pulse\"></div>\n\n      <div class=\"max-w-2xl relative z-10 flex flex-col items-center\">\n        \n        <!-- Illustration -->\n        <div class=\"w-[280px] h-[200px] mx-auto mb-4 relative\">\n          <div class=\"absolute w-[190px] h-[125px] bg-[#172554] rounded-xl left-[45px] top-[25px] p-2.5 shadow-2xl\">\n            <div class=\"w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 rounded-md flex flex-col items-center justify-center gap-2\">\n              <div class=\"text-4xl anim-gear\">⚙️</div>\n              <div class=\"w-20 h-1.5 bg-blue-200 rounded-full overflow-hidden anim-loading-bar\"></div>\n            </div>\n          </div>\n          <div class=\"absolute w-[220px] h-[10px] bg-slate-500 rounded-b-[18px] bottom-[48px] left-[30px]\"></div>\n\n          <div class=\"absolute right-[5px] bottom-[40px]\">\n            <div class=\"w-9 h-9 rounded-full bg-[#f8c9a0] mx-auto relative\">\n              <div class=\"absolute w-[46px] h-[18px] bg-[#fbbf24] rounded-t-[24px] rounded-b-[4px] -top-[6px] -left-[5px] shadow-sm\"></div>\n            </div>\n            <div class=\"w-12 h-14 bg-blue-600 rounded-t-xl rounded-b-md mt-1 mx-auto\"></div>\n            <div class=\"absolute text-3xl -right-[30px] top-[45px] -rotate-[30deg]\">🔧</div>\n          </div>\n        </div>\n\n        <div class=\"inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold mb-4 bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900\">\n          <span class=\"w-2 h-2 rounded-full bg-emerald-500 animate-ping\"></span>\n          MAINTENANCE REFERENCE VIEW\n        </div>\n\n        <h1 class=\"text-4xl font-extrabold tracking-tight mb-3\">\n          Site <span class=\"bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent\">Under Maintenance</span>\n        </h1>\n\n        <p class=\"text-xs sm:text-sm text-slate-500 max-w-lg mb-8 leading-relaxed\">\n          We're currently working behind the scenes to improve our website and provide you with a better experience. We'll be back online shortly.\n        </p>\n\n        <div class=\"grid grid-cols-1 sm:grid-cols-3 gap-4 w-full\">\n          <a [href]=\"phoneTel\" class=\"p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-xl transition-all flex flex-col items-center\">\n            <span class=\"text-2xl mb-1\">📞</span>\n            <strong class=\"text-xs\">Phone Support</strong>\n            <span class=\"text-[11px] font-mono text-slate-500\">{{ phone }}</span>\n          </a>\n          <a [href]=\"emailMailto\" class=\"p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-xl transition-all flex flex-col items-center\">\n            <span class=\"text-2xl mb-1\">✉️</span>\n            <strong class=\"text-xs\">Email Us</strong>\n            <span class=\"text-[11px] text-slate-500\">{{ email }}</span>\n          </a>\n          <a [href]=\"mapsUrl\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-xl transition-all flex flex-col items-center\">\n            <span class=\"text-2xl mb-1\">🏢</span>\n            <strong class=\"text-xs\">Head Office</strong>\n            <span class=\"text-[10px] text-slate-500\">Vegdi GIDC, Dhoraji</span>\n          </a>\n        </div>\n      </div>\n    </div>\n  `\n})\nexport class MaintenanceRefComponent {\n  theme = inject(ThemeService);\n  phone = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;\n  phoneTel = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;\n  email = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;\n  emailMailto = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;\n  mapsUrl = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;\n}\n"
+  },
+  {
+    "name": "product-detail.component.ts",
+    "path": "src/app/features/user/product-detail/product-detail.component.ts",
+    "category": "User Portal",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/user/product-detail/product-detail.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ActivatedRoute, RouterModule } from '@angular/router';\nimport { ProductService } from '../../../core/services/product.service';\nimport { Product } from '../../../core/models/product.model';\n\n@Component({\n  selector: 'app-product-detail',\n  standalone: true,\n  imports: [CommonModule, RouterModule],\n  template: `\n    <div class=\"py-12 px-6 max-w-6xl mx-auto space-y-8\" *ngIf=\"product(); else loadingTpl\">\n      <!-- Breadcrumb Navigation -->\n      <div class=\"flex items-center gap-2 text-xs text-slate-500\">\n        <a routerLink=\"/\" class=\"hover:text-blue-600 transition-colors\">Home</a>\n        <span>/</span>\n        <a routerLink=\"/products\" class=\"hover:text-blue-600 transition-colors\">Products</a>\n        <span>/</span>\n        <span class=\"text-slate-800 dark:text-white font-medium\">{{ product()?.productName }}</span>\n      </div>\n\n      <div class=\"grid grid-cols-1 lg:grid-cols-3 gap-8 items-start\">\n        <!-- Main Column: Product Gallery, Description & Specs -->\n        <div class=\"lg:col-span-2 space-y-8\">\n          <!-- Featured Image Container -->\n          <div class=\"h-80 sm:h-96 w-full rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 relative shadow-md\">\n            <img \n              [src]=\"product()?.mainImageUrl || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=1200&q=80'\" \n              [alt]=\"product()?.productName\" \n              class=\"w-full h-full object-cover\" \n            />\n            <div *ngIf=\"product()?.isFeatured\" class=\"absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-slate-950 shadow-lg\">\n              ★ Highlighted Product\n            </div>\n          </div>\n\n          <!-- Product Title & Overview -->\n          <div class=\"bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4\">\n            <div class=\"flex items-center gap-2 text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider\">\n              <span>{{ product()?.category?.categoryName || 'Standard' }}</span>\n              <span>·</span>\n              <span class=\"font-mono\">SDR 11 / SDR 17 / SDR 21</span>\n            </div>\n\n            <h1 class=\"text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white\">\n              {{ product()?.productName }}\n            </h1>\n\n            <p class=\"text-xs sm:text-sm text-slate-500 leading-relaxed\">\n              {{ product()?.shortDescription }}\n            </p>\n\n            <div class=\"pt-4 border-t border-slate-100 dark:border-slate-800\">\n              <h2 class=\"text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2\">\n                Engineering Description\n              </h2>\n              <p class=\"text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line\">\n                {{ product()?.fullDescription || 'Continuous extrusion with bimodal PE100 Virgin resin conforming strictly to ISO 4427 and ASTM D3035 specifications. Engineered for zero crack propagation under high hydrostatic transient pressure.' }}\n              </p>\n            </div>\n          </div>\n\n          <!-- Technical Specifications Matrix -->\n          <div class=\"bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4\">\n            <h2 class=\"text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300\">\n              Technical Specifications & Performance Ratings\n            </h2>\n\n            <div class=\"p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 font-mono text-xs text-blue-900 dark:text-blue-300 leading-relaxed whitespace-pre-line\">\n              {{ product()?.specifications || 'Standard specifications compliant with ISO 4427.' }}\n            </div>\n          </div>\n        </div>\n\n        <!-- Sidebar Column: Action Cards & Direct Inquiry -->\n        <div class=\"space-y-6\">\n          <!-- Quotation & WhatsApp Action Box -->\n          <div class=\"bg-gradient-to-br from-blue-900 via-slate-900 to-indigo-950 text-white p-7 rounded-3xl shadow-xl space-y-5\">\n            <div class=\"space-y-2\">\n              <div class=\"inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30\">\n                Direct Materials Desk\n              </div>\n              <h3 class=\"text-lg font-extrabold tracking-tight\">Need Specifications & Commercial Quote?</h3>\n              <p class=\"text-xs text-slate-300 leading-relaxed\">\n                Connect with our materials engineering sales desk for specific outside diameters, wall thicknesses (SDR), metric tonnage delivery schedules, and project tenders.\n              </p>\n            </div>\n\n            <div class=\"space-y-2.5 pt-2\">\n              <!-- WhatsApp Instant Inquiry -->\n              <button \n                (click)=\"openWhatsApp()\"\n                class=\"w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]\"\n              >\n                <span class=\"text-base\">💬</span>\n                <span>Inquire on WhatsApp Instantly</span>\n              </button>\n\n              <!-- RFQ Form Route -->\n              <a \n                routerLink=\"/quote\" \n                [queryParams]=\"{ product: product()?.productName }\"\n                class=\"w-full block text-center py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]\"\n              >\n                Request Detailed Quotation (RFQ) →\n              </a>\n            </div>\n          </div>\n\n          <!-- Quality Assurance & Standards Card -->\n          <div class=\"bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4 text-xs\">\n            <h4 class=\"font-bold text-sm text-slate-900 dark:text-white\">Manufacturing Assurances</h4>\n            <div class=\"space-y-2.5 text-slate-600 dark:text-slate-400\">\n              <div class=\"flex items-center gap-2\">\n                <span class=\"text-emerald-500 font-bold\">✓</span>\n                <span>100% Virgin Prime Polymer Pellets</span>\n              </div>\n              <div class=\"flex items-center gap-2\">\n                <span class=\"text-emerald-500 font-bold\">✓</span>\n                <span>Ultrasonic Wall-Thickness Scanned</span>\n              </div>\n              <div class=\"flex items-center gap-2\">\n                <span class=\"text-emerald-500 font-bold\">✓</span>\n                <span>Hydrostatic Lot-Traceable Certification</span>\n              </div>\n              <div class=\"flex items-center gap-2\">\n                <span class=\"text-emerald-500 font-bold\">✓</span>\n                <span>Drinking Water Safe (Non-Toxic)</span>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n\n    <ng-template #loadingTpl>\n      <div class=\"py-24 text-center space-y-3\">\n        <div class=\"inline-block w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin\"></div>\n        <div class=\"text-xs text-slate-500\">Loading product technical specifications...</div>\n      </div>\n    </ng-template>\n  `\n})\nexport class ProductDetailComponent implements OnInit {\n  private route = inject(ActivatedRoute);\n  private prodService = inject(ProductService);\n\n  product = signal<Product | null>(null);\n  whatsappNumber = '919876543210';\n\n  ngOnInit(): void {\n    const slug = this.route.snapshot.paramMap.get('slug');\n    if (slug) {\n      this.prodService.getProductBySlug(slug).subscribe(res => {\n        if (res.success && res.data) {\n          this.product.set(res.data);\n        }\n      });\n    }\n  }\n\n  openWhatsApp(): void {\n    const p = this.product();\n    const productName = p ? p.productName : 'OM Polymer Products';\n    const text = encodeURIComponent(`Hello OM Polymer Team, I would like to inquire about specifications and pricing for: ${productName}`);\n    window.location.href = `https://wa.me/${this.whatsappNumber}?text=${text}`;\n  }\n}\n"
+  },
+  {
+    "name": "user-rfq.component.ts",
+    "path": "src/app/features/user/rfq/user-rfq.component.ts",
+    "category": "User Portal",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/features/user/rfq/user-rfq.component.ts",
+    "content": "import { Component, OnInit, inject, signal } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ActivatedRoute } from '@angular/router';\nimport { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';\nimport { RequirementService } from '../../../core/services/requirement.service';\nimport { ToastService } from '../../../core/services/toast.service';\n\n@Component({\n  selector: 'app-user-rfq',\n  standalone: true,\n  imports: [CommonModule, ReactiveFormsModule],\n  template: `\n    <div class=\"py-12 px-6 max-w-3xl mx-auto\">\n      <div class=\"bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-10 shadow-xl space-y-6\">\n        <div>\n          <span class=\"px-2.5 py-1 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300\">\n            Direct Engineering Inquiry\n          </span>\n          <h1 class=\"text-2xl sm:text-3xl font-extrabold tracking-tight mt-2\">Technical Quotation & RFQ Form</h1>\n          <p class=\"text-xs text-slate-500 mt-1\">Submit your engineering specs for HDPE pipes, SDR ratings, and compounding requirements.</p>\n        </div>\n\n        <form [formGroup]=\"rfqForm\" (ngSubmit)=\"onSubmit()\" class=\"space-y-4\">\n          <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-4\">\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Full Name *</label>\n              <input formControlName=\"fullName\" type=\"text\" placeholder=\"e.g. Ramesh Patel\" class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950\" />\n            </div>\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Company / Organization</label>\n              <input formControlName=\"companyName\" type=\"text\" placeholder=\"e.g. Gujarat Polymer Infra Ltd\" class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950\" />\n            </div>\n          </div>\n\n          <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-4\">\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Email Address *</label>\n              <input formControlName=\"email\" type=\"email\" placeholder=\"contact@example.com\" class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950\" />\n            </div>\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Phone Number *</label>\n              <input formControlName=\"phoneNumber\" type=\"tel\" placeholder=\"+91 98765 43210\" class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950\" />\n            </div>\n          </div>\n\n          <div class=\"grid grid-cols-1 sm:grid-cols-2 gap-4\">\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Product of Interest</label>\n              <input formControlName=\"productOfInterest\" type=\"text\" placeholder=\"e.g. HDPE PN16 Pipes\" class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950\" />\n            </div>\n            <div>\n              <label class=\"block text-xs font-semibold mb-1\">Estimated Quantity</label>\n              <input formControlName=\"quantity\" type=\"text\" placeholder=\"e.g. 5,000 meters\" class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950\" />\n            </div>\n          </div>\n\n          <div>\n            <label class=\"block text-xs font-semibold mb-1\">Technical Requirement Details *</label>\n            <textarea formControlName=\"requirementDescription\" rows=\"4\" placeholder=\"Detail diameter requirements, SDR ratings, operating temperatures, or custom extrusion requests...\" class=\"w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950\"></textarea>\n          </div>\n\n          <button \n            type=\"submit\" \n            [disabled]=\"loading()\"\n            class=\"w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs shadow-md transition-colors disabled:opacity-50\"\n          >\n            {{ loading() ? 'Submitting to Engineering Team...' : 'Transmit Technical Specification' }}\n          </button>\n        </form>\n      </div>\n    </div>\n  `\n})\nexport class UserRfqComponent implements OnInit {\n  private fb = inject(FormBuilder);\n  private route = inject(ActivatedRoute);\n  private reqService = inject(RequirementService);\n  private toast = inject(ToastService);\n\n  loading = signal(false);\n\n  rfqForm: FormGroup = this.fb.group({\n    fullName: ['', [Validators.required, Validators.maxLength(150)]],\n    companyName: [''],\n    email: ['', [Validators.required, Validators.email]],\n    phoneNumber: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(20)]],\n    productOfInterest: ['HDPE PN16 Pipes'],\n    quantity: [''],\n    requirementDescription: ['', [Validators.required, Validators.minLength(5)]]\n  });\n\n  ngOnInit(): void {\n    const prodParam = this.route.snapshot.queryParamMap.get('product');\n    if (prodParam) {\n      this.rfqForm.patchValue({\n        productOfInterest: prodParam,\n        requirementDescription: `Inquiry regarding specifications and commercial terms for ${prodParam}.`\n      });\n    }\n  }\n\n  onSubmit(): void {\n    if (this.rfqForm.invalid) {\n      this.rfqForm.markAllAsTouched();\n      this.toast.error('Please complete all required fields correctly.');\n      return;\n    }\n\n    this.loading.set(true);\n    this.reqService.submitRequirement(this.rfqForm.value).subscribe({\n      next: res => {\n        this.loading.set(false);\n        this.toast.success(res.message);\n        this.rfqForm.reset({ productOfInterest: 'HDPE PN16 Pipes' });\n      },\n      error: () => this.loading.set(false)\n    });\n  }\n}\n"
+  },
+  {
+    "name": "admin-layout.component.ts",
+    "path": "src/app/layouts/admin-layout/admin-layout.component.ts",
+    "category": "Layouts",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/layouts/admin-layout/admin-layout.component.ts",
+    "content": "import { Component, inject } from '@angular/core';\nimport { RouterOutlet, RouterModule, Router } from '@angular/router';\nimport { CommonModule } from '@angular/common';\nimport { AuthService } from '../../core/services/auth.service';\nimport { ToastService } from '../../core/services/toast.service';\n\n@Component({\n  selector: 'app-admin-layout',\n  standalone: true,\n  imports: [RouterOutlet, RouterModule, CommonModule],\n  template: `\n    <div class=\"min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row\">\n      \n      <!-- Collapsible / Fixed Admin Sidebar -->\n      <aside class=\"w-full md:w-64 bg-slate-900 border-r border-slate-800 p-5 flex flex-col justify-between shrink-0\">\n        <div>\n          <!-- Sidebar Header Brand -->\n          <div class=\"flex items-center gap-3 mb-8\">\n            <div class=\"w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md\">\n              OM\n            </div>\n            <div>\n              <span class=\"font-extrabold text-sm tracking-tight text-white block\">OM POLYMER</span>\n              <span class=\"text-[10px] font-bold tracking-wider uppercase text-blue-400\">Admin Control</span>\n            </div>\n          </div>\n\n          <!-- Role Pill -->\n          <div class=\"mb-6 p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between\">\n            <div>\n              <div class=\"text-[11px] text-slate-400\">Logged in as</div>\n              <div class=\"text-xs font-semibold text-white truncate max-w-[130px]\">{{ auth.adminName() }}</div>\n            </div>\n            <span class=\"px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider\"\n              [ngClass]=\"auth.isSuperAdmin() ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'\">\n              {{ auth.role() }}\n            </span>\n          </div>\n\n          <!-- Navigation Links -->\n          <nav class=\"space-y-1 text-xs font-medium\">\n            <a routerLink=\"/admin/dashboard\" routerLinkActive=\"bg-blue-600 text-white font-semibold\" class=\"flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors\">\n              <span>📊</span> Dashboard Overview\n            </a>\n            <a routerLink=\"/admin/inquiries\" routerLinkActive=\"bg-blue-600 text-white font-semibold\" class=\"flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors\">\n              <span>📋</span> Inquiries CRM\n            </a>\n            <a routerLink=\"/admin/products\" routerLinkActive=\"bg-blue-600 text-white font-semibold\" class=\"flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors\">\n              <span>📦</span> Product Catalog\n            </a>\n            <a routerLink=\"/admin/blogs\" routerLinkActive=\"bg-blue-600 text-white font-semibold\" class=\"flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors\">\n              <span>📝</span> Articles & Blogs\n            </a>\n            <a routerLink=\"/admin/logs\" routerLinkActive=\"bg-blue-600 text-white font-semibold\" class=\"flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors\">\n              <span>📜</span> System Logs\n            </a>\n            <a routerLink=\"/admin/company\" routerLinkActive=\"bg-blue-600 text-white font-semibold\" class=\"flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors\">\n              <span>🏢</span> Company & WhatsApp\n            </a>\n\n            <!-- SuperAdmin Exclusive Navigation Link -->\n            <a \n              *ngIf=\"auth.isSuperAdmin()\"\n              routerLink=\"/admin/users\" \n              routerLinkActive=\"bg-blue-600 text-white font-semibold\" \n              class=\"flex items-center justify-between px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors\"\n            >\n              <div class=\"flex items-center gap-3\">\n                <span>🛡️</span> Administrators\n              </div>\n              <span class=\"text-[9px] uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold\">Root</span>\n            </a>\n          </nav>\n        </div>\n\n        <!-- Sidebar Bottom Actions -->\n        <div class=\"pt-6 border-t border-slate-800 space-y-2 text-xs\">\n          <a routerLink=\"/\" class=\"flex items-center gap-2 px-3.5 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors\">\n            <span>🌐</span> Client Portal\n          </a>\n          <button (click)=\"handleLogout()\" class=\"w-full text-left flex items-center gap-2 px-3.5 py-2 rounded-lg text-rose-400 hover:bg-rose-950/40 transition-colors font-medium\">\n            <span>🚪</span> Log Out\n          </button>\n        </div>\n      </aside>\n\n      <!-- Main Admin Workspace Viewport -->\n      <main class=\"flex-1 flex flex-col overflow-x-hidden\">\n        <header class=\"bg-slate-900/60 border-b border-slate-800 px-6 py-3.5 flex items-center justify-between\">\n          <div class=\"text-xs text-slate-400\">\n            Administrative Console · <span class=\"text-slate-200 font-medium\">OM Polymer Platform</span>\n          </div>\n          <div class=\"flex items-center gap-3\">\n            <span class=\"w-2 h-2 rounded-full bg-emerald-500\"></span>\n            <span class=\"text-xs font-mono text-emerald-400\">API Connected</span>\n          </div>\n        </header>\n\n        <div class=\"flex-1 p-6 md:p-8\">\n          <router-outlet></router-outlet>\n        </div>\n      </main>\n    </div>\n  `\n})\nexport class AdminLayoutComponent {\n  auth = inject(AuthService);\n  private toast = inject(ToastService);\n  private router = inject(Router);\n\n  handleLogout(): void {\n    this.auth.logout();\n    this.toast.info('You have logged out of the Admin Panel.');\n    this.router.navigate(['/']);\n  }\n}\n"
+  },
+  {
+    "name": "public-layout.component.ts",
+    "path": "src/app/layouts/public-layout/public-layout.component.ts",
+    "category": "Layouts",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/layouts/public-layout/public-layout.component.ts",
+    "content": "import { Component } from '@angular/core';\nimport { RouterOutlet, RouterModule } from '@angular/router';\nimport { CommonModule } from '@angular/common';\n\n@Component({\n  selector: 'app-public-layout',\n  standalone: true,\n  imports: [RouterOutlet, RouterModule, CommonModule],\n  template: `\n    <div class=\"min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between p-4\">\n      <header class=\"max-w-7xl w-full mx-auto py-4 flex items-center justify-between\">\n        <a routerLink=\"/\" class=\"flex items-center gap-2.5\">\n          <div class=\"w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center font-bold text-white shadow-md\">\n            OM\n          </div>\n          <span class=\"font-bold text-base tracking-tight text-white\">OM POLYMER</span>\n        </a>\n        <a routerLink=\"/\" class=\"text-xs text-slate-400 hover:text-white transition-colors\">\n          ← Back to Client Portal\n        </a>\n      </header>\n\n      <main class=\"flex-1 flex items-center justify-center py-8\">\n        <router-outlet></router-outlet>\n      </main>\n\n      <footer class=\"text-center py-4 text-xs text-slate-500\">\n        © 2026 OM POLYMER · Administrative Access Portal · ISO 9001\n      </footer>\n    </div>\n  `\n})\nexport class PublicLayoutComponent {}\n"
+  },
+  {
+    "name": "user-layout.component.ts",
+    "path": "src/app/layouts/user-layout/user-layout.component.ts",
+    "category": "Layouts",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/layouts/user-layout/user-layout.component.ts",
+    "content": "import { Component, inject } from '@angular/core';\nimport { RouterOutlet, RouterModule } from '@angular/router';\nimport { CommonModule } from '@angular/common';\nimport { ThemeService } from '../../core/services/theme.service';\nimport { AuthService } from '../../core/services/auth.service';\n\n@Component({\n  selector: 'app-user-layout',\n  standalone: true,\n  imports: [RouterOutlet, RouterModule, CommonModule],\n  template: `\n    <div class=\"min-h-screen bg-[#f5f8ff] text-[#172554] dark:bg-[#0f172a] dark:text-[#e2e8f0] flex flex-col transition-colors duration-300\">\n      \n      <!-- Top Navigation Header -->\n      <header class=\"sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-3.5 transition-colors\">\n        <div class=\"max-w-7xl mx-auto flex items-center justify-between gap-6\">\n          \n          <!-- Logo & Brand Mark -->\n          <a routerLink=\"/\" class=\"flex items-center gap-3 shrink-0\">\n            <div class=\"w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md\">\n              OM\n            </div>\n            <div>\n              <span class=\"font-extrabold text-base tracking-tight leading-none text-[#172554] dark:text-white block\">\n                OM POLYMER\n              </span>\n              <span class=\"text-[10px] font-semibold tracking-wider uppercase text-blue-600 dark:text-blue-400\">\n                Extrusion & Compounding\n              </span>\n            </div>\n          </a>\n\n          <!-- Navigation Links -->\n          <nav class=\"hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider\">\n            <a routerLink=\"/\" routerLinkActive=\"text-blue-600 dark:text-blue-400 font-bold\" [routerLinkActiveOptions]=\"{exact: true}\" class=\"hover:text-blue-600 dark:hover:text-blue-400 transition-colors\">\n              Home\n            </a>\n            <a routerLink=\"/products\" routerLinkActive=\"text-blue-600 dark:text-blue-400 font-bold\" class=\"hover:text-blue-600 dark:hover:text-blue-400 transition-colors\">\n              Products\n            </a>\n            <a routerLink=\"/blogs\" routerLinkActive=\"text-blue-600 dark:text-blue-400 font-bold\" class=\"hover:text-blue-600 dark:hover:text-blue-400 transition-colors\">\n              Articles\n            </a>\n            <a routerLink=\"/quote\" routerLinkActive=\"text-blue-600 dark:text-blue-400 font-bold\" class=\"hover:text-blue-600 dark:hover:text-blue-400 transition-colors\">\n              Request Quote\n            </a>\n            <a routerLink=\"/maintenance\" routerLinkActive=\"text-blue-600 dark:text-blue-400 font-bold\" class=\"hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1\">\n              <span class=\"w-2 h-2 rounded-full bg-emerald-500 animate-pulse\"></span>\n              Maintenance\n            </a>\n          </nav>\n\n          <!-- Action Buttons & Auth Switcher -->\n          <div class=\"flex items-center gap-3\">\n            <!-- Theme Toggle -->\n            <button \n              (click)=\"theme.toggleTheme()\" \n              class=\"w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-sm flex items-center justify-center text-base hover:scale-110 active:scale-95 transition-all\"\n              [title]=\"theme.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'\"\n            >\n              {{ theme.isDark() ? '☀️' : '🌙' }}\n            </button>\n\n            <!-- Admin Entry -->\n            <ng-container *ngIf=\"auth.isAuthenticated(); else loginLink\">\n              <a routerLink=\"/admin/dashboard\" class=\"flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all\">\n                <span>⚡ Admin Dashboard</span>\n              </a>\n            </ng-container>\n            <ng-template #loginLink>\n              <a routerLink=\"/auth/login\" class=\"px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors\">\n                Admin Login\n              </a>\n            </ng-template>\n          </div>\n        </div>\n      </header>\n\n      <!-- Main User Page Content -->\n      <main class=\"flex-1\">\n        <router-outlet></router-outlet>\n      </main>\n\n      <!-- User Experience Footer -->\n      <footer class=\"bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 px-6 text-xs text-slate-500 transition-colors\">\n        <div class=\"max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4\">\n          <div class=\"flex items-center gap-3\">\n            <div class=\"font-extrabold text-sm text-slate-800 dark:text-white\">OM POLYMER</div>\n            <span>· ISO 9001 Certified · High-Density Polyethylene & Polymer Extrusion</span>\n          </div>\n          <div class=\"flex items-center gap-4 text-slate-400\">\n            <a routerLink=\"/blogs\" class=\"hover:text-blue-500 transition-colors\">Engineering Insights</a>\n            <a routerLink=\"/products\" class=\"hover:text-blue-500 transition-colors\">Products</a>\n            <a routerLink=\"/auth/login\" class=\"hover:text-blue-500 transition-colors\">Admin Console</a>\n          </div>\n        </div>\n      </footer>\n    </div>\n  `\n})\nexport class UserLayoutComponent {\n  theme = inject(ThemeService);\n  auth = inject(AuthService);\n}\n"
+  },
+  {
+    "name": "toast.component.ts",
+    "path": "src/app/shared/components/toast.component.ts",
+    "category": "Shared & Shell",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/shared/components/toast.component.ts",
+    "content": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ToastService } from '../../core/services/toast.service';\n\n@Component({\n  selector: 'app-toast',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <div class=\"fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none\">\n      <div \n        *ngFor=\"let toast of toastService.messages()\" \n        class=\"pointer-events-auto p-3.5 rounded-xl shadow-xl border text-xs flex items-start gap-3 transition-all\"\n        [ngClass]=\"{\n          'bg-emerald-950/95 border-emerald-700 text-emerald-200': toast.type === 'success',\n          'bg-rose-950/95 border-rose-700 text-rose-200': toast.type === 'error',\n          'bg-blue-950/95 border-blue-700 text-blue-200': toast.type === 'info',\n          'bg-amber-950/95 border-amber-700 text-amber-200': toast.type === 'warning'\n        }\"\n      >\n        <div class=\"text-base shrink-0\">\n          <span *ngIf=\"toast.type === 'success'\">✅</span>\n          <span *ngIf=\"toast.type === 'error'\">⚠️</span>\n          <span *ngIf=\"toast.type === 'info'\">ℹ️</span>\n          <span *ngIf=\"toast.type === 'warning'\">⚡</span>\n        </div>\n        <div class=\"flex-1\">\n          <div *ngIf=\"toast.title\" class=\"font-bold text-white mb-0.5\">{{ toast.title }}</div>\n          <div>{{ toast.message }}</div>\n        </div>\n        <button \n          (click)=\"toastService.remove(toast.id)\"\n          class=\"text-white/60 hover:text-white font-bold p-0.5 ml-1\"\n        >\n          ✕\n        </button>\n      </div>\n    </div>\n  `\n})\nexport class ToastComponent {\n  toastService = inject(ToastService);\n}\n"
+  },
+  {
+    "name": "environment.production.ts",
+    "path": "src/environments/environment.production.ts",
+    "category": "Configuration",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/environments/environment.production.ts",
+    "content": "export const environment = {\n  production: true,\n  apiUrl: '/api',\n  companyName: 'OM POLYMER',\n  apiVersion: '1.0.0',\n  defaultPageSize: 10\n};\n"
+  },
+  {
+    "name": "environment.ts",
+    "path": "src/environments/environment.ts",
+    "category": "Configuration",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/environments/environment.ts",
+    "content": "export const environment = {\n  production: false,\n  apiUrl: 'https://localhost:44370/api',\n  companyName: 'OM POLYMER',\n  apiVersion: '1.0.0',\n  defaultPageSize: 10\n};\n"
+  },
+  {
+    "name": "index.html",
+    "path": "src/index.html",
+    "category": "Documentation",
+    "language": "html",
+    "description": "OM Polymer Angular 19 solution file: src/index.html",
+    "content": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>OM POLYMER | Industrial Extrusion & Web API Platform</title>\n  <base href=\"/\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <meta name=\"description\" content=\"OM Polymer - ISO 9001 certified manufacturer of HDPE pipes, polymer compounds, and technical extrusion solutions.\">\n  <link rel=\"icon\" type=\"image/x-icon\" href=\"favicon.ico\">\n  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n</head>\n<body class=\"bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-blue-600 selection:text-white\">\n  <app-root></app-root>\n</body>\n</html>\n"
+  },
+  {
+    "name": "main.ts",
+    "path": "src/main.ts",
+    "category": "Configuration",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/main.ts",
+    "content": "import { bootstrapApplication } from '@angular/platform-browser';\nimport { appConfig } from './app/app.config';\nimport { AppComponent } from './app/app.component';\n\nbootstrapApplication(AppComponent, appConfig)\n  .catch((err) => console.error('Failed to bootstrap OM Polymer Angular application:', err));\n"
+  },
+  {
+    "name": "styles.css",
+    "path": "src/styles.css",
+    "category": "Documentation",
+    "language": "css",
+    "description": "OM Polymer Angular 19 solution file: src/styles.css",
+    "content": "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n@layer base {\n  body {\n    @apply antialiased transition-colors duration-300;\n    font-family: \"Segoe UI\", Arial, sans-serif;\n  }\n}\n\n@keyframes floatAnim {\n  0%, 100% { transform: translateY(0); }\n  50% { transform: translateY(-20px); }\n}\n\n@keyframes rotateGear {\n  from { transform: rotate(0deg); }\n  to { transform: rotate(360deg); }\n}\n\n@keyframes loadingBar {\n  0% { transform: translateX(-100%); }\n  100% { transform: translateX(230%); }\n}\n\n.anim-gear {\n  animation: rotateGear 5s linear infinite;\n}\n\n.anim-loading-bar::before {\n  content: \"\";\n  display: block;\n  height: 100%;\n  width: 45%;\n  background: #2563eb;\n  border-radius: 10px;\n  animation: loadingBar 2s ease-in-out infinite;\n}\n"
+  },
+  {
+    "name": "tailwind.config.js",
+    "path": "tailwind.config.js",
+    "category": "Documentation",
+    "language": "text",
+    "description": "OM Polymer Angular 19 solution file: tailwind.config.js",
+    "content": "/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  content: [\"./src/**/*.{html,ts}\"],\n  darkMode: 'class',\n  theme: {\n    extend: {\n      colors: {\n        brand: {\n          50: '#eff6ff',\n          100: '#dbeafe',\n          200: '#bfdbfe',\n          500: '#3b82f6',\n          600: '#2563eb',\n          700: '#1d4ed8',\n          800: '#1e40af',\n          900: '#1e3a8a',\n          950: '#172554',\n        }\n      },\n      fontFamily: {\n        sans: ['\"Segoe UI\"', 'system-ui', '-apple-system', 'Arial', 'sans-serif'],\n      },\n      keyframes: {\n        float: {\n          '0%, 100%': { transform: 'translateY(0)' },\n          '50%': { transform: 'translateY(-20px)' },\n        },\n        rotateGear: {\n          'from': { transform: 'rotate(0deg)' },\n          'to': { transform: 'rotate(360deg)' },\n        },\n        loadingBar: {\n          '0%': { transform: 'translateX(-100%)' },\n          '100%': { transform: 'translateX(230%)' },\n        }\n      },\n      animation: {\n        'float-slow': 'float 7s ease-in-out infinite',\n        'float-reverse': 'float 8s ease-in-out infinite reverse',\n        'gear-spin': 'rotateGear 5s linear infinite',\n        'progress-bar': 'loadingBar 2s ease-in-out infinite',\n      }\n    },\n  },\n  plugins: [],\n}\n"
+  },
+  {
+    "name": "tsconfig.app.json",
+    "path": "tsconfig.app.json",
+    "category": "Configuration",
+    "language": "json",
+    "description": "OM Polymer Angular 19 solution file: tsconfig.app.json",
+    "content": "\n{\n  \"extends\": \"./tsconfig.json\",\n  \"compilerOptions\": {\n    \"outDir\": \"./dist/out-tsc/app\",\n    \"types\": []\n  },\n  \"include\": [\n    \"src/**/*.ts\"\n  ],\n  \"exclude\": [\n    \"src/**/*.spec.ts\"\n  ]\n}\n"
+  },
+  {
+    "name": "tsconfig.json",
+    "path": "tsconfig.json",
+    "category": "Configuration",
+    "language": "json",
+    "description": "OM Polymer Angular 19 solution file: tsconfig.json",
+    "content": "{\n  \"compileOnSave\": false,\n  \"compilerOptions\": {\n    \"outDir\": \"./dist/out-tsc\",\n    \"strict\": true,\n    \"noImplicitOverride\": true,\n    \"noPropertyAccessFromIndexSignature\": true,\n    \"noImplicitReturns\": true,\n    \"noFallthroughCasesInSwitch\": true,\n    \"skipLibCheck\": true,\n    \"isolatedModules\": true,\n    \"esModuleInterop\": true,\n    \"experimentalDecorators\": true,\n    \"moduleResolution\": \"bundler\",\n    \"importHelpers\": true,\n    \"baseUrl\": \".\",\n    \"paths\": {\n      \"@core/*\": [\n        \"src/app/core/*\"\n      ],\n      \"@shared/*\": [\n        \"src/app/shared/*\"\n      ],\n      \"@features/*\": [\n        \"src/app/features/*\"\n      ],\n      \"@layouts/*\": [\n        \"src/app/layouts/*\"\n      ],\n      \"@env/*\": [\n        \"src/environments/*\"\n      ]\n    }\n  },\n  \"angularCompilerOptions\": {\n    \"enableI18nLegacyMessageIdFormat\": false,\n    \"strictInjectionParameters\": true,\n    \"strictInputAccessModifiers\": true,\n    \"strictTemplates\": true\n  }\n}"
   }
 ];
