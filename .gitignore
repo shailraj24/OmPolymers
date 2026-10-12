@@ -16,10 +16,10 @@ out-tsc/
 tmp/
 
 # .NET Configuration, Secrets & Binaries
-appsettings.json
-**/appsettings.json
-appsettings.*.json
-**/appsettings.*.json
+appsettings.Production.json
+*.secrets.json
+!appsettings.json
+!appsettings.Development.json
 !appsettings.example.json
 !**/appsettings.example.json
 bin/

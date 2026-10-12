@@ -9,8 +9,10 @@ obj/
 .vscode/
 
 ## Secrets & Configuration Files
-appsettings.json
-appsettings.*.json
+appsettings.Production.json
+*.secrets.json
+!appsettings.json
+!appsettings.Development.json
 !appsettings.example.json
 
 ## Node.js Dependencies
