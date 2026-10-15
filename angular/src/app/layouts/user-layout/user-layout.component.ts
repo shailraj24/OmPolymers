@@ -312,12 +312,12 @@ export class UserLayoutComponent implements OnInit {
   logoFailed = false;
   isMobileMenuOpen = signal(false);
 
-  phone = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;
-  phoneTel = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;
-  email = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;
-  emailMailto = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;
-  mapsUrl = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;
-  whatsappNumber = '918866246042';
+  phone: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE;
+  phoneTel: string = APP_CONSTANTS.DEFAULT_CONTACT.PHONE_TEL;
+  email: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL;
+  emailMailto: string = APP_CONSTANTS.DEFAULT_CONTACT.EMAIL_MAILTO;
+  mapsUrl: string = APP_CONSTANTS.DEFAULT_CONTACT.MAPS_URL;
+  whatsappNumber: string = '918866246042';
 
   ngOnInit(): void {
     this.company.getCompanySettings().subscribe(res => {
