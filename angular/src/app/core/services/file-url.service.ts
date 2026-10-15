@@ -8,8 +8,8 @@ export class FileUrlService {
   /**
    * Resolves the configured base URL for files/uploads.
    * Priority:
-   * 1. Explicit `environment.fileBaseUrl` (e.g. 'http://localhost:3000')
-   * 2. Host origin extracted from absolute `environment.apiUrl` (e.g. 'http://localhost:3000/api' -> 'http://localhost:3000')
+   * 1. Explicit `environment.fileBaseUrl` (e.g. 'http://localhost:44370')
+   * 2. Host origin extracted from absolute `environment.apiUrl` (e.g. 'http://localhost:44370/api' -> 'http://localhost:44370')
    * 3. Empty string if relative apiUrl (e.g. '/api' for production reverse proxy)
    */
   getBaseUrl(): string {

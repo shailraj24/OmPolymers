@@ -42,7 +42,7 @@ namespace OMPolymer.API.Controllers
         {
             if (request?.File == null || request.File.Length == 0)
             {
-                return BadRequest(ApiResponse<ImageUploadResponse>.FailureResult("No logo file was provided or file is empty."));
+                return BadRequest(ApiResponse<ImageUploadResponse>.FailureResponse("No logo file was provided or file is empty."));
             }
 
             var result = await _fileStorage.UploadImageAsync(request.File, "logos", cancellationToken);
