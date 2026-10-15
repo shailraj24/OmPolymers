@@ -8,11 +8,12 @@ import { Product } from '../../../core/models/product.model';
 import { CompanySettings } from '../../../core/models/company.model';
 import { BlogPost } from '../../../core/models/blog.model';
 import { APP_CONSTANTS } from '../../../core/constants/app.constant';
+import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
 
 @Component({
   selector: 'app-user-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FileUrlPipe],
   template: `
     <div class="space-y-20 py-10 px-6 max-w-7xl mx-auto">
       
@@ -125,7 +126,7 @@ import { APP_CONSTANTS } from '../../../core/constants/app.constant';
               <!-- Product Image Showcase -->
               <div class="h-48 w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative border border-slate-100 dark:border-slate-800/80">
                 <img 
-                  [src]="p.mainImageUrl || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80'" 
+                  [src]="p.mainImageUrl | fileUrl:'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80'" 
                   [alt]="p.productName" 
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />
@@ -276,7 +277,7 @@ import { APP_CONSTANTS } from '../../../core/constants/app.constant';
             <div class="p-5 space-y-3">
               <div class="h-44 w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-950 border border-slate-100 dark:border-slate-800/80">
                 <img 
-                  [src]="blog.featuredImageUrl || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'" 
+                  [src]="blog.featuredImageUrl | fileUrl:'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'" 
                   [alt]="blog.title" 
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />

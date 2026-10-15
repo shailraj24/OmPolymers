@@ -1300,6 +1300,28 @@ apiRouter.post('/uploads/image', requireAdminAuth, (req: Request, res: Response)
   const fileSizeBytes = base64Data ? Math.round(base64Data.length * 0.75) : 102400;
   const mimeType = contentType || (ext === 'svg' ? 'image/svg+xml' : `image/${ext}`);
 
+  // Save physical file to disk
+  try {
+    const cleanBase64 = (base64Data || '').replace(/^data:image\/[a-z+]+;base64,/, '');
+    const buffer = cleanBase64 ? Buffer.from(cleanBase64, 'base64') : Buffer.from('');
+    
+    // Save to primary uploads directory
+    const targetDir = path.resolve(process.cwd(), 'uploads', targetCategory);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(targetDir, safeFilename), buffer);
+
+    // Also mirror to dotnet wwwroot/uploads for ASP.NET Core compatibility
+    const dotnetTargetDir = path.resolve(process.cwd(), 'dotnet/OMPolymer.API/wwwroot/uploads', targetCategory);
+    if (!fs.existsSync(dotnetTargetDir)) {
+      fs.mkdirSync(dotnetTargetDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(dotnetTargetDir, safeFilename), buffer);
+  } catch (fileErr) {
+    console.error('Failed writing physical upload to disk:', fileErr);
+  }
+
   // Persist file metadata in SQL Server / in-memory table
   const newFileRecord = {
     fileId: db.uploadedFiles.length > 0 ? Math.max(...db.uploadedFiles.map(f => f.fileId)) + 1 : 1,
@@ -1337,6 +1359,26 @@ apiRouter.post('/uploads/logo', requireAdminAuth, (req: Request, res: Response) 
   const relativePath = `/uploads/logos/${safeFilename}`;
   const fileSizeBytes = base64Data ? Math.round(base64Data.length * 0.75) : 24576;
   const mimeType = contentType || (ext === 'svg' ? 'image/svg+xml' : `image/${ext}`);
+
+  // Save physical file to disk
+  try {
+    const cleanBase64 = (base64Data || '').replace(/^data:image\/[a-z+]+;base64,/, '');
+    const buffer = cleanBase64 ? Buffer.from(cleanBase64, 'base64') : Buffer.from('');
+    
+    const targetDir = path.resolve(process.cwd(), 'uploads/logos');
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(targetDir, safeFilename), buffer);
+
+    const dotnetTargetDir = path.resolve(process.cwd(), 'dotnet/OMPolymer.API/wwwroot/uploads/logos');
+    if (!fs.existsSync(dotnetTargetDir)) {
+      fs.mkdirSync(dotnetTargetDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(dotnetTargetDir, safeFilename), buffer);
+  } catch (fileErr) {
+    console.error('Failed writing physical logo upload to disk:', fileErr);
+  }
 
   const newFileRecord = {
     fileId: db.uploadedFiles.length > 0 ? Math.max(...db.uploadedFiles.map(f => f.fileId)) + 1 : 1,
@@ -1414,6 +1456,21 @@ apiRouter.delete('/uploads/image', requireAdminAuth, (req: Request, res: Respons
     record.isDeleted = true;
   }
 
+  // Remove physical files
+  try {
+    const localRel = imgPath.replace(/^\//, '');
+    const fullPath = path.resolve(process.cwd(), localRel);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+    }
+    const dotnetFullPath = path.resolve(process.cwd(), 'dotnet/OMPolymer.API/wwwroot', localRel);
+    if (fs.existsSync(dotnetFullPath)) {
+      fs.unlinkSync(dotnetFullPath);
+    }
+  } catch (unlinkErr) {
+    console.error('Failed deleting physical file:', unlinkErr);
+  }
+
   return ok(res, true, `Image file '${imgPath}' safely removed from storage.`);
 });
 
@@ -1423,6 +1480,21 @@ apiRouter.delete('/uploads/:id', requireAdminAuth, (req: Request, res: Response)
   const record = db.uploadedFiles.find(f => f.fileId === fileId);
   if (!record) return notFound(res, 'File record not found.');
   record.isDeleted = true;
+
+  try {
+    const localRel = record.relativePath.replace(/^\//, '');
+    const fullPath = path.resolve(process.cwd(), localRel);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+    }
+    const dotnetFullPath = path.resolve(process.cwd(), 'dotnet/OMPolymer.API/wwwroot', localRel);
+    if (fs.existsSync(dotnetFullPath)) {
+      fs.unlinkSync(dotnetFullPath);
+    }
+  } catch (unlinkErr) {
+    console.error('Failed deleting physical file:', unlinkErr);
+  }
+
   return ok(res, true, `File record ${fileId} safely deleted.`);
 });
 

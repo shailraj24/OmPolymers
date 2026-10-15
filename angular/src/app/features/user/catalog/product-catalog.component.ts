@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../core/services/product.service';
 import { Product, ProductCategory } from '../../../core/models/product.model';
+import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
 
 @Component({
   selector: 'app-product-catalog',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, FileUrlPipe],
   template: `
     <div class="py-10 px-6 max-w-7xl mx-auto space-y-8">
       <div>
@@ -66,7 +67,7 @@ import { Product, ProductCategory } from '../../../core/models/product.model';
             <!-- Product Image -->
             <div class="h-48 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 relative">
               <img 
-                [src]="p.mainImageUrl || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80'" 
+                [src]="p.mainImageUrl | fileUrl:'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=800&q=80'" 
                 [alt]="p.productName" 
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
               />

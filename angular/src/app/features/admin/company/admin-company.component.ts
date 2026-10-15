@@ -6,11 +6,12 @@ import { ToastService } from '../../../core/services/toast.service';
 import { UploadService } from '../../../core/services/upload.service';
 import { CompanySettings } from '../../../core/models/company.model';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
+import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
 
 @Component({
   selector: 'app-admin-company',
   standalone: true,
-  imports: [CommonModule, FormsModule, FileUploadComponent],
+  imports: [CommonModule, FormsModule, FileUploadComponent, FileUrlPipe],
   template: `
     <div class="space-y-6 max-w-4xl">
       <div>
@@ -43,10 +44,10 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
             <div class="w-32 h-20 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center p-2 shadow-inner overflow-hidden">
               <img 
                 *ngIf="previewLogoUrl()" 
-                [src]="previewLogoUrl()" 
+                [src]="previewLogoUrl() | fileUrl" 
                 alt="Current Logo" 
-                class="max-w-full max-h-full object-contain"
-                (error)="onLogoError()"
+                class="max-w-full max-h-full object-contain" 
+                (error)="onLogoError()" 
               />
               <div *ngIf="!previewLogoUrl()" class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-sm">
                 OM

@@ -5,11 +5,12 @@ import { ThemeService } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CompanyService } from '../../core/services/company.service';
 import { APP_CONSTANTS } from '../../core/constants/app.constant';
+import { FileUrlPipe } from '../../shared/pipes/file-url.pipe';
 
 @Component({
   selector: 'app-user-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule],
+  imports: [RouterOutlet, RouterModule, CommonModule, FileUrlPipe],
   template: `
     <div class="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#0b132b] dark:text-slate-100 flex flex-col transition-colors duration-300">
       
@@ -51,7 +52,7 @@ import { APP_CONSTANTS } from '../../core/constants/app.constant';
             <div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-700 via-blue-800 to-slate-900 border border-blue-600/30 flex items-center justify-center text-white font-extrabold text-lg shadow-sm overflow-hidden group-hover:border-blue-500 transition-colors">
               <img 
                 *ngIf="company.currentLogo()" 
-                [src]="company.currentLogo()" 
+                [src]="company.currentLogo() | fileUrl" 
                 alt="OM Polymer Corporate Logo" 
                 class="w-full h-full object-cover"
                 (error)="onLogoError($event)"

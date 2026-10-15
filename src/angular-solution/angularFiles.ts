@@ -521,12 +521,28 @@ export const angularSolutionFiles: AngularCodeFile[] = [
     "content": "import { Component, inject } from '@angular/core';\nimport { CommonModule } from '@angular/common';\nimport { ToastService } from '../../core/services/toast.service';\n\n@Component({\n  selector: 'app-toast',\n  standalone: true,\n  imports: [CommonModule],\n  template: `\n    <div class=\"fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none\">\n      <div \n        *ngFor=\"let toast of toastService.messages()\" \n        class=\"pointer-events-auto p-3.5 rounded-xl shadow-xl border text-xs flex items-start gap-3 transition-all\"\n        [ngClass]=\"{\n          'bg-emerald-950/95 border-emerald-700 text-emerald-200': toast.type === 'success',\n          'bg-rose-950/95 border-rose-700 text-rose-200': toast.type === 'error',\n          'bg-blue-950/95 border-blue-700 text-blue-200': toast.type === 'info',\n          'bg-amber-950/95 border-amber-700 text-amber-200': toast.type === 'warning'\n        }\"\n      >\n        <div class=\"text-base shrink-0\">\n          <span *ngIf=\"toast.type === 'success'\">✅</span>\n          <span *ngIf=\"toast.type === 'error'\">⚠️</span>\n          <span *ngIf=\"toast.type === 'info'\">ℹ️</span>\n          <span *ngIf=\"toast.type === 'warning'\">⚡</span>\n        </div>\n        <div class=\"flex-1\">\n          <div *ngIf=\"toast.title\" class=\"font-bold text-white mb-0.5\">{{ toast.title }}</div>\n          <div>{{ toast.message }}</div>\n        </div>\n        <button \n          (click)=\"toastService.remove(toast.id)\"\n          class=\"text-white/60 hover:text-white font-bold p-0.5 ml-1\"\n        >\n          ✕\n        </button>\n      </div>\n    </div>\n  `\n})\nexport class ToastComponent {\n  toastService = inject(ToastService);\n}\n"
   },
   {
+    "name": "file-url.pipe.ts",
+    "path": "src/app/shared/pipes/file-url.pipe.ts",
+    "category": "Shared Components",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/shared/pipes/file-url.pipe.ts",
+    "content": "import { Pipe, PipeTransform, inject } from '@angular/core';\nimport { FileUrlService } from '../../core/services/file-url.service';\n\n@Pipe({\n  name: 'fileUrl',\n  standalone: true\n})\nexport class FileUrlPipe implements PipeTransform {\n  private fileUrlService = inject(FileUrlService);\n\n  transform(value: string | null | undefined, fallback: string = ''): string {\n    return this.fileUrlService.resolve(value, fallback);\n  }\n}\n"
+  },
+  {
+    "name": "file-url.service.ts",
+    "path": "src/app/core/services/file-url.service.ts",
+    "category": "Core",
+    "language": "typescript",
+    "description": "OM Polymer Angular 19 solution file: src/app/core/services/file-url.service.ts",
+    "content": "import { Injectable } from '@angular/core';\nimport { environment } from '@env/environment';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class FileUrlService {\n  getBaseUrl(): string {\n    const envFileBase = (environment as any).fileBaseUrl;\n    if (typeof envFileBase === 'string') {\n      return envFileBase.replace(/\\/+$/, '');\n    }\n    const apiUrl = environment.apiUrl || '';\n    if (apiUrl.startsWith('http://') || apiUrl.startsWith('https://')) {\n      try {\n        const parsed = new URL(apiUrl);\n        return parsed.origin;\n      } catch {\n        return apiUrl.replace(/\\/api\\/?$/i, '').replace(/\\/+$/, '');\n      }\n    }\n    return '';\n  }\n\n  resolve(path: string | null | undefined, fallback: string = ''): string {\n    if (!path || typeof path !== 'string' || !path.trim()) {\n      return fallback;\n    }\n    const trimmed = path.trim();\n    if (\n      trimmed.startsWith('http://') ||\n      trimmed.startsWith('https://') ||\n      trimmed.startsWith('//') ||\n      trimmed.startsWith('data:') ||\n      trimmed.startsWith('blob:')\n    ) {\n      return trimmed;\n    }\n    const base = this.getBaseUrl();\n    if (!base) {\n      return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;\n    }\n    const cleanPath = trimmed.startsWith('/') ? trimmed.slice(1) : trimmed;\n    return `${base}/${cleanPath}`;\n  }\n}\n"
+  },
+  {
     "name": "environment.production.ts",
     "path": "src/environments/environment.production.ts",
     "category": "Configuration",
     "language": "typescript",
     "description": "OM Polymer Angular 19 solution file: src/environments/environment.production.ts",
-    "content": "export const environment = {\n  production: true,\n  apiUrl: '/api',\n  companyName: 'OM POLYMER',\n  apiVersion: '1.0.0',\n  defaultPageSize: 10\n};\n"
+    "content": "export const environment = {\n  production: true,\n  apiUrl: '/api',\n  fileBaseUrl: '',\n  companyName: 'OM POLYMER',\n  apiVersion: '1.0.0',\n  defaultPageSize: 10\n};\n"
   },
   {
     "name": "environment.ts",
@@ -534,7 +550,7 @@ export const angularSolutionFiles: AngularCodeFile[] = [
     "category": "Configuration",
     "language": "typescript",
     "description": "OM Polymer Angular 19 solution file: src/environments/environment.ts",
-    "content": "export const environment = {\n  production: false,\n  apiUrl: 'https://localhost:44370/api',\n  companyName: 'OM POLYMER',\n  apiVersion: '1.0.0',\n  defaultPageSize: 10\n};\n"
+    "content": "export const environment = {\n  production: false,\n  apiUrl: 'http://localhost:3000/api',\n  fileBaseUrl: 'http://localhost:3000',\n  companyName: 'OM POLYMER',\n  apiVersion: '1.0.0',\n  defaultPageSize: 10\n};\n"
   },
   {
     "name": "index.html",

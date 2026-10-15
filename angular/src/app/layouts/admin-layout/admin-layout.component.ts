@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { CompanyService } from '../../core/services/company.service';
+import { FileUrlPipe } from '../../shared/pipes/file-url.pipe';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule],
+  imports: [RouterOutlet, RouterModule, CommonModule, FileUrlPipe],
   template: `
     <div class="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row">
       
@@ -20,7 +21,7 @@ import { CompanyService } from '../../core/services/company.service';
             <div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center text-white font-extrabold text-lg shadow-md overflow-hidden">
               <img 
                 *ngIf="company.currentLogo()" 
-                [src]="company.currentLogo()" 
+                [src]="company.currentLogo() | fileUrl" 
                 alt="OM Polymer Site Logo" 
                 class="w-full h-full object-cover"
                 (error)="onLogoError($event)"

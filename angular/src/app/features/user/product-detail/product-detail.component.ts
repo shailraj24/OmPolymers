@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { Product } from '../../../core/models/product.model';
+import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FileUrlPipe],
   template: `
     <div class="py-12 px-6 max-w-6xl mx-auto space-y-8" *ngIf="product(); else loadingTpl">
       <!-- Breadcrumb Navigation -->
@@ -25,7 +26,7 @@ import { Product } from '../../../core/models/product.model';
           <!-- Featured Image Container -->
           <div class="h-80 sm:h-96 w-full rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 relative shadow-md">
             <img 
-              [src]="product()?.mainImageUrl || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=1200&q=80'" 
+              [src]="product()?.mainImageUrl | fileUrl:'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=1200&q=80'" 
               [alt]="product()?.productName" 
               class="w-full h-full object-cover" 
             />

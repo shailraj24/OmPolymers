@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '@env/environment';
@@ -6,15 +6,18 @@ import { API_ENDPOINTS } from '../constants/api-endpoints.constant';
 import { ApiResponse } from '../models/api-response.model';
 import { CompanySettings, WhatsAppUrlResponse } from '../models/company.model';
 import { ImageUploadResponse } from '../models/upload.model';
+import { FileUrlService } from './file-url.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CompanyService {
   private http = inject(HttpClient);
+  private fileUrlService = inject(FileUrlService);
 
   // Reactive signals for globally synchronized site logo and company branding
   readonly currentLogo = signal<string>('/uploads/logos/om-polymer-logo.png');
+  readonly fullLogoUrl = computed(() => this.fileUrlService.resolve(this.currentLogo()));
   readonly companyProfile = signal<CompanySettings | null>(null);
 
   getCompanySettings(): Observable<ApiResponse<CompanySettings>> {

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Observable, of, filter, map, catchError } from 'rxjs';
 import { UploadService } from '../../../core/services/upload.service';
 import { ImageUploadResponse } from '../../../core/models/upload.model';
+import { FileUrlPipe } from '../../pipes/file-url.pipe';
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FileUrlPipe],
   template: `
     <div class="space-y-2 text-xs">
       <!-- Label & Helper -->
@@ -45,7 +46,7 @@ import { ImageUploadResponse } from '../../../core/models/upload.model';
         <div *ngIf="previewUrl()" class="w-full space-y-3">
           <div class="relative w-full h-44 rounded-xl overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
             <img 
-              [src]="previewUrl()" 
+              [src]="previewUrl() | fileUrl" 
               alt="Image Preview" 
               class="w-full h-full object-cover"
               (error)="onImageError()"

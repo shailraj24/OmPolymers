@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPost, BlogCategory } from '../../../core/models/blog.model';
+import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, FileUrlPipe],
   template: `
     <div class="py-10 px-6 max-w-7xl mx-auto space-y-8">
       <div>
@@ -57,7 +58,16 @@ import { BlogPost, BlogCategory } from '../../../core/models/blog.model';
 
       <!-- Blogs Grid -->
       <div *ngIf="!loading() && blogs().length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <article *ngFor="let blog of blogs()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-xl transition-all">
+        <article *ngFor="let blog of blogs()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-xl transition-all group">
+          <!-- Article Thumbnail Image -->
+          <div class="h-44 w-full overflow-hidden bg-slate-100 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800/80">
+            <img 
+              [src]="blog.featuredImageUrl | fileUrl:'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80'" 
+              [alt]="blog.title" 
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            />
+          </div>
+
           <div class="p-6 space-y-3">
             <div class="flex items-center justify-between text-[11px] text-slate-400">
               <span class="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">

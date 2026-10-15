@@ -4,11 +4,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BlogService } from '../../../core/services/blog.service';
 import { CompanyService } from '../../../core/services/company.service';
 import { BlogPost } from '../../../core/models/blog.model';
+import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FileUrlPipe],
   template: `
     <div class="py-10 px-6 max-w-4xl mx-auto space-y-8">
       
@@ -29,6 +30,15 @@ import { BlogPost } from '../../../core/models/blog.model';
       <!-- Article View -->
       <article *ngIf="!loading() && blog() as b" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-12 shadow-sm space-y-8">
         
+        <!-- Featured Image Banner -->
+        <div *ngIf="b.featuredImageUrl" class="h-64 sm:h-80 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+          <img 
+            [src]="b.featuredImageUrl | fileUrl:'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80'" 
+            [alt]="b.title" 
+            class="w-full h-full object-cover" 
+          />
+        </div>
+
         <header class="space-y-4">
           <div class="flex flex-wrap items-center gap-3">
             <span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">

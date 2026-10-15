@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import { apiRouter } from './src/server/routes.js';
 import { openApiSpec } from './src/server/openapi.js';
 
@@ -23,6 +24,46 @@ async function startServer() {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
     next();
+  });
+
+  // Serve physical uploaded files from /uploads directory
+  const uploadsDir = path.resolve(__dirname, 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  // Allowed public file extensions for uploads security
+  const allowedUploadExts = new Set(['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif']);
+
+  app.use('/uploads', (req: Request, res: Response, next: NextFunction) => {
+    // Prevent dotfiles and directory traversal
+    const safePath = path.normalize(req.path);
+    if (safePath.includes('..') || req.path.includes('/.')) {
+      return res.status(403).json({ success: false, message: 'Access denied: Directory traversal forbidden.' });
+    }
+    const ext = path.extname(safePath).toLowerCase();
+    if (ext && !allowedUploadExts.has(ext)) {
+      return res.status(403).json({ success: false, message: 'File format not allowed for public serving.' });
+    }
+    next();
+  }, express.static(uploadsDir, {
+    maxAge: '1d',
+    etag: true,
+    dotfiles: 'ignore',
+    setHeaders: (res: Response) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+    }
+  }));
+
+  // Fallback 404 for missing uploaded files
+  app.use('/uploads', (_req: Request, res: Response) => {
+    res.status(404).json({
+      success: false,
+      message: 'Uploaded file not found on backend storage.',
+      errors: ['File does not exist or has been removed.']
+    });
   });
 
   // OpenAPI schema endpoint
