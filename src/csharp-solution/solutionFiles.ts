@@ -228,6 +228,7 @@ EndGlobal`
     content: `using System.Text;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -340,6 +341,13 @@ builder.Services.AddSwaggerGen(c =>
         Title = "OM Polymer Web API",
         Version = "v1",
         Description = "Production ASP.NET Core Web API backend for OM Polymer public website and admin portal."
+    });
+
+    // Map IFormFile explicitly to binary schema to prevent Swashbuckle from reflecting into internal IHeaderDictionary
+    c.MapType<IFormFile>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "binary"
     });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -1187,6 +1195,23 @@ public class UploadImageRequest
     public IFormFile File { get; set; } = null!;
 
     public string Category { get; set; } = "products";
+}`
+  },
+  {
+    path: 'OMPolymer.API/DTOs/Requests/UploadLogoRequest.cs',
+    name: 'UploadLogoRequest.cs',
+    category: 'DTOs',
+    language: 'csharp',
+    description: 'Site logo upload request DTO with IFormFile for Swagger/OpenAPI support',
+    content: `using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+
+namespace OMPolymer.API.DTOs.Requests;
+
+public class UploadLogoRequest
+{
+    [Required]
+    public IFormFile File { get; set; } = null!;
 }`
   },
 
@@ -3174,6 +3199,7 @@ namespace OMPolymer.API.Controllers
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OMPolymer.API.DTOs.Requests;
+using OMPolymer.API.DTOs.Responses;
 using OMPolymer.API.Services.Interfaces;
 
 namespace OMPolymer.API.Controllers
@@ -3184,10 +3210,12 @@ namespace OMPolymer.API.Controllers
     public class UploadsController : ControllerBase
     {
         private readonly IFileStorageService _fileStorage;
+        private readonly ICompanyService _companyService;
 
-        public UploadsController(IFileStorageService fileStorage)
+        public UploadsController(IFileStorageService fileStorage, ICompanyService companyService)
         {
             _fileStorage = fileStorage;
+            _companyService = companyService;
         }
 
         /// <summary>
@@ -3199,6 +3227,29 @@ namespace OMPolymer.API.Controllers
         {
             var result = await _fileStorage.UploadImageAsync(request.File, request.Category, cancellationToken);
             if (!result.Success) return BadRequest(result);
+            return StatusCode(201, result);
+        }
+
+        /// <summary>
+        /// Dedicated site logo upload: stores in wwwroot/uploads/logos/ and updates CompanySettings.LogoUrl automatically.
+        /// </summary>
+        [HttpPost("logo")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadSiteLogo([FromForm] UploadLogoRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request?.File == null || request.File.Length == 0)
+            {
+                return BadRequest(ApiResponse<ImageUploadResponse>.FailureResult("No logo file was provided or file is empty."));
+            }
+
+            var result = await _fileStorage.UploadImageAsync(request.File, "logos", cancellationToken);
+            if (!result.Success) return BadRequest(result);
+
+            if (result.Data?.RelativeUrl != null)
+            {
+                await _companyService.UpdateLogoAsync(result.Data.RelativeUrl);
+            }
+
             return StatusCode(201, result);
         }
 
@@ -3650,8 +3701,10 @@ namespace OMPolymer.API.Controllers
     language: 'csharp',
     description: 'Secured Admin Company settings updater',
     content: `using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OMPolymer.API.DTOs.Requests;
+using OMPolymer.API.DTOs.Responses;
 using OMPolymer.API.Services.Interfaces;
 
 namespace OMPolymer.API.Controllers
@@ -3662,10 +3715,12 @@ namespace OMPolymer.API.Controllers
     public class AdminCompanyController : ControllerBase
     {
         private readonly ICompanyService _service;
+        private readonly IFileStorageService _fileStorage;
 
-        public AdminCompanyController(ICompanyService service)
+        public AdminCompanyController(ICompanyService service, IFileStorageService fileStorage)
         {
             _service = service;
+            _fileStorage = fileStorage;
         }
 
         [HttpPut]
@@ -3674,6 +3729,29 @@ namespace OMPolymer.API.Controllers
             var result = await _service.UpdateSettingsAsync(request);
             if (!result.Success) return BadRequest(result);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Uploads, replaces, and updates the site logo dynamically.
+        /// </summary>
+        [HttpPost("logo")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadLogo([FromForm] UploadLogoRequest request, CancellationToken cancellationToken = default)
+        {
+            if (request?.File == null || request.File.Length == 0)
+            {
+                return BadRequest(ApiResponse<ImageUploadResponse>.FailureResult("No logo file was provided or file is empty."));
+            }
+
+            var uploadResult = await _fileStorage.UploadImageAsync(request.File, "logos", cancellationToken);
+            if (!uploadResult.Success) return BadRequest(uploadResult);
+
+            if (uploadResult.Data?.RelativeUrl != null)
+            {
+                await _service.UpdateLogoAsync(uploadResult.Data.RelativeUrl);
+            }
+
+            return Ok(uploadResult);
         }
     }
 }`

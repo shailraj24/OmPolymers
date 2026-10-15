@@ -1,6 +1,7 @@
 using System.Text;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -113,6 +114,13 @@ builder.Services.AddSwaggerGen(c =>
         Title = "OM Polymer Web API",
         Version = "v1",
         Description = "Production ASP.NET Core Web API backend for OM Polymer public website and admin portal."
+    });
+
+    // Map IFormFile explicitly to binary schema to prevent Swashbuckle from reflecting into internal IHeaderDictionary
+    c.MapType<IFormFile>(() => new OpenApiSchema
+    {
+        Type = "string",
+        Format = "binary"
     });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

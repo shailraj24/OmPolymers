@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OMPolymer.API.DTOs.Requests;
+using OMPolymer.API.DTOs.Responses;
 using OMPolymer.API.Services.Interfaces;
 
 namespace OMPolymer.API.Controllers
@@ -37,9 +38,14 @@ namespace OMPolymer.API.Controllers
         /// </summary>
         [HttpPost("logo")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadSiteLogo([FromForm] IFormFile file, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> UploadSiteLogo([FromForm] UploadLogoRequest request, CancellationToken cancellationToken = default)
         {
-            var result = await _fileStorage.UploadImageAsync(file, "logos", cancellationToken);
+            if (request?.File == null || request.File.Length == 0)
+            {
+                return BadRequest(ApiResponse<ImageUploadResponse>.FailureResult("No logo file was provided or file is empty."));
+            }
+
+            var result = await _fileStorage.UploadImageAsync(request.File, "logos", cancellationToken);
             if (!result.Success) return BadRequest(result);
 
             if (result.Data?.RelativeUrl != null)
