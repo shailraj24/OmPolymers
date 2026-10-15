@@ -81,13 +81,86 @@ import { ClientRequirement, RequirementStatus } from '../../../core/models/requi
                 </span>
               </td>
               <td class="p-3 text-right">
-                <button (click)="openStatusModal(item)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors">
-                  Update
-                </button>
+                <div class="flex items-center justify-end gap-1.5">
+                  <button (click)="viewItem.set(item)" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 rounded text-white font-semibold flex items-center gap-1 shadow-sm transition-colors text-xs" title="View complete inquiry details">
+                    <span>👁️</span>
+                    <span>View</span>
+                  </button>
+                  <button (click)="openStatusModal(item)" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition-colors text-xs font-semibold">
+                    Update
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- View Inquiry Detail Modal -->
+      <div *ngIf="viewItem()" class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+          <div class="flex items-start justify-between border-b border-slate-800 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-bold text-white">{{ viewItem()?.fullName }}</h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold"
+                  [ngClass]="{
+                    'bg-emerald-950 text-emerald-400 border border-emerald-800': viewItem()?.status === 'Completed',
+                    'bg-blue-950 text-blue-400 border border-blue-800': viewItem()?.status === 'New',
+                    'bg-amber-950 text-amber-400 border border-amber-800': viewItem()?.status === 'Contacted' || viewItem()?.status === 'In Progress',
+                    'bg-rose-950 text-rose-400 border border-rose-800': viewItem()?.status === 'Rejected'
+                  }">
+                  {{ viewItem()?.status }}
+                </span>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">
+                {{ viewItem()?.companyName ? viewItem()?.companyName + ' · ' : '' }}Submitted on {{ viewItem()?.createdAt | date:'medium' }}
+              </p>
+            </div>
+            <button (click)="viewItem.set(null)" class="text-slate-400 hover:text-white text-base">✕</button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Contact Details</div>
+              <div><strong class="text-slate-400">Email:</strong> <a [href]="'mailto:' + viewItem()?.email" class="text-blue-400 hover:underline">{{ viewItem()?.email }}</a></div>
+              <div><strong class="text-slate-400">Phone:</strong> <span class="font-mono text-slate-200">{{ viewItem()?.phoneNumber }}</span></div>
+              <div *ngIf="viewItem()?.city || viewItem()?.state"><strong class="text-slate-400">Location:</strong> {{ viewItem()?.city }} {{ viewItem()?.state }}</div>
+              <div><strong class="text-slate-400">Company:</strong> {{ viewItem()?.companyName || 'Independent Inquirer' }}</div>
+            </div>
+
+            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5">
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Product / RFQ Scope</div>
+              <div><strong class="text-slate-400">Product:</strong> <span class="text-white font-medium">{{ viewItem()?.productOfInterest || 'General Inquiry' }}</span></div>
+              <div><strong class="text-slate-400">Quantity:</strong> <span class="text-amber-400 font-medium">{{ viewItem()?.quantity || 'Not specified' }}</span></div>
+              <div><strong class="text-slate-400">Inquiry ID:</strong> <span class="font-mono text-slate-400">#{{ viewItem()?.requirementId }}</span></div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-1.5">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Full Requirement Description</div>
+            <p class="text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">{{ viewItem()?.requirementDescription }}</p>
+          </div>
+
+          <div *ngIf="viewItem()?.adminRemarks" class="p-3 bg-blue-950/30 border border-blue-900/50 rounded-xl space-y-1">
+            <div class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Internal Admin Remarks</div>
+            <p class="text-xs text-blue-200">{{ viewItem()?.adminRemarks }}</p>
+          </div>
+
+          <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+            <a [href]="'https://wa.me/' + (viewItem()?.phoneNumber || '').replace(nonDigitsRegex, '')" target="_blank" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5">
+              <span>💬</span> Reply on WhatsApp
+            </a>
+            <div class="flex items-center gap-2">
+              <button (click)="openStatusModal(viewItem()!); viewItem.set(null)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold">
+                Update Status
+              </button>
+              <button (click)="viewItem.set(null)" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Status Updater Modal -->
@@ -131,9 +204,11 @@ export class AdminInquiriesComponent implements OnInit {
   search = '';
   statusFilter = 'All';
 
+  viewItem = signal<ClientRequirement | null>(null);
   selectedItem = signal<ClientRequirement | null>(null);
   newStatus: RequirementStatus = 'Contacted';
   adminRemarks = '';
+  nonDigitsRegex = /[^0-9]/g;
 
   ngOnInit(): void {
     this.loadData();

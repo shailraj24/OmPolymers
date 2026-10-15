@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../core/services/blog.service';
-import { BlogPost, BlogCategory } from '../../../core/models/blog.model';
+import { BlogPost } from '../../../core/models/blog.model';
 import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
 
 @Component({
@@ -17,24 +17,10 @@ import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
         <p class="text-xs text-slate-500 mt-1">Research papers, hydrostatic testing data, and polymer manufacturing best practices</p>
       </div>
 
-      <!-- Filters & Search Bar -->
+      <!-- Search Bar -->
       <div class="flex flex-col md:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex flex-wrap gap-2">
-          <button 
-            (click)="selectCategory(undefined)"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-            [ngClass]="selectedCategoryId() === undefined ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
-          >
-            All Categories
-          </button>
-          <button 
-            *ngFor="let cat of categories()"
-            (click)="selectCategory(cat.blogCategoryId)"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-            [ngClass]="selectedCategoryId() === cat.blogCategoryId ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'"
-          >
-            {{ cat.categoryName }}
-          </button>
+        <div class="text-xs text-slate-500 font-medium">
+          Showing all published technical whitepapers and industry insights
         </div>
 
         <input 
@@ -70,9 +56,7 @@ import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
 
           <div class="p-6 space-y-3">
             <div class="flex items-center justify-between text-[11px] text-slate-400">
-              <span class="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                {{ blog.category?.categoryName || 'Technical' }}
-              </span>
+              <span class="font-medium text-slate-500">By {{ blog.author || 'OM Polymer Lab' }}</span>
               <span>{{ blog.createdAt | date:'mediumDate' }}</span>
             </div>
             
@@ -86,7 +70,7 @@ import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
           </div>
 
           <div class="p-6 pt-0 border-t border-slate-100 dark:border-slate-800/60 mt-4 flex items-center justify-between">
-            <span class="text-xs text-slate-400">Author: {{ blog.author || 'OM Polymer Lab' }}</span>
+            <span class="text-xs text-slate-400 font-mono text-[11px]">Published</span>
             <a [routerLink]="['/blogs', blog.slug]" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
               Read Complete Article →
             </a>
@@ -100,32 +84,16 @@ export class BlogListComponent implements OnInit {
   private blogService = inject(BlogService);
 
   blogs = signal<BlogPost[]>([]);
-  categories = signal<BlogCategory[]>([]);
-  selectedCategoryId = signal<number | undefined>(undefined);
   searchQuery = '';
   loading = signal(true);
 
   ngOnInit(): void {
-    this.loadCategories();
-    this.loadBlogs();
-  }
-
-  loadCategories(): void {
-    this.blogService.getCategories().subscribe({
-      next: res => {
-        if (res.success && res.data) this.categories.set(res.data);
-      }
-    });
-  }
-
-  selectCategory(id?: number): void {
-    this.selectedCategoryId.set(id);
     this.loadBlogs();
   }
 
   loadBlogs(): void {
     this.loading.set(true);
-    this.blogService.getPublishedBlogs(1, 50, this.selectedCategoryId(), this.searchQuery).subscribe({
+    this.blogService.getPublishedBlogs(1, 50, undefined, this.searchQuery).subscribe({
       next: res => {
         if (res.success && res.data?.items) {
           this.blogs.set(res.data.items);

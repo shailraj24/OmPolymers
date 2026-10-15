@@ -41,9 +41,11 @@ import {
   User,
   Activity,
   HardDrive,
-  RotateCw
+  RotateCw,
+  X
 } from 'lucide-react';
 import { ImageUploadDropzone, uploadImageFile } from './ImageUploadDropzone.js';
+import { DraggableWhatsApp } from './DraggableWhatsApp.js';
 import { angularSolutionFiles, AngularCodeFile } from '../angular-solution/angularFiles.js';
 import { exportAngularZip, exportFullStackZip } from '../utils/zipExporter.js';
 
@@ -61,8 +63,20 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   // User Portal sub-tab: 'home' | 'catalog' | 'blogs' | 'about' | 'quote' | 'maintenance'
   const [userTab, setUserTab] = useState<'home' | 'catalog' | 'blogs' | 'about' | 'quote' | 'maintenance'>('home');
   
-  // Admin Panel sub-tab: 'dashboard' | 'products' | 'blogs' | 'inquiries' | 'logs' | 'company' | 'users'
-  const [adminTab, setAdminTab] = useState<'dashboard' | 'products' | 'blogs' | 'inquiries' | 'logs' | 'company' | 'users'>('dashboard');
+  // Admin Panel sub-tab: 'dashboard' | 'products' | 'categories' | 'blogs' | 'inquiries' | 'logs' | 'company' | 'users'
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'products' | 'categories' | 'blogs' | 'inquiries' | 'logs' | 'company' | 'users'>('dashboard');
+
+  // Dynamic Product Categories Admin State
+  const [adminCategories, setAdminCategories] = useState<any[]>([]);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<any | null>(null);
+  const [categoryForm, setCategoryForm] = useState({ categoryName: '', slug: '', isActive: true });
+  const [categoryToDelete, setCategoryToDelete] = useState<any | null>(null);
+  const [categoryFormError, setCategoryFormError] = useState<string | null>(null);
+  const [isSavingCategory, setIsSavingCategory] = useState(false);
+
+  // Inquiries CRM View Details Modal State
+  const [viewingLead, setViewingLead] = useState<any | null>(null);
 
   // Code Explorer state
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -82,10 +96,8 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   const [productSearch, setProductSearch] = useState('');
   const [selectedProductDetail, setSelectedProductDetail] = useState<any | null>(null);
 
-  // Blogs State
+  // Blogs State (Categories removed per requirement)
   const [blogs, setBlogs] = useState<any[]>([]);
-  const [blogCategories, setBlogCategories] = useState<any[]>([]);
-  const [selectedBlogCatId, setSelectedBlogCatId] = useState<number | undefined>(undefined);
   const [blogSearch, setBlogSearch] = useState('');
   const [selectedBlogDetail, setSelectedBlogDetail] = useState<any | null>(null);
 
@@ -141,7 +153,6 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   const [blogForm, setBlogForm] = useState({
     title: '',
     slug: '',
-    blogCategoryId: '1',
     shortDescription: '',
     content: '',
     featuredImageUrl: '',
@@ -190,7 +201,7 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
         setCategories(catJson.data);
       }
 
-      // 4. Blogs
+      // 4. Blogs (No categories per requirement)
       const blogEndpoint = token && roleMode === 'admin'
         ? '/api/admin/blogs?page=1&pageSize=50'
         : '/api/blogs?page=1&pageSize=50';
@@ -202,15 +213,16 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
         setBlogs(blogJson.data.items || []);
       }
 
-      // 5. Blog Categories
-      const bcatRes = await fetch('/api/blogs/categories');
-      const bcatJson = await bcatRes.json();
-      if (bcatJson.success && bcatJson.data) {
-        setBlogCategories(bcatJson.data);
-      }
-
-      // 6. Admin leads & users
+      // 5. Admin data (Categories, Inquiries, Users, Logs)
       if (token) {
+        const catAdminRes = await fetch('/api/admin/categories', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const catAdminJson = await catAdminRes.json();
+        if (catAdminJson.success && catAdminJson.data) {
+          setAdminCategories(catAdminJson.data);
+        }
+
         const leadRes = await fetch('/api/admin/requirements?page=1&pageSize=50', {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -498,14 +510,81 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
     }
   };
 
-  // Blog CRUD Handlers
+  // Category CRUD Handlers
+  const handleOpenAddCategory = () => {
+    setEditingCategory(null);
+    setCategoryForm({ categoryName: '', slug: '', isActive: true });
+    setCategoryFormError(null);
+    setShowCategoryModal(true);
+  };
+
+  const handleOpenEditCategory = (cat: any) => {
+    setEditingCategory(cat);
+    setCategoryForm({ categoryName: cat.categoryName, slug: cat.slug, isActive: cat.isActive });
+    setCategoryFormError(null);
+    setShowCategoryModal(true);
+  };
+
+  const handleSaveCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!categoryForm.categoryName.trim()) {
+      setCategoryFormError('Category name is required.');
+      return;
+    }
+    setIsSavingCategory(true);
+    setCategoryFormError(null);
+
+    try {
+      const url = editingCategory ? `/api/admin/categories/${editingCategory.categoryId}` : '/api/admin/categories';
+      const method = editingCategory ? 'PUT' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(categoryForm)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setShowCategoryModal(false);
+        loadData();
+      } else {
+        setCategoryFormError(data.message || (data.errors && data.errors[0]) || 'Failed to save category.');
+      }
+    } catch {
+      setCategoryFormError('Network error communicating with API.');
+    } finally {
+      setIsSavingCategory(false);
+    }
+  };
+
+  const handleDeleteCategory = async (cat: any) => {
+    if (!token) return;
+    try {
+      const res = await fetch(`/api/admin/categories/${cat.categoryId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setCategoryToDelete(null);
+        loadData();
+      } else {
+        alert(data.message || 'Cannot delete category.');
+      }
+    } catch {
+      alert('Network error deleting category.');
+    }
+  };
+
+  // Blog CRUD Handlers (Categories removed per requirement)
   const handleOpenAddBlog = () => {
     setEditingBlog(null);
     setStagedBlogFile(null);
     setBlogForm({
       title: '',
       slug: '',
-      blogCategoryId: blogCategories[0]?.blogCategoryId?.toString() || '1',
       shortDescription: '',
       content: '<p>Enter article technical details and data findings here...</p>',
       featuredImageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
@@ -522,7 +601,6 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
     setBlogForm({
       title: b.title,
       slug: b.slug,
-      blogCategoryId: (b.category?.blogCategoryId || b.blogCategoryId || 1).toString(),
       shortDescription: b.shortDescription || '',
       content: b.content || '',
       featuredImageUrl: b.featuredImageUrl || '',
@@ -753,14 +831,13 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
 
   const featuredProducts = products.filter(p => p.isFeatured && p.isActive);
 
-  // Filtered Blogs
+  // Filtered Blogs (Category-free per requirement)
   const filteredBlogs = blogs.filter(b => {
-    const matchesCat = selectedBlogCatId ? (b.category?.blogCategoryId === selectedBlogCatId || b.blogCategoryId === selectedBlogCatId) : true;
     const matchesSearch = blogSearch.trim() === '' ||
       b.title.toLowerCase().includes(blogSearch.toLowerCase()) ||
       (b.shortDescription && b.shortDescription.toLowerCase().includes(blogSearch.toLowerCase())) ||
       (b.content && b.content.toLowerCase().includes(blogSearch.toLowerCase()));
-    return matchesCat && matchesSearch;
+    return matchesSearch;
   });
 
   const whatsAppNumberClean = (companyData?.whatsAppNumber || '+919876543210').replace(/[^0-9]/g, '');
@@ -985,18 +1062,9 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                   </nav>
 
                   <div className="flex items-center gap-2">
-                    <a
-                      href={whatsAppLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      <span>WhatsApp</span>
-                    </a>
                     <button
                       onClick={() => setRoleMode('admin')}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all"
+                      className="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-all"
                     >
                       Admin Panel →
                     </button>
@@ -1447,7 +1515,7 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                               </div>
 
                               <div className="flex items-center justify-between text-[11px] text-slate-500">
-                                <span className="font-semibold text-blue-600">{b.category?.categoryName || 'Material Science'}</span>
+                                <span className="font-medium text-slate-400">By {b.author || 'OM Polymer Lab'}</span>
                                 <span>{new Date(b.createdAt).toLocaleDateString()}</span>
                               </div>
 
@@ -1645,16 +1713,11 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                     </div>
                   )}
 
-                  {/* FLOATING WHATSAPP BUTTON */}
-                  <a
-                    href={whatsAppLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="fixed bottom-6 right-6 z-40 p-3.5 bg-emerald-500 hover:bg-emerald-400 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform"
-                    title="Chat with OM Polymer on WhatsApp"
-                  >
-                    <MessageCircle className="w-6 h-6" />
-                  </a>
+                  {/* FLOATING DRAGGABLE WHATSAPP BUTTON (Movable across screen) */}
+                  <DraggableWhatsApp
+                    whatsAppLink={whatsAppLink}
+                    whatsAppNumber={companyData?.whatsAppNumber}
+                  />
                 </div>
               </div>
             ) : (
@@ -1703,6 +1766,16 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                       >
                         <Package className="w-3.5 h-3.5" />
                         <span>Product Catalog ({products.length})</span>
+                      </button>
+
+                      <button
+                        onClick={() => setAdminTab('categories')}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                          adminTab === 'categories' ? 'bg-amber-600/20 text-amber-400 border border-amber-600/30' : 'text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        <Layers className="w-3.5 h-3.5" />
+                        <span>Product Categories ({categories.length})</span>
                       </button>
 
                       <button
@@ -1924,6 +1997,86 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                     </div>
                   )}
 
+                  {/* ADMIN TAB 2.5: PRODUCT CATEGORIES MANAGEMENT */}
+                  {adminTab === 'categories' && (
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <h2 className="text-lg font-bold">Dynamic Product Categories</h2>
+                          <p className="text-xs text-slate-400">Manage catalog categories, custom slugs, and active status dynamically</p>
+                        </div>
+
+                        <button 
+                          onClick={handleOpenAddCategory}
+                          className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm"
+                        >
+                          <Plus className="w-4 h-4" />
+                          <span>Add New Category</span>
+                        </button>
+                      </div>
+
+                      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto">
+                        <table className="w-full text-left text-xs">
+                          <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
+                            <tr>
+                              <th className="p-3">Category Name</th>
+                              <th className="p-3">Slug</th>
+                              <th className="p-3">Associated Products</th>
+                              <th className="p-3">Status</th>
+                              <th className="p-3 text-right">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-800">
+                            {(adminCategories.length > 0 ? adminCategories : categories).map(c => {
+                              const prodCount = c.productCount !== undefined 
+                                ? c.productCount 
+                                : products.filter(p => p.categoryId === c.categoryId).length;
+                              return (
+                                <tr key={c.categoryId} className="hover:bg-slate-800/40">
+                                  <td className="p-3">
+                                    <div className="font-semibold text-white">{c.categoryName}</div>
+                                    <div className="text-[10px] font-mono text-slate-400">ID #{c.categoryId}</div>
+                                  </td>
+                                  <td className="p-3 font-mono text-slate-400">/{c.slug}</td>
+                                  <td className="p-3">
+                                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                                      {prodCount} product{prodCount !== 1 ? 's' : ''}
+                                    </span>
+                                  </td>
+                                  <td className="p-3">
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                      c.isActive !== false ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-slate-800 text-slate-400'
+                                    }`}>
+                                      {c.isActive !== false ? 'Active' : 'Inactive'}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 text-right">
+                                    <div className="flex items-center justify-end gap-1.5">
+                                      <button 
+                                        onClick={() => handleOpenEditCategory(c)}
+                                        className="p-1.5 bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white rounded transition-colors" 
+                                        title="Edit Category Name & Slug"
+                                      >
+                                        <Edit className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button 
+                                        onClick={() => setCategoryToDelete({ ...c, productCount: prodCount })}
+                                        className="p-1.5 bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white rounded transition-colors" 
+                                        title="Delete Category"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
                   {/* ADMIN TAB 3: BLOGS CRUD */}
                   {adminTab === 'blogs' && (
                     <div className="space-y-4">
@@ -1947,7 +2100,6 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                           <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
                             <tr>
                               <th className="p-3">Article Title</th>
-                              <th className="p-3">Category</th>
                               <th className="p-3">Author</th>
                               <th className="p-3">Publication State</th>
                               <th className="p-3 text-right">Actions</th>
@@ -1960,7 +2112,6 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                                   <div className="font-semibold text-white">{b.title}</div>
                                   <div className="text-[10px] font-mono text-slate-400">/{b.slug}</div>
                                 </td>
-                                <td className="p-3 text-slate-400">{b.category?.categoryName || 'Material Science'}</td>
                                 <td className="p-3 text-slate-300">{b.author}</td>
                                 <td className="p-3">
                                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
@@ -2012,7 +2163,12 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                   {/* ADMIN TAB 4: INQUIRIES CRM */}
                   {adminTab === 'inquiries' && (
                     <div className="space-y-4">
-                      <h2 className="text-lg font-bold">Client Inquiries CRM & RFQ Desk</h2>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h2 className="text-lg font-bold">Client Inquiries CRM & RFQ Desk</h2>
+                          <p className="text-xs text-slate-400">Review technical requirements, open comprehensive detail cards, and respond to RFQs</p>
+                        </div>
+                      </div>
                       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto">
                         <table className="w-full text-left text-xs">
                           <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
@@ -2043,6 +2199,14 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                                 </td>
                                 <td className="p-3 text-right">
                                   <div className="flex items-center justify-end gap-1.5">
+                                    <button 
+                                      onClick={() => setViewingLead(lead)} 
+                                      className="px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold flex items-center gap-1 shadow-sm transition-colors"
+                                      title="View complete inquiry details"
+                                    >
+                                      <Eye className="w-3.5 h-3.5" />
+                                      <span>View</span>
+                                    </button>
                                     <a
                                       href={`https://wa.me/${(lead.phoneNumber || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${lead.fullName}, regarding your technical inquiry for ${lead.productOfInterest || 'OM Polymer products'}...`)}`}
                                       target="_blank"
@@ -2464,8 +2628,6 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
 
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 text-xs text-slate-400">
-                    <span className="font-bold text-blue-400">{selectedBlogDetail.category?.categoryName || 'Material Science'}</span>
-                    <span>•</span>
                     <span>By {selectedBlogDetail.author}</span>
                     <span>•</span>
                     <span>{new Date(selectedBlogDetail.createdAt).toLocaleDateString()}</span>
@@ -2636,28 +2798,14 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-slate-400 font-semibold mb-1">Category</label>
-                      <select 
-                        value={blogForm.blogCategoryId}
-                        onChange={e => setBlogForm({ ...blogForm, blogCategoryId: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white"
-                      >
-                        {blogCategories.map(c => (
-                          <option key={c.blogCategoryId} value={c.blogCategoryId}>{c.categoryName}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-slate-400 font-semibold mb-1">Author Name</label>
-                      <input 
-                        type="text" 
-                        value={blogForm.author}
-                        onChange={e => setBlogForm({ ...blogForm, author: e.target.value })}
-                        className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Author Name</label>
+                    <input 
+                      type="text" 
+                      value={blogForm.author}
+                      onChange={e => setBlogForm({ ...blogForm, author: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white"
+                    />
                   </div>
 
                   <ImageUploadDropzone
@@ -2779,6 +2927,272 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                 <div className="flex justify-end gap-2 pt-2">
                   <button onClick={() => setActiveLead(null)} className="px-3 py-1.5 text-xs text-slate-400">Cancel</button>
                   <button onClick={handleSaveLeadStatus} className="px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg">Save Status</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 8. CATEGORY ADD / EDIT MODAL */}
+          {showCategoryModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <h3 className="text-base font-bold text-white">
+                    {editingCategory ? 'Edit Product Category' : 'Create Product Category'}
+                  </h3>
+                  <button onClick={() => setShowCategoryModal(false)} className="text-slate-400 hover:text-white">✕</button>
+                </div>
+
+                {categoryFormError && (
+                  <div className="p-3 bg-rose-950/60 border border-rose-800 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{categoryFormError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSaveCategory} className="space-y-4 text-xs">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Category Name *</label>
+                    <input 
+                      type="text"
+                      required
+                      value={categoryForm.categoryName}
+                      onChange={e => {
+                        const name = e.target.value;
+                        setCategoryForm({
+                          ...categoryForm,
+                          categoryName: name,
+                          slug: editingCategory ? categoryForm.slug : name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                        });
+                      }}
+                      placeholder="e.g. Specialty PVC Compounds"
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">URL Slug</label>
+                    <input 
+                      type="text"
+                      value={categoryForm.slug}
+                      onChange={e => setCategoryForm({ ...categoryForm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') })}
+                      placeholder="e.g. specialty-pvc-compounds"
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input 
+                      type="checkbox"
+                      id="catActive"
+                      checked={categoryForm.isActive}
+                      onChange={e => setCategoryForm({ ...categoryForm, isActive: e.target.checked })}
+                      className="w-4 h-4 rounded text-blue-600 bg-slate-950 border-slate-700"
+                    />
+                    <label htmlFor="catActive" className="text-slate-300 font-medium cursor-pointer">
+                      Active in catalog and public listings
+                    </label>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                    <button 
+                      type="button" 
+                      onClick={() => setShowCategoryModal(false)}
+                      className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={isSavingCategory}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold flex items-center gap-1.5 disabled:opacity-50"
+                    >
+                      {isSavingCategory ? 'Saving...' : editingCategory ? 'Update Category' : 'Create Category'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* 9. CATEGORY DELETE CONFIRMATION MODAL */}
+          {categoryToDelete && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+                <div className="flex items-center gap-2 text-rose-400">
+                  <AlertCircle className="w-5 h-5 shrink-0" />
+                  <h3 className="text-base font-bold text-white">Delete Product Category</h3>
+                </div>
+
+                {categoryToDelete.productCount > 0 ? (
+                  <div className="space-y-3">
+                    <div className="p-3 bg-amber-950/60 border border-amber-800 rounded-xl text-xs text-amber-200">
+                      <p className="font-semibold mb-1">Cannot Delete Category</p>
+                      <p>
+                        Category <strong>"{categoryToDelete.categoryName}"</strong> currently has <strong>{categoryToDelete.productCount}</strong> associated product(s). To protect catalog integrity and avoid broken products, please reassign or delete these products before deleting this category.
+                      </p>
+                    </div>
+                    <div className="flex justify-end pt-2">
+                      <button 
+                        onClick={() => setCategoryToDelete(null)}
+                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold"
+                      >
+                        Understood
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-xs text-slate-300">
+                      Are you sure you want to permanently delete category <strong>"{categoryToDelete.categoryName}"</strong>? This action cannot be undone.
+                    </p>
+                    <div className="flex justify-end gap-2 pt-2">
+                      <button 
+                        onClick={() => setCategoryToDelete(null)}
+                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteCategory(categoryToDelete)}
+                        className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold"
+                      >
+                        Confirm Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 10. INQUIRY CRM VIEW DETAILS MODAL */}
+          {viewingLead && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+                {/* Modal Header */}
+                <div className="flex items-start justify-between border-b border-slate-800 pb-3">
+                  <div>
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="text-lg font-bold text-white tracking-tight">{viewingLead.fullName}</h3>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        viewingLead.status === 'Completed' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
+                        viewingLead.status === 'New' ? 'bg-blue-950 text-blue-400 border border-blue-800' :
+                        viewingLead.status === 'Rejected' ? 'bg-rose-950 text-rose-400 border border-rose-800' :
+                        'bg-amber-950 text-amber-400 border border-amber-800'
+                      }`}>
+                        {viewingLead.status}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {viewingLead.companyName ? `${viewingLead.companyName} · ` : ''}Submitted on {new Date(viewingLead.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => setViewingLead(null)} 
+                    className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+                    title="Close details"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Grid of details */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  {/* Contact Info Card */}
+                  <div className="p-3.5 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Contact & Customer Information</div>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                        <a href={`mailto:${viewingLead.email}`} className="text-blue-400 hover:underline">{viewingLead.email}</a>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span className="font-mono text-slate-200">{viewingLead.phoneNumber}</span>
+                      </div>
+                      {(viewingLead.city || viewingLead.state) && (
+                        <div className="flex items-center gap-2 text-slate-300">
+                          <MapPin className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                          <span>{[viewingLead.city, viewingLead.state].filter(Boolean).join(', ')}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <Building2 className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                        <span>{viewingLead.companyName || 'Independent Inquirer'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Product & Scope Card */}
+                  <div className="p-3.5 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Technical Requirement Scope</div>
+                    <div className="space-y-1.5">
+                      <div>
+                        <span className="text-slate-500">Product of Interest:</span>
+                        <div className="font-semibold text-white mt-0.5">{viewingLead.productOfInterest || 'General Inquiry'}</div>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">Estimated Quantity:</span>
+                        <div className="font-medium text-amber-400 mt-0.5">{viewingLead.quantity || 'Not specified'}</div>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">Inquiry ID:</span>
+                        <div className="font-mono text-slate-400 mt-0.5">#{viewingLead.requirementId}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Full Requirement Message Description */}
+                <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Complete Inquiry Message & Notes</div>
+                  <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-wrap">
+                    {viewingLead.requirementDescription}
+                  </p>
+                </div>
+
+                {/* Internal Admin Remarks */}
+                {viewingLead.adminRemarks && (
+                  <div className="p-3.5 bg-blue-950/30 border border-blue-900/50 rounded-xl space-y-1">
+                    <div className="text-[11px] font-bold text-blue-400 uppercase tracking-wider">Internal Admin Remarks</div>
+                    <p className="text-xs text-blue-200 leading-relaxed">
+                      {viewingLead.adminRemarks}
+                    </p>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800">
+                  <a
+                    href={`https://wa.me/${(viewingLead.phoneNumber || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${viewingLead.fullName}, regarding your technical inquiry for ${viewingLead.productOfInterest || 'OM Polymer products'}...`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Reply on WhatsApp</span>
+                  </a>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setActiveLead(viewingLead);
+                        setLeadStatus(viewingLead.status);
+                        setLeadRemarks(viewingLead.adminRemarks || '');
+                        setViewingLead(null);
+                      }}
+                      className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition-colors"
+                    >
+                      Update Status
+                    </button>
+                    <button
+                      onClick={() => setViewingLead(null)}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold transition-colors"
+                    >
+                      Back to Inquiries List
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -250,13 +250,142 @@ apiRouter.get('/products/featured', (req: Request, res: Response) => {
   return ok(res, featured);
 });
 
-// GET /api/products/categories
+// GET /api/products/categories (Public)
 apiRouter.get('/products/categories', (req: Request, res: Response) => {
   const cats = db.productCategories
     .filter(c => c.isActive)
-    .map(c => ({ categoryId: c.categoryId, categoryName: c.categoryName, slug: c.slug }));
+    .map(c => ({
+      categoryId: c.categoryId,
+      categoryName: c.categoryName,
+      slug: c.slug,
+      isActive: c.isActive,
+      productCount: db.products.filter(p => p.categoryId === c.categoryId && p.isActive).length
+    }));
 
   return ok(res, cats);
+});
+
+// ADMIN: GET /api/admin/categories (All categories with product counts)
+apiRouter.get('/admin/categories', requireAdminAuth, (req: Request, res: Response) => {
+  const cats = db.productCategories.map(c => ({
+    categoryId: c.categoryId,
+    categoryName: c.categoryName,
+    slug: c.slug,
+    isActive: c.isActive,
+    productCount: db.products.filter(p => p.categoryId === c.categoryId).length
+  }));
+
+  return ok(res, cats);
+});
+
+// ADMIN: POST /api/admin/categories
+apiRouter.post('/admin/categories', requireAdminAuth, (req: Request, res: Response) => {
+  const { categoryName, slug, isActive } = req.body;
+  if (!categoryName || typeof categoryName !== 'string' || categoryName.trim().length === 0) {
+    return badRequest(res, 'Validation failed', ['CategoryName is required.']);
+  }
+
+  const cleanName = categoryName.trim();
+  const cleanSlug = (slug && typeof slug === 'string' && slug.trim().length > 0)
+    ? slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    : cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  if (db.productCategories.some(c => c.categoryName.toLowerCase() === cleanName.toLowerCase())) {
+    return conflict(res, `A category with the name '${cleanName}' already exists.`);
+  }
+
+  if (db.productCategories.some(c => c.slug.toLowerCase() === cleanSlug.toLowerCase())) {
+    return conflict(res, `A category with the slug '${cleanSlug}' already exists.`);
+  }
+
+  const newId = db.productCategories.length > 0
+    ? Math.max(...db.productCategories.map(c => c.categoryId)) + 1
+    : 1;
+
+  const newCategory = {
+    categoryId: newId,
+    categoryName: cleanName,
+    slug: cleanSlug,
+    isActive: isActive !== undefined ? Boolean(isActive) : true
+  };
+
+  db.productCategories.push(newCategory);
+  logMessage('INF', 'OMPolymer.API.Categories', `Admin created product category: ${newCategory.categoryName} (ID: ${newId})`);
+
+  return created(res, {
+    ...newCategory,
+    productCount: 0
+  }, 'Category created successfully.');
+});
+
+// ADMIN: PUT /api/admin/categories/:id
+apiRouter.put('/admin/categories/:id', requireAdminAuth, (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const cat = db.productCategories.find(c => c.categoryId === id);
+  if (!cat) return notFound(res, `Category with ID '${id}' not found.`);
+
+  const { categoryName, slug, isActive } = req.body;
+  if (!categoryName || typeof categoryName !== 'string' || categoryName.trim().length === 0) {
+    return badRequest(res, 'Validation failed', ['CategoryName is required.']);
+  }
+
+  const cleanName = categoryName.trim();
+  const cleanSlug = (slug && typeof slug === 'string' && slug.trim().length > 0)
+    ? slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    : cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  if (db.productCategories.some(c => c.categoryId !== id && c.categoryName.toLowerCase() === cleanName.toLowerCase())) {
+    return conflict(res, `Another category with the name '${cleanName}' already exists.`);
+  }
+
+  if (db.productCategories.some(c => c.categoryId !== id && c.slug.toLowerCase() === cleanSlug.toLowerCase())) {
+    return conflict(res, `Another category with the slug '${cleanSlug}' already exists.`);
+  }
+
+  cat.categoryName = cleanName;
+  cat.slug = cleanSlug;
+  if (isActive !== undefined) {
+    cat.isActive = Boolean(isActive);
+  }
+
+  const productCount = db.products.filter(p => p.categoryId === id).length;
+  logMessage('INF', 'OMPolymer.API.Categories', `Admin updated product category: ${cat.categoryName} (ID: ${id})`);
+
+  return ok(res, {
+    ...cat,
+    productCount
+  }, 'Category updated successfully.');
+});
+
+// ADMIN: DELETE /api/admin/categories/:id
+apiRouter.delete('/admin/categories/:id', requireAdminAuth, (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  const index = db.productCategories.findIndex(c => c.categoryId === id);
+  if (index === -1) return notFound(res, `Category with ID '${id}' not found.`);
+
+  const cat = db.productCategories[index];
+  const associatedProducts = db.products.filter(p => p.categoryId === id);
+  const reassignToId = req.query.reassignToId ? parseInt(req.query.reassignToId as string) : undefined;
+
+  if (associatedProducts.length > 0) {
+    if (reassignToId && reassignToId !== id) {
+      const targetCat = db.productCategories.find(c => c.categoryId === reassignToId);
+      if (!targetCat) {
+        return badRequest(res, `Target category ID '${reassignToId}' for reassignment does not exist.`);
+      }
+      associatedProducts.forEach(p => { p.categoryId = reassignToId; });
+      logMessage('INF', 'OMPolymer.API.Categories', `Reassigned ${associatedProducts.length} product(s) from category ID ${id} to ${reassignToId}`);
+    } else {
+      return badRequest(res, `Cannot delete category "${cat.categoryName}" because ${associatedProducts.length} product(s) are currently associated with it. Please reassign or delete these products first.`, [
+        `Category has ${associatedProducts.length} linked product(s): ${associatedProducts.slice(0, 3).map(p => p.productName).join(', ')}${associatedProducts.length > 3 ? '...' : ''}`
+      ]);
+    }
+  }
+
+  db.productCategories.splice(index, 1);
+  logMessage('INF', 'OMPolymer.API.Categories', `Admin deleted product category: ${cat.categoryName} (ID: ${id})`);
+
+  return ok(res, true, `Category "${cat.categoryName}" deleted successfully.`);
 });
 
 // GET /api/products/slug/:slug
@@ -442,7 +571,6 @@ apiRouter.delete('/admin/products/:id', requireAdminAuth, (req: Request, res: Re
 // -------------------------------------------------------------
 
 function mapBlogResponse(b: typeof db.blogPosts[0]) {
-  const cat = db.blogCategories.find(c => c.blogCategoryId === b.blogCategoryId);
   return {
     blogId: b.blogId,
     title: b.title,
@@ -455,8 +583,7 @@ function mapBlogResponse(b: typeof db.blogPosts[0]) {
     metaDescription: b.metaDescription,
     isPublished: b.isPublished,
     publishedAt: b.publishedAt,
-    createdAt: b.createdAt,
-    category: cat ? { blogCategoryId: cat.blogCategoryId, categoryName: cat.categoryName, slug: cat.slug } : null
+    createdAt: b.createdAt
   };
 }
 
@@ -464,14 +591,9 @@ function mapBlogResponse(b: typeof db.blogPosts[0]) {
 apiRouter.get('/blogs', (req: Request, res: Response) => {
   const page = Math.max(1, parseInt(req.query.page as string) || 1);
   const pageSize = Math.max(1, Math.min(100, parseInt(req.query.pageSize as string) || 10));
-  const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
   const search = (req.query.search as string || '').toLowerCase().trim();
 
   let filtered = db.blogPosts.filter(b => b.isPublished);
-
-  if (categoryId) {
-    filtered = filtered.filter(b => b.blogCategoryId === categoryId);
-  }
 
   if (search) {
     filtered = filtered.filter(b =>
@@ -518,7 +640,6 @@ apiRouter.get('/blogs/:slug', (req: Request, res: Response) => {
 apiRouter.get('/admin/blogs', requireAdminAuth, (req: Request, res: Response) => {
   const page = Math.max(1, parseInt(req.query.page as string) || 1);
   const pageSize = Math.max(1, Math.min(100, parseInt(req.query.pageSize as string) || 20));
-  const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
   const status = req.query.status as string | undefined; // 'published', 'draft', 'all'
   const search = (req.query.search as string || '').toLowerCase().trim();
 
@@ -528,10 +649,6 @@ apiRouter.get('/admin/blogs', requireAdminAuth, (req: Request, res: Response) =>
     filtered = filtered.filter(b => b.isPublished);
   } else if (status === 'draft') {
     filtered = filtered.filter(b => !b.isPublished);
-  }
-
-  if (categoryId) {
-    filtered = filtered.filter(b => b.blogCategoryId === categoryId);
   }
 
   if (search) {
@@ -579,7 +696,7 @@ apiRouter.post('/admin/blogs', requireAdminAuth, (req: Request, res: Response) =
 
   const newBlog: typeof db.blogPosts[0] = {
     blogId: newId,
-    blogCategoryId: body.blogCategoryId ? parseInt(body.blogCategoryId) : null,
+    blogCategoryId: null,
     title: body.title,
     slug: body.slug,
     shortDescription: body.shortDescription || '',
@@ -615,7 +732,7 @@ apiRouter.put('/admin/blogs/:id', requireAdminAuth, (req: Request, res: Response
 
   blog.title = body.title;
   blog.slug = body.slug;
-  if (body.blogCategoryId !== undefined) blog.blogCategoryId = body.blogCategoryId ? parseInt(body.blogCategoryId) : null;
+  blog.blogCategoryId = null;
   if (body.shortDescription !== undefined) blog.shortDescription = body.shortDescription;
   blog.content = body.content;
   if (body.featuredImageUrl !== undefined) blog.featuredImageUrl = body.featuredImageUrl;

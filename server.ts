@@ -12,7 +12,15 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = parseInt(process.env.PORT || '3000', 10);
+  // Ensure server binds to port 3000 (avoiding port 8080 which is reserved for the Nginx proxy)
+  const portArgIndex = process.argv.indexOf('--port');
+  const cliPort = portArgIndex !== -1 && process.argv[portArgIndex + 1] ? parseInt(process.argv[portArgIndex + 1], 10) : undefined;
+  const envPort = process.env.PORT && process.env.PORT !== '8080' ? parseInt(process.env.PORT, 10) : undefined;
+  const PORT = cliPort || envPort || 3000;
+
+  const hostArgIndex = process.argv.indexOf('--host');
+  const cliHost = hostArgIndex !== -1 && process.argv[hostArgIndex + 1] ? process.argv[hostArgIndex + 1] : undefined;
+  const HOST = cliHost || '0.0.0.0';
 
   // Body parser with 25mb limit for image uploads
   app.use(express.json({ limit: '25mb' }));
@@ -100,8 +108,8 @@ async function startServer() {
     app.use(vite.middlewares);
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`OM Polymer API Server running on http://0.0.0.0:${PORT}`);
+  app.listen(PORT, HOST, () => {
+    console.log(`OM Polymer API Server running on http://${HOST}:${PORT}`);
   });
 }
 
