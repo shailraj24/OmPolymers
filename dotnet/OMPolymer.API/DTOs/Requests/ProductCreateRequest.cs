@@ -7,8 +7,8 @@ namespace OMPolymer.API.DTOs.Requests
         [Required, StringLength(200)]
         public string ProductName { get; set; } = string.Empty;
 
-        [Required, StringLength(250)]
-        public string Slug { get; set; } = string.Empty;
+        [StringLength(250)]
+        public string? Slug { get; set; }
 
         [Required]
         public int CategoryId { get; set; }

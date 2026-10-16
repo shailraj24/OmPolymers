@@ -15,8 +15,8 @@ namespace OMPolymer.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPublished([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] int? categoryId = null, [FromQuery] string? search = null)
-            => Ok(await _blogService.GetPublishedBlogsAsync(page, pageSize, categoryId, search));
+        public async Task<IActionResult> GetPublished([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
+            => Ok(await _blogService.GetPublishedBlogsAsync(page, pageSize, search));
 
         [HttpGet("{slug}")]
         public async Task<IActionResult> GetBySlug(string slug)
@@ -25,8 +25,5 @@ namespace OMPolymer.API.Controllers
             if (!result.Success) return NotFound(result);
             return Ok(result);
         }
-
-        [HttpGet("categories")]
-        public async Task<IActionResult> GetCategories() => Ok(await _blogService.GetBlogCategoriesAsync());
     }
 }

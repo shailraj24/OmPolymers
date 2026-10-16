@@ -6,11 +6,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { CompanyService } from '../../core/services/company.service';
 import { APP_CONSTANTS } from '../../core/constants/app.constant';
 import { FileUrlPipe } from '../../shared/pipes/file-url.pipe';
+import { DraggableWhatsAppComponent } from '../../shared/components/draggable-whatsapp/draggable-whatsapp.component';
 
 @Component({
   selector: 'app-user-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterModule, CommonModule, FileUrlPipe],
+  imports: [RouterOutlet, RouterModule, CommonModule, FileUrlPipe, DraggableWhatsAppComponent],
   template: `
     <div class="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#0b132b] dark:text-slate-100 flex flex-col transition-colors duration-300">
       
@@ -291,6 +292,9 @@ import { FileUrlPipe } from '../../shared/pipes/file-url.pipe';
         </div>
       </footer>
 
+      <!-- Draggable Floating WhatsApp Action -->
+      <app-draggable-whatsapp [whatsAppLink]="whatsAppLink"></app-draggable-whatsapp>
+
     </div>
   `
 })
@@ -339,8 +343,12 @@ export class UserLayoutComponent implements OnInit {
     this.logoFailed = true;
   }
 
-  openWhatsApp(): void {
+  get whatsAppLink(): string {
     const text = encodeURIComponent('Hello OM Polymer Team, I would like to inquire regarding pipe specifications and commercial supply terms.');
-    window.location.href = `https://wa.me/${this.whatsappNumber}?text=${text}`;
+    return `https://wa.me/${this.whatsappNumber}?text=${text}`;
+  }
+
+  openWhatsApp(): void {
+    window.location.href = this.whatsAppLink;
   }
 }

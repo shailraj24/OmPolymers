@@ -18,9 +18,21 @@ export const DraggableWhatsApp: React.FC<DraggableWhatsAppProps> = ({ whatsAppLi
     moved: boolean;
   } | null>(null);
 
-  // Initialize position to bottom-right on mount and handle window resize safely
+  // Initialize position from localStorage or default to bottom-right, handle window resize safely
   useEffect(() => {
     const updateDefaultPos = () => {
+      const saved = localStorage.getItem('om_whatsapp_pos');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
+            const boundedX = Math.max(16, Math.min(window.innerWidth - 68, parsed.x));
+            const boundedY = Math.max(16, Math.min(window.innerHeight - 68, parsed.y));
+            setPos({ x: boundedX, y: boundedY });
+            return;
+          }
+        } catch {}
+      }
       const defaultX = Math.max(16, window.innerWidth - 84);
       const defaultY = Math.max(16, window.innerHeight - 88);
       setPos(prev => {
@@ -78,6 +90,13 @@ export const DraggableWhatsApp: React.FC<DraggableWhatsAppProps> = ({ whatsAppLi
     } catch {}
     dragInfo.current = null;
     setIsDragging(false);
+
+    // Persist position if dragged
+    if (moved && pos) {
+      try {
+        localStorage.setItem('om_whatsapp_pos', JSON.stringify(pos));
+      } catch {}
+    }
 
     // If pointer was not dragged beyond threshold, execute WhatsApp launch
     if (!moved) {

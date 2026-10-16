@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OMPolymer.API.Common;
 using OMPolymer.API.Data;
 using OMPolymer.API.Data.Models;
 using OMPolymer.API.DTOs.Requests;
@@ -96,17 +97,25 @@ namespace OMPolymer.API.Services.Implementations
 
         public async Task<ApiResponse<ProductResponse>> CreateProductAsync(ProductCreateRequest request)
         {
-            if (await _context.Products.AnyAsync(p => p.Slug.ToLower() == request.Slug.ToLower()))
-                return ApiResponse<ProductResponse>.FailureResponse("A product with this slug already exists.");
+            var baseSlug = string.IsNullOrWhiteSpace(request.Slug) 
+                ? SlugHelper.GenerateSlug(request.ProductName) 
+                : SlugHelper.GenerateSlug(request.Slug);
+
+            var targetSlug = baseSlug;
+            int counter = 1;
+            while (await _context.Products.AnyAsync(p => p.Slug.ToLower() == targetSlug.ToLower()))
+            {
+                targetSlug = $"{baseSlug}-{counter++}";
+            }
 
             var product = new Product
             {
-                ProductName = request.ProductName,
-                Slug = request.Slug,
+                ProductName = request.ProductName.Trim(),
+                Slug = targetSlug,
                 CategoryId = request.CategoryId,
-                ShortDescription = request.ShortDescription,
+                ShortDescription = request.ShortDescription?.Trim(),
                 FullDescription = request.FullDescription,
-                Specifications = request.Specifications,
+                Specifications = request.Specifications?.Trim(),
                 MainImageUrl = request.MainImageUrl,
                 IsFeatured = request.IsFeatured,
                 IsActive = true,
@@ -131,7 +140,11 @@ namespace OMPolymer.API.Services.Implementations
             var product = await _context.Products.Include(p => p.ProductImages).FirstOrDefaultAsync(p => p.ProductId == id);
             if (product == null) return ApiResponse<bool>.FailureResponse("Product not found.");
 
-            if (await _context.Products.AnyAsync(p => p.Slug.ToLower() == request.Slug.ToLower() && p.ProductId != id))
+            var targetSlug = string.IsNullOrWhiteSpace(request.Slug)
+                ? product.Slug
+                : SlugHelper.GenerateSlug(request.Slug);
+
+            if (await _context.Products.AnyAsync(p => p.Slug.ToLower() == targetSlug.ToLower() && p.ProductId != id))
                 return ApiResponse<bool>.FailureResponse("Slug already in use by another product.");
 
             // If main image changed, delete old image from disk
@@ -140,12 +153,12 @@ namespace OMPolymer.API.Services.Implementations
                 await _fileStorage.DeleteImageAsync(product.MainImageUrl);
             }
 
-            product.ProductName = request.ProductName;
-            product.Slug = request.Slug;
+            product.ProductName = request.ProductName.Trim();
+            product.Slug = targetSlug;
             product.CategoryId = request.CategoryId;
-            product.ShortDescription = request.ShortDescription;
+            product.ShortDescription = request.ShortDescription?.Trim();
             product.FullDescription = request.FullDescription;
-            product.Specifications = request.Specifications;
+            product.Specifications = request.Specifications?.Trim();
             product.MainImageUrl = request.MainImageUrl;
             product.IsFeatured = request.IsFeatured;
             product.UpdatedAt = DateTime.UtcNow;

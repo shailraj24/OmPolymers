@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OMPolymer.API.Common;
 using OMPolymer.API.Data;
 using OMPolymer.API.Data.Models;
 using OMPolymer.API.DTOs.Requests;
@@ -18,14 +19,12 @@ namespace OMPolymer.API.Services.Implementations
             _fileStorage = fileStorage;
         }
 
-        public async Task<ApiResponse<PaginatedResponse<BlogResponse>>> GetPublishedBlogsAsync(int page, int pageSize, int? categoryId, string? search)
+        public async Task<ApiResponse<PaginatedResponse<BlogResponse>>> GetPublishedBlogsAsync(int page, int pageSize, string? search)
         {
             var query = _context.BlogPosts
-                .Include(b => b.BlogCategory)
                 .Where(b => b.IsPublished)
                 .AsNoTracking();
 
-            if (categoryId.HasValue) query = query.Where(b => b.BlogCategoryId == categoryId.Value);
             if (!string.IsNullOrWhiteSpace(search)) query = query.Where(b => b.Title.Contains(search.Trim()));
 
             var totalCount = await query.CountAsync();
@@ -40,13 +39,11 @@ namespace OMPolymer.API.Services.Implementations
                 new PaginatedResponse<BlogResponse>(items, totalCount, page, pageSize));
         }
 
-        public async Task<ApiResponse<PaginatedResponse<BlogResponse>>> GetAllBlogsAsync(int page, int pageSize, int? categoryId, string? search)
+        public async Task<ApiResponse<PaginatedResponse<BlogResponse>>> GetAllBlogsAsync(int page, int pageSize, string? search)
         {
             var query = _context.BlogPosts
-                .Include(b => b.BlogCategory)
                 .AsNoTracking();
 
-            if (categoryId.HasValue) query = query.Where(b => b.BlogCategoryId == categoryId.Value);
             if (!string.IsNullOrWhiteSpace(search)) query = query.Where(b => b.Title.Contains(search.Trim()));
 
             var totalCount = await query.CountAsync();
@@ -64,7 +61,6 @@ namespace OMPolymer.API.Services.Implementations
         public async Task<ApiResponse<BlogResponse>> GetBlogBySlugAsync(string slug)
         {
             var b = await _context.BlogPosts
-                .Include(x => x.BlogCategory)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Slug == slug && x.IsPublished);
 
@@ -72,32 +68,30 @@ namespace OMPolymer.API.Services.Implementations
             return ApiResponse<BlogResponse>.SuccessResponse(MapToResponse(b));
         }
 
-        public async Task<ApiResponse<IEnumerable<BlogCategoryResponse>>> GetBlogCategoriesAsync()
-        {
-            var items = await _context.BlogCategories
-                .AsNoTracking()
-                .Select(c => new BlogCategoryResponse { BlogCategoryId = c.BlogCategoryId, CategoryName = c.CategoryName, Slug = c.Slug })
-                .ToListAsync();
-
-            return ApiResponse<IEnumerable<BlogCategoryResponse>>.SuccessResponse(items);
-        }
-
         public async Task<ApiResponse<BlogResponse>> CreateBlogAsync(BlogCreateRequest request)
         {
-            if (await _context.BlogPosts.AnyAsync(b => b.Slug.ToLower() == request.Slug.ToLower()))
-                return ApiResponse<BlogResponse>.FailureResponse("Slug already exists.");
+            var targetSlug = string.IsNullOrWhiteSpace(request.Slug) 
+                ? SlugHelper.GenerateSlug(request.Title) 
+                : SlugHelper.GenerateSlug(request.Slug);
+
+            // Ensure unique slug with collision suffix if needed
+            var originalSlug = targetSlug;
+            int counter = 1;
+            while (await _context.BlogPosts.AnyAsync(b => b.Slug.ToLower() == targetSlug.ToLower()))
+            {
+                targetSlug = $"{originalSlug}-{counter++}";
+            }
 
             var post = new BlogPost
             {
-                Title = request.Title,
-                Slug = request.Slug,
-                BlogCategoryId = request.BlogCategoryId,
-                ShortDescription = request.ShortDescription,
+                Title = request.Title.Trim(),
+                Slug = targetSlug,
+                ShortDescription = request.ShortDescription?.Trim(),
                 Content = request.Content,
                 FeaturedImageUrl = request.FeaturedImageUrl,
-                Author = request.Author,
-                MetaTitle = request.MetaTitle,
-                MetaDescription = request.MetaDescription,
+                Author = request.Author?.Trim(),
+                MetaTitle = request.MetaTitle?.Trim(),
+                MetaDescription = request.MetaDescription?.Trim(),
                 IsPublished = request.IsPublished,
                 PublishedAt = request.IsPublished ? DateTime.UtcNow : null,
                 CreatedAt = DateTime.UtcNow,
@@ -114,7 +108,11 @@ namespace OMPolymer.API.Services.Implementations
             var post = await _context.BlogPosts.FindAsync(id);
             if (post == null) return ApiResponse<bool>.FailureResponse("Blog not found.");
 
-            if (await _context.BlogPosts.AnyAsync(b => b.Slug.ToLower() == request.Slug.ToLower() && b.BlogId != id))
+            var targetSlug = string.IsNullOrWhiteSpace(request.Slug) 
+                ? post.Slug 
+                : SlugHelper.GenerateSlug(request.Slug);
+
+            if (await _context.BlogPosts.AnyAsync(b => b.Slug.ToLower() == targetSlug.ToLower() && b.BlogId != id))
                 return ApiResponse<bool>.FailureResponse("Slug already in use by another article.");
 
             if (!string.IsNullOrWhiteSpace(post.FeaturedImageUrl) && post.FeaturedImageUrl != request.FeaturedImageUrl)
@@ -122,15 +120,14 @@ namespace OMPolymer.API.Services.Implementations
                 await _fileStorage.DeleteImageAsync(post.FeaturedImageUrl);
             }
 
-            post.Title = request.Title;
-            post.Slug = request.Slug;
-            post.BlogCategoryId = request.BlogCategoryId;
-            post.ShortDescription = request.ShortDescription;
+            post.Title = request.Title.Trim();
+            post.Slug = targetSlug;
+            post.ShortDescription = request.ShortDescription?.Trim();
             post.Content = request.Content;
             post.FeaturedImageUrl = request.FeaturedImageUrl;
-            post.Author = request.Author;
-            post.MetaTitle = request.MetaTitle;
-            post.MetaDescription = request.MetaDescription;
+            post.Author = request.Author?.Trim();
+            post.MetaTitle = request.MetaTitle?.Trim();
+            post.MetaDescription = request.MetaDescription?.Trim();
 
             if (!post.IsPublished && request.IsPublished) post.PublishedAt = DateTime.UtcNow;
             post.IsPublished = request.IsPublished;
@@ -179,8 +176,7 @@ namespace OMPolymer.API.Services.Implementations
             MetaDescription = b.MetaDescription,
             IsPublished = b.IsPublished,
             PublishedAt = b.PublishedAt,
-            CreatedAt = b.CreatedAt ?? DateTime.UtcNow,
-            Category = b.BlogCategory != null ? new BlogCategoryResponse { BlogCategoryId = b.BlogCategory.BlogCategoryId, CategoryName = b.BlogCategory.CategoryName, Slug = b.BlogCategory.Slug } : null
+            CreatedAt = b.CreatedAt ?? DateTime.UtcNow
         };
     }
 }

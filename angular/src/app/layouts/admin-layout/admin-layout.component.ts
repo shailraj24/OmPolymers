@@ -59,6 +59,9 @@ import { FileUrlPipe } from '../../shared/pipes/file-url.pipe';
             <a routerLink="/admin/products" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
               <span>📦</span> Product Catalog
             </a>
+            <a routerLink="/admin/categories" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
+              <span>🏷️</span> Product Categories
+            </a>
             <a routerLink="/admin/blogs" routerLinkActive="bg-blue-600 text-white font-semibold" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-300 hover:bg-slate-800 transition-colors">
               <span>📝</span> Articles & Blogs
             </a>

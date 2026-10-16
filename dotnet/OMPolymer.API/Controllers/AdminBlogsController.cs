@@ -18,8 +18,8 @@ namespace OMPolymer.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] int? categoryId = null, [FromQuery] string? search = null)
-            => Ok(await _blogService.GetAllBlogsAsync(page, pageSize, categoryId, search));
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] string? search = null)
+            => Ok(await _blogService.GetAllBlogsAsync(page, pageSize, search));
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] BlogCreateRequest request)

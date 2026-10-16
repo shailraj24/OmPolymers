@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../core/services/blog.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { UploadService } from '../../../core/services/upload.service';
-import { BlogPost, BlogCategory, CreateBlogRequest } from '../../../core/models/blog.model';
+import { BlogPost, CreateBlogRequest } from '../../../core/models/blog.model';
 import { FileUploadComponent } from '../../../shared/components/file-upload/file-upload.component';
 
 @Component({
@@ -48,8 +48,7 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
         <table class="w-full text-left text-xs">
           <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider text-[10px]">
             <tr>
-              <th class="p-3.5">Title & Slug</th>
-              <th class="p-3.5">Category</th>
+              <th class="p-3.5">Title & Path</th>
               <th class="p-3.5">Author</th>
               <th class="p-3.5">Status</th>
               <th class="p-3.5">Published Date</th>
@@ -61,11 +60,6 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
               <td class="p-3.5">
                 <div class="font-semibold text-white max-w-sm truncate">{{ b.title }}</div>
                 <div class="text-[11px] font-mono text-slate-500 truncate max-w-xs">/blogs/{{ b.slug }}</div>
-              </td>
-              <td class="p-3.5">
-                <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">
-                  {{ b.category?.categoryName || 'Technical' }}
-                </span>
               </td>
               <td class="p-3.5 text-slate-400">{{ b.author || 'OM Polymer Lab' }}</td>
               <td class="p-3.5">
@@ -94,7 +88,7 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
               </td>
             </tr>
             <tr *ngIf="blogs().length === 0">
-              <td colspan="6" class="p-8 text-center text-slate-500">
+              <td colspan="5" class="p-8 text-center text-slate-500">
                 No blog articles found.
               </td>
             </tr>
@@ -119,39 +113,11 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
                 type="text" 
                 [(ngModel)]="formData.title" 
                 name="title" 
-                (ngModelChange)="onTitleChange($event)"
                 required 
                 placeholder="e.g. Advances in PE100-RC Resins for Trenchless Installations"
                 class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-slate-300 font-semibold mb-1">URL Slug *</label>
-                <input 
-                  type="text" 
-                  [(ngModel)]="formData.slug" 
-                  name="slug" 
-                  required 
-                  placeholder="e.g. advances-in-pe100-rc-resins"
-                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label class="block text-slate-300 font-semibold mb-1">Category</label>
-                <select 
-                  [(ngModel)]="formData.blogCategoryId" 
-                  name="categoryId" 
-                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                >
-                  <option [ngValue]="null">Select Category</option>
-                  <option *ngFor="let c of categories()" [ngValue]="c.blogCategoryId">
-                    {{ c.categoryName }}
-                  </option>
-                </select>
-              </div>
+              <p class="text-[10px] text-slate-500 mt-1">SEO URL slug will be automatically generated from the title upon saving.</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -242,7 +208,7 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
           <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <div>
               <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-950 text-blue-400">
-                {{ selectedBlog.category?.categoryName || 'Technical' }}
+                Technical Whitepaper
               </span>
               <h3 class="text-base font-bold text-white mt-1">{{ selectedBlog.title }}</h3>
             </div>
@@ -301,7 +267,6 @@ export class AdminBlogsComponent implements OnInit {
   private uploadService = inject(UploadService);
 
   blogs = signal<BlogPost[]>([]);
-  categories = signal<BlogCategory[]>([]);
   searchQuery = '';
 
   showFormModal = false;
@@ -314,8 +279,6 @@ export class AdminBlogsComponent implements OnInit {
 
   formData: CreateBlogRequest = {
     title: '',
-    slug: '',
-    blogCategoryId: null,
     shortDescription: '',
     content: '',
     author: 'OM Polymer Technical Team',
@@ -323,20 +286,11 @@ export class AdminBlogsComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.loadCategories();
     this.loadBlogs();
   }
 
-  loadCategories(): void {
-    this.blogService.getCategories().subscribe({
-      next: res => {
-        if (res.success && res.data) this.categories.set(res.data);
-      }
-    });
-  }
-
   loadBlogs(): void {
-    this.blogService.getAdminBlogs(1, 100, undefined, this.searchQuery).subscribe({
+    this.blogService.getAdminBlogs(1, 100, this.searchQuery).subscribe({
       next: res => {
         if (res.success && res.data?.items) {
           this.blogs.set(res.data.items);
@@ -348,19 +302,11 @@ export class AdminBlogsComponent implements OnInit {
     });
   }
 
-  onTitleChange(val: string): void {
-    if (!this.editingBlogId) {
-      this.formData.slug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    }
-  }
-
   openCreateModal(): void {
     this.editingBlogId = null;
     this.stagedBlogFile = null;
     this.formData = {
       title: '',
-      slug: '',
-      blogCategoryId: this.categories()[0]?.blogCategoryId || null,
       shortDescription: '',
       content: '',
       featuredImageUrl: '',
@@ -377,7 +323,6 @@ export class AdminBlogsComponent implements OnInit {
     this.formData = {
       title: b.title,
       slug: b.slug,
-      blogCategoryId: b.category?.blogCategoryId || null,
       shortDescription: b.shortDescription || '',
       content: b.content,
       featuredImageUrl: b.featuredImageUrl || '',
@@ -399,10 +344,6 @@ export class AdminBlogsComponent implements OnInit {
   saveBlog(): void {
     if (!this.formData.title.trim()) {
       this.formError = 'Please provide an article title.';
-      return;
-    }
-    if (!this.formData.slug.trim()) {
-      this.formError = 'Please provide a valid slug.';
       return;
     }
     if (!this.formData.content.trim()) {

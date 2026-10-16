@@ -22,6 +22,15 @@ export const API_ENDPOINTS = {
     TOGGLE_STATUS: (id: number) => `/admin/products/${id}/status`,
     DELETE: (id: number) => `/admin/products/${id}`
   },
+  CATEGORIES: {
+    PUBLIC_LIST: '/products/categories',
+    ADMIN_LIST: '/admin/categories',
+    BY_ID: (id: number) => `/admin/categories/${id}`,
+    CREATE: '/admin/categories',
+    UPDATE: (id: number) => `/admin/categories/${id}`,
+    TOGGLE_STATUS: (id: number) => `/admin/categories/${id}/status`,
+    DELETE: (id: number) => `/admin/categories/${id}`
+  },
   TESTIMONIALS: {
     PUBLIC_LIST: '/testimonials',
     ADMIN_LIST: '/admin/testimonials'
@@ -29,7 +38,6 @@ export const API_ENDPOINTS = {
   BLOGS: {
     PUBLIC_LIST: '/blogs',
     BY_SLUG: (slug: string) => `/blogs/${slug}`,
-    CATEGORIES: '/blogs/categories',
     ADMIN_LIST: '/admin/blogs',
     CREATE: '/admin/blogs',
     UPDATE: (id: number) => `/admin/blogs/${id}`,

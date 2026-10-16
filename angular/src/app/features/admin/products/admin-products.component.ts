@@ -138,32 +138,19 @@ import { FileUploadComponent } from '../../../shared/components/file-upload/file
               />
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-slate-300 font-semibold mb-1">URL Slug *</label>
-                <input 
-                  type="text" 
-                  [(ngModel)]="formData.slug" 
-                  name="slug" 
-                  required 
-                  placeholder="e.g. pe100-hdpe-high-pressure-piping"
-                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl font-mono text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label class="block text-slate-300 font-semibold mb-1">Product Category *</label>
-                <select 
-                  [(ngModel)]="formData.categoryId" 
-                  name="categoryId" 
-                  required
-                  class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                >
-                  <option *ngFor="let c of categories()" [ngValue]="c.categoryId">
-                    {{ c.categoryName }}
-                  </option>
-                </select>
-              </div>
+            <div>
+              <label class="block text-slate-300 font-semibold mb-1">Product Category *</label>
+              <select 
+                [(ngModel)]="formData.categoryId" 
+                name="categoryId" 
+                required
+                class="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option *ngFor="let c of categories()" [ngValue]="c.categoryId">
+                  {{ c.categoryName }}
+                </option>
+              </select>
+              <p class="text-[10px] text-slate-500 mt-1">SEO URL slug will be auto-generated from product name in the backend.</p>
             </div>
 
             <div class="space-y-3">
@@ -409,10 +396,6 @@ export class AdminProductsComponent implements OnInit {
   saveProduct(): void {
     if (!this.formData.productName.trim()) {
       this.formError = 'Product name is required.';
-      return;
-    }
-    if (!this.formData.slug.trim()) {
-      this.formError = 'Valid product slug is required.';
       return;
     }
     if (!this.formData.categoryId) {

@@ -2,6 +2,8 @@ export interface ProductCategory {
   categoryId: number;
   categoryName: string;
   slug: string;
+  description?: string;
+  isActive?: boolean;
 }
 
 export interface ProductImage {
@@ -27,7 +29,7 @@ export interface Product {
 
 export interface CreateProductRequest {
   productName: string;
-  slug: string;
+  slug?: string;
   categoryId: number;
   shortDescription?: string;
   fullDescription?: string;

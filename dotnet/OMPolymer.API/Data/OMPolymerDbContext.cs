@@ -62,9 +62,12 @@ namespace OMPolymer.API.Data
             modelBuilder.Entity<ProductCategory>(entity =>
             {
                 entity.HasKey(e => e.CategoryId);
+                entity.HasIndex(e => e.CategoryName);
                 entity.HasIndex(e => e.Slug).IsUnique();
                 entity.Property(e => e.CategoryName).HasMaxLength(100);
                 entity.Property(e => e.Slug).HasMaxLength(150);
+                entity.Property(e => e.Description).HasMaxLength(500);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -78,7 +81,7 @@ namespace OMPolymer.API.Data
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.CategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Products_Categories");
             });
 

@@ -42,7 +42,7 @@ import { FileUrlPipe } from '../../../shared/pipes/file-url.pipe';
         <header class="space-y-4">
           <div class="flex flex-wrap items-center gap-3">
             <span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-              {{ b.category?.categoryName || 'Technical Whitepaper' }}
+              Technical Paper
             </span>
             <span class="text-xs text-slate-500">Published: {{ b.publishedAt || b.createdAt | date:'longDate' }}</span>
             <span class="text-xs text-slate-500">· Author: {{ b.author || 'OM Polymer Engineering Lab' }}</span>

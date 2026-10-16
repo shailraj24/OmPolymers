@@ -60,7 +60,10 @@ export interface ProductCategoryRecord {
   categoryId: number;
   categoryName: string;
   slug: string;
+  description?: string;
   isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ProductImageRecord {

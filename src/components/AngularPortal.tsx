@@ -70,7 +70,7 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   const [adminCategories, setAdminCategories] = useState<any[]>([]);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any | null>(null);
-  const [categoryForm, setCategoryForm] = useState({ categoryName: '', slug: '', isActive: true });
+  const [categoryForm, setCategoryForm] = useState({ categoryName: '', slug: '', description: '', isActive: true });
   const [categoryToDelete, setCategoryToDelete] = useState<any | null>(null);
   const [categoryFormError, setCategoryFormError] = useState<string | null>(null);
   const [isSavingCategory, setIsSavingCategory] = useState(false);
@@ -513,14 +513,14 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
   // Category CRUD Handlers
   const handleOpenAddCategory = () => {
     setEditingCategory(null);
-    setCategoryForm({ categoryName: '', slug: '', isActive: true });
+    setCategoryForm({ categoryName: '', slug: '', description: '', isActive: true });
     setCategoryFormError(null);
     setShowCategoryModal(true);
   };
 
   const handleOpenEditCategory = (cat: any) => {
     setEditingCategory(cat);
-    setCategoryForm({ categoryName: cat.categoryName, slug: cat.slug, isActive: cat.isActive });
+    setCategoryForm({ categoryName: cat.categoryName, slug: cat.slug, description: cat.description || '', isActive: cat.isActive !== false });
     setCategoryFormError(null);
     setShowCategoryModal(true);
   };
@@ -2679,18 +2679,6 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                   </div>
 
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">URL Slug *</label>
-                    <input 
-                      type="text" 
-                      required
-                      value={productForm.slug}
-                      onChange={e => setProductForm({ ...productForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-                      placeholder="e.g. hdpe-pn16-pipe"
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono"
-                    />
-                  </div>
-
-                  <div>
                     <label className="block text-slate-400 font-semibold mb-1">Category *</label>
                     <select 
                       value={productForm.categoryId}
@@ -2783,18 +2771,6 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                       onChange={e => setBlogForm({ ...blogForm, title: e.target.value })}
                       placeholder="e.g. Advances in PE100-RC Resins"
                       className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-slate-400 font-semibold mb-1">URL Slug *</label>
-                    <input 
-                      type="text" 
-                      required
-                      value={blogForm.slug}
-                      onChange={e => setBlogForm({ ...blogForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-                      placeholder="e.g. advances-in-pe100-rc"
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono"
                     />
                   </div>
 
@@ -2971,14 +2947,15 @@ export const AngularPortal: React.FC<AngularPortalProps> = ({ onQuickLogin, toke
                   </div>
 
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">URL Slug</label>
-                    <input 
-                      type="text"
-                      value={categoryForm.slug}
-                      onChange={e => setCategoryForm({ ...categoryForm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') })}
-                      placeholder="e.g. specialty-pvc-compounds"
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white font-mono focus:outline-none focus:border-blue-500"
+                    <label className="block text-slate-400 font-semibold mb-1">Description (Optional)</label>
+                    <textarea 
+                      rows={2}
+                      value={categoryForm.description}
+                      onChange={e => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                      placeholder="Classification, application scope or technical standard notes..."
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                     />
+                    <p className="text-[10px] text-slate-500 mt-1">SEO URL slug will be auto-generated in the backend.</p>
                   </div>
 
                   <div className="flex items-center gap-2">
