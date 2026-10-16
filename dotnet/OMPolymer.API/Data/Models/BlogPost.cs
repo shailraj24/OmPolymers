@@ -3,7 +3,6 @@ namespace OMPolymer.API.Data.Models
     public class BlogPost
     {
         public int BlogId { get; set; }
-        public int? BlogCategoryId { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Slug { get; set; } = string.Empty;
         public string? ShortDescription { get; set; }
@@ -16,7 +15,5 @@ namespace OMPolymer.API.Data.Models
         public DateTime? PublishedAt { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-
-        public virtual BlogCategory? BlogCategory { get; set; }
     }
 }

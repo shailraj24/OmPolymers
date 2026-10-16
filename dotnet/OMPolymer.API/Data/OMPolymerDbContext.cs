@@ -16,7 +16,6 @@ namespace OMPolymer.API.Data
         public virtual DbSet<ProductCategory> ProductCategories { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<ProductImage> ProductImages { get; set; } = null!;
-        public virtual DbSet<BlogCategory> BlogCategories { get; set; } = null!;
         public virtual DbSet<BlogPost> BlogPosts { get; set; } = null!;
         public virtual DbSet<ClientRequirement> ClientRequirements { get; set; } = null!;
         public virtual DbSet<Testimonial> Testimonials { get; set; } = null!;
@@ -95,26 +94,12 @@ namespace OMPolymer.API.Data
                     .HasConstraintName("FK_ProductImages_Products");
             });
 
-            modelBuilder.Entity<BlogCategory>(entity =>
-            {
-                entity.HasKey(e => e.BlogCategoryId);
-                entity.HasIndex(e => e.Slug).IsUnique();
-                entity.Property(e => e.CategoryName).HasMaxLength(100);
-                entity.Property(e => e.Slug).HasMaxLength(150);
-            });
-
             modelBuilder.Entity<BlogPost>(entity =>
             {
                 entity.HasKey(e => e.BlogId);
                 entity.HasIndex(e => e.Slug).IsUnique();
                 entity.Property(e => e.Title).HasMaxLength(250);
                 entity.Property(e => e.Slug).HasMaxLength(300);
-
-                entity.HasOne(d => d.BlogCategory)
-                    .WithMany(p => p.BlogPosts)
-                    .HasForeignKey(d => d.BlogCategoryId)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK_Blogs_Categories");
             });
 
             modelBuilder.Entity<ClientRequirement>(entity =>

@@ -92,16 +92,30 @@ BEGIN
         ALTER TABLE CompanySettings ADD FaviconUrl NVARCHAR(1000) NULL;
 END;
 
--- 4. Product Categories
+-- 4. Product Categories (Dynamic Category Management with Description & Timestamps)
 IF OBJECT_ID('dbo.ProductCategories', 'U') IS NULL
 BEGIN
     CREATE TABLE ProductCategories (
         CategoryID INT PRIMARY KEY IDENTITY(1,1),
         CategoryName NVARCHAR(100) NOT NULL,
         Slug NVARCHAR(150) NOT NULL UNIQUE,
-        IsActive BIT NOT NULL DEFAULT 1
+        Description NVARCHAR(500) NULL,
+        IsActive BIT NOT NULL DEFAULT 1,
+        CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+        UpdatedAt DATETIME NOT NULL DEFAULT GETDATE()
     );
+END
+ELSE
+BEGIN
+    -- Safe Migration: Add missing columns if upgrading existing table
+    IF COL_LENGTH('dbo.ProductCategories', 'Description') IS NULL
+        ALTER TABLE ProductCategories ADD Description NVARCHAR(500) NULL;
+    IF COL_LENGTH('dbo.ProductCategories', 'CreatedAt') IS NULL
+        ALTER TABLE ProductCategories ADD CreatedAt DATETIME NOT NULL DEFAULT GETDATE();
+    IF COL_LENGTH('dbo.ProductCategories', 'UpdatedAt') IS NULL
+        ALTER TABLE ProductCategories ADD UpdatedAt DATETIME NOT NULL DEFAULT GETDATE();
 END;
+GO
 
 -- 5. Products Table (Stores relative image paths e.g. /uploads/products/...)
 IF OBJECT_ID('dbo.Products', 'U') IS NULL
@@ -119,9 +133,19 @@ BEGIN
         IsActive BIT NOT NULL DEFAULT 1,
         CreatedAt DATETIME DEFAULT GETDATE(),
         UpdatedAt DATETIME DEFAULT GETDATE(),
-        CONSTRAINT FK_Products_Categories FOREIGN KEY (CategoryID) REFERENCES ProductCategories(CategoryID)
+        CONSTRAINT FK_Products_Categories FOREIGN KEY (CategoryID) 
+            REFERENCES ProductCategories(CategoryID) ON DELETE NO ACTION
     );
+END
+ELSE
+BEGIN
+    -- Ensure FK_Products_Categories enforces RESTRICT / NO ACTION
+    IF OBJECT_ID('dbo.FK_Products_Categories', 'F') IS NOT NULL
+    BEGIN
+        PRINT 'FK_Products_Categories verified on Products table.';
+    END;
 END;
+GO
 
 -- 6. Product Images (One-to-Many gallery, relative file paths)
 IF OBJECT_ID('dbo.ProductImages', 'U') IS NULL
@@ -134,23 +158,28 @@ BEGIN
         CONSTRAINT FK_ProductImages_Products FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
     );
 END;
+GO
 
--- 7. Blog Categories
-IF OBJECT_ID('dbo.BlogCategories', 'U') IS NULL
+-- 7. Blog Posts (Blog Categories removed per architecture requirements)
+-- Safe Migration: Drop obsolete BlogCategories table and foreign key from BlogPosts if upgrading
+IF OBJECT_ID('dbo.FK_Blogs_Categories', 'F') IS NOT NULL
 BEGIN
-    CREATE TABLE BlogCategories (
-        BlogCategoryID INT PRIMARY KEY IDENTITY(1,1),
-        CategoryName NVARCHAR(100) NOT NULL,
-        Slug NVARCHAR(150) NOT NULL UNIQUE
-    );
+    ALTER TABLE BlogPosts DROP CONSTRAINT FK_Blogs_Categories;
 END;
+IF COL_LENGTH('dbo.BlogPosts', 'BlogCategoryID') IS NOT NULL
+BEGIN
+    ALTER TABLE BlogPosts DROP COLUMN BlogCategoryID;
+END;
+IF OBJECT_ID('dbo.BlogCategories', 'U') IS NOT NULL
+BEGIN
+    DROP TABLE BlogCategories;
+END;
+GO
 
--- 8. Blog Posts (FeaturedImageUrl stores relative path e.g. /uploads/blogs/...)
 IF OBJECT_ID('dbo.BlogPosts', 'U') IS NULL
 BEGIN
     CREATE TABLE BlogPosts (
         BlogID INT PRIMARY KEY IDENTITY(1,1),
-        BlogCategoryID INT NULL,
         Title NVARCHAR(250) NOT NULL,
         Slug NVARCHAR(300) NOT NULL UNIQUE,
         ShortDescription NVARCHAR(1000),
@@ -162,10 +191,10 @@ BEGIN
         IsPublished BIT NOT NULL DEFAULT 0,
         PublishedAt DATETIME NULL,
         CreatedAt DATETIME DEFAULT GETDATE(),
-        UpdatedAt DATETIME DEFAULT GETDATE(),
-        CONSTRAINT FK_Blogs_Categories FOREIGN KEY (BlogCategoryID) REFERENCES BlogCategories(BlogCategoryID) ON DELETE SET NULL
+        UpdatedAt DATETIME DEFAULT GETDATE()
     );
 END;
+GO
 
 -- 9. Client Requirements (Leads)
 IF OBJECT_ID('dbo.ClientRequirements', 'U') IS NULL
@@ -221,11 +250,26 @@ BEGIN
 END;
 
 -- Indexes
-CREATE NONCLUSTERED INDEX IX_Products_Slug ON Products(Slug);
-CREATE NONCLUSTERED INDEX IX_BlogPosts_Slug ON BlogPosts(Slug);
-CREATE NONCLUSTERED INDEX IX_Products_IsActive_IsFeatured ON Products(IsActive, IsFeatured);
-CREATE NONCLUSTERED INDEX IX_ClientRequirements_Status ON ClientRequirements(Status);
-CREATE NONCLUSTERED INDEX IX_AdminUsers_Email ON AdminUsers(Email);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Products_Slug' AND object_id = OBJECT_ID('Products'))
+    CREATE NONCLUSTERED INDEX IX_Products_Slug ON Products(Slug);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_BlogPosts_Slug' AND object_id = OBJECT_ID('BlogPosts'))
+    CREATE NONCLUSTERED INDEX IX_BlogPosts_Slug ON BlogPosts(Slug);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ProductCategories_Slug' AND object_id = OBJECT_ID('ProductCategories'))
+    CREATE NONCLUSTERED INDEX IX_ProductCategories_Slug ON ProductCategories(Slug);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ProductCategories_IsActive' AND object_id = OBJECT_ID('ProductCategories'))
+    CREATE NONCLUSTERED INDEX IX_ProductCategories_IsActive ON ProductCategories(IsActive);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_Products_IsActive_IsFeatured' AND object_id = OBJECT_ID('Products'))
+    CREATE NONCLUSTERED INDEX IX_Products_IsActive_IsFeatured ON Products(IsActive, IsFeatured);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ClientRequirements_Status' AND object_id = OBJECT_ID('ClientRequirements'))
+    CREATE NONCLUSTERED INDEX IX_ClientRequirements_Status ON ClientRequirements(Status);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_AdminUsers_Email' AND object_id = OBJECT_ID('AdminUsers'))
+    CREATE NONCLUSTERED INDEX IX_AdminUsers_Email ON AdminUsers(Email);
 GO
 
 -- Seed Initial Super Administrator (Password: Admin@123 via BCrypt)
@@ -282,14 +326,37 @@ BEGIN
     WHERE LogoUrl IS NULL;
 END;
 
--- Seed Product Categories
+-- Seed Product Categories (With Descriptions, Status, and Timestamps)
 IF NOT EXISTS (SELECT 1 FROM ProductCategories)
 BEGIN
-    INSERT INTO ProductCategories (CategoryName, Slug, IsActive)
+    INSERT INTO ProductCategories (CategoryName, Slug, Description, IsActive, CreatedAt, UpdatedAt)
     VALUES 
-    ('HDPE Pressure Pipes & Ducts', 'hdpe-pipes-ducts', 1),
-    ('Engineering Polymers & Resins', 'engineering-polymers', 1),
-    ('Color & Additive Masterbatches', 'masterbatches', 1),
-    ('UPVC & CPVC Fitting Solutions', 'upvc-cpvc-fittings', 1);
+    ('HDPE Pressure Pipes & Ducts', 'hdpe-pipes-ducts', 'High-density polyethylene pipes engineered for municipal potable water supply, industrial effluent, gas distribution, and mining slurry.', 1, GETDATE(), GETDATE()),
+    ('Engineering Polymers & Resins', 'engineering-polymers', 'Prime-grade polymer compounds and engineering resins optimized for injection molding, profile extrusion, and blown film processes.', 1, GETDATE(), GETDATE()),
+    ('Color & Additive Masterbatches', 'masterbatches', 'Specialized UV stabilizer, antioxidant, slip, and custom color masterbatches engineered for polymer processing precision.', 1, GETDATE(), GETDATE()),
+    ('UPVC & CPVC Fitting Solutions', 'upvc-cpvc-fittings', 'High-performance unplasticized and chlorinated PVC pipes and pressure fittings for commercial plumbing and chemical lines.', 1, GETDATE(), GETDATE());
+END
+ELSE
+BEGIN
+    -- Update existing seeded categories with descriptions and timestamps if null
+    UPDATE ProductCategories 
+    SET Description = 'High-density polyethylene pipes engineered for municipal potable water supply, industrial effluent, gas distribution, and mining slurry.',
+        UpdatedAt = GETDATE()
+    WHERE Slug = 'hdpe-pipes-ducts' AND (Description IS NULL OR Description = '');
+
+    UPDATE ProductCategories 
+    SET Description = 'Prime-grade polymer compounds and engineering resins optimized for injection molding, profile extrusion, and blown film processes.',
+        UpdatedAt = GETDATE()
+    WHERE Slug = 'engineering-polymers' AND (Description IS NULL OR Description = '');
+
+    UPDATE ProductCategories 
+    SET Description = 'Specialized UV stabilizer, antioxidant, slip, and custom color masterbatches engineered for polymer processing precision.',
+        UpdatedAt = GETDATE()
+    WHERE Slug = 'masterbatches' AND (Description IS NULL OR Description = '');
+
+    UPDATE ProductCategories 
+    SET Description = 'High-performance unplasticized and chlorinated PVC pipes and pressure fittings for commercial plumbing and chemical lines.',
+        UpdatedAt = GETDATE()
+    WHERE Slug = 'upvc-cpvc-fittings' AND (Description IS NULL OR Description = '');
 END;
 GO
