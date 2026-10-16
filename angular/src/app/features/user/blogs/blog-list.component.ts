@@ -93,7 +93,7 @@ export class BlogListComponent implements OnInit {
 
   loadBlogs(): void {
     this.loading.set(true);
-    this.blogService.getPublishedBlogs(1, 50, undefined, this.searchQuery).subscribe({
+    this.blogService.getPublishedBlogs(1, 50, this.searchQuery).subscribe({
       next: res => {
         if (res.success && res.data?.items) {
           this.blogs.set(res.data.items);
